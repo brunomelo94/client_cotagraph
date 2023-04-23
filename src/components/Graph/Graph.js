@@ -245,26 +245,28 @@ const Graph = ({ data }) => {
                 </select>
             </div>
             {selectedNode && (
-                <Card className="NodeDetails">
-                    <Card.Img variant="top" src={selectedNode.party} />
-                    <Card.Body>
-                        <Card.Title>{selectedNode.name}</Card.Title>
-                        <Card.Text>
-                            Nome: {selectedNode.name}
-                        </Card.Text>
-                        <Card.Text>
-                            email: {selectedNode.email}
-                        </Card.Text>
-                        <Card.Text>
-                            Estado: {selectedNode.uf}
-                        </Card.Text>
-                        <Card.Text>
-                            Partido: {selectedNode.party}
-                        </Card.Text>
-                        {/* Foto */}
-                        <Card.Img variant="top" src={selectedNode.photoUrl} />
-                    </Card.Body>
-                </Card>
+
+                <div style={{ position: 'fixed', top: 0, right: 0, width: '20%' }}>
+                    <Card className="NodeDetails">
+                        <Card.Img variant="top" src={selectedNode.photoUrl} bsPrefix='img-fluid' />
+                        <Card.Body>
+                            <Card.Title>{selectedNode.name}</Card.Title>
+                            <Card.Text>
+                                Nome: {selectedNode.name}
+                            </Card.Text>
+                            <Card.Text>
+                                email: {selectedNode.email}
+                            </Card.Text>
+                            <Card.Text>
+                                Estado: {selectedNode.uf}
+                            </Card.Text>
+                            <Card.Text>
+                                Partido: {selectedNode.party}
+                            </Card.Text>
+                        </Card.Body>
+                    </Card>
+                </div>
+
             )}
         </div>
     );

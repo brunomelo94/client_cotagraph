@@ -1,0 +1,22 @@
+/* src/components/Layout/Layout.css */
+.Layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.Layout-header {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  text-align: center;
+}
+
+.Layout-main {
+  flex: 1;
+}
+
+.Layout-footer {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  text-align: center;
+}

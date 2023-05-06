@@ -5,30 +5,26 @@ import Graph from '../../components/Graph/Graph';
 import './Home.css';
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
-// console.log('API_BASE_URL:', API_BASE_URL);
-
 const Home = () => {
     const [graphData, setGraphData] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Buscar deputados e despesas separadamente
+                // Fetch deputies and expenses separately
                 const deputiesResponse = await axios.get(`${API_BASE_URL}/deputies`);
                 const expensesResponse = await axios.get(`${API_BASE_URL}/expenses`);
 
-                // Combinar os dados recebidos em uma estrutura adequada para o componente Graph
+                // Combine the received data into a structure suitable for the Graph component
                 const combinedData = {
                     deputies: deputiesResponse.data,
                     expenses: expensesResponse.data,
                 };
 
-                // console.log('Dados do grafo:', combinedData);
-
-                // Atualizar o estado com os dados combinados
+                // Update the state with the combined data
                 setGraphData(combinedData);
             } catch (error) {
-                console.error('Erro ao buscar dados do grafo:', error);
+                console.error('Error fetching graph data:', error);
             }
         };
 
@@ -37,6 +33,7 @@ const Home = () => {
 
     return (
         <div className="Home">
+            <h1 className="Home-title">Graph Overview</h1>
             {graphData && <Graph data={graphData} />}
         </div>
     );

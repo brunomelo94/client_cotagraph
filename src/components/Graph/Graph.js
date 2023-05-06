@@ -1,10 +1,20 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, FC } from 'react';
 import { Sigma, renderers } from 'sigma';
 import graphology from 'graphology';
 import ForceAtlas2 from 'graphology-layout-forceatlas2';
 import './Graph.css';
 import { Card, Form, Button } from 'react-bootstrap';
-
+// import {
+//     AiOutlineZoomIn,
+//     AiOutlineZoomOut,
+//     AiOutlineFullscreenExit,
+//     AiOutlineFullscreen,
+//     AiFillPlayCircle,
+//     AiFillPauseCircle,
+// } from "react-icons/ai";
+// import { MdFilterCenterFocus } from "react-icons/md";
+// import { SigmaContainer, ControlsContainer, ZoomControl, FullScreenControl } from "@react-sigma/core";
+// import { LayoutForceAtlas2Control } from "@react-sigma/layout-forceatlas2";
 
 const partyColors = {
     'PT': '#FF0000',
@@ -52,15 +62,16 @@ const Graph = ({ data }) => {
     const containerRef = useRef();
     const [searchValue, setSearchValue] = useState('');
     const [selectedNode, setSelectedNode] = useState(null);
+    const [selectedEdge, setSelectedEdge] = useState(null);
     const [layout, setLayout] = useState("forceAtlas2");
     const [sigmaRenderer, setSigmaRenderer] = useState(null);
 
-    const randomCoordinate = () => Math.random() * 10;
+    const randomCoordinate = () => Math.random() * 5;
 
     const applyForceAtlas2Layout = (graph) => {
         const settings = {
-            iterations: 10,
-            linLogMode: false,
+            iterations: 12,
+            linLogMode: true,
         };
         ForceAtlas2.assign(graph, settings);
     };
@@ -126,47 +137,68 @@ const Graph = ({ data }) => {
                     x: randomCoordinate(),
                     y: randomCoordinate(),
                 });
-            });
-
-            // Adicione as arestas aqui de despesas para deputados, caso aresta já exista, somar o valor da despesa
-            data.expenses.forEach((expense) => {
                 const deputyId = expense.deputy;
-                const expenseId = expense._id;
                 graph.addEdge(deputyId, expenseId, {
                     label: expense.tipoDespesa,
                     size: Math.log(expense.valorDocumento + 1) / 10,
                     color: '#0f0',
+                    expense: {
+                        ano: expense.ano,
+                        mes: expense.mes,
+                        tipoDespesa: expense.tipoDespesa,
+                        codDocumento: expense.codDocumento,
+                        tipoDocumento: expense.tipoDocumento,
+                        codTipoDocumento: expense.codTipoDocumento,
+                        dataDocumento: expense.dataDocumento,
+                        numDocumento: expense.numDocumento,
+                        valorDocumento: expense.valorDocumento,
+                        urlDocumento: expense.urlDocumento,
+                        nomeFornecedor: expense.nomeFornecedor,
+                        cnpjCpfFornecedor: expense.cnpjCpfFornecedor,
+                        valorLiquido: expense.valorLiquido,
+                        valorGlosa: expense.valorGlosa,
+                        numRessarcimento: expense.numRessarcimento,
+                        codLote: expense.codLote,
+                        parcela: expense.parcela,
+                        deputy: expense.deputy
+                    }
                 });
             });
 
-
-            // data.expenses.forEach((expense) => {
-            //     const deputyId = expense.deputy;
-            //     const expenseId = expense._id;
-            //     graph.addEdge(deputyId, expenseId, {
-            //         label: expense.tipoDespesa,
-            //         size: Math.log(expense.valorDocumento + 1) / 10,
-            //         color: '#0f0',
-            //     });
-            // });
-
-            if (layout === "forceAtlas2") {
+            if (layout === "forceAtlas2" && sigmaRenderer) {
                 applyForceAtlas2Layout(graph);
+                console.log('forceAtlas2');
             }
 
             const renderer = new Sigma(graph, containerRef.current, {
                 zIndex: true,
+                defaultEdgeColor: '#000',
+                defaultEdgeType: 'arrow',
+                defaultEdgeHoverColor: '#000',
+                defaultNodeColor: '#000',
+                defaultNodeHoverColor: '#000',
+                defaultNodeBorderColor: '#000',
+                defaultLabelColor: '#000',
+                defaultEdgeLabelColor: '#000',
+                edgeColor: 'default',
             });
 
             setSigmaRenderer(renderer);
 
+            renderer.on('clickEdge', (event) => {
+                const { edge } = event;
+                const edgeData = graph.getEdgeAttributes(edge);
+                console.log(edgeData);
+                setSelectedEdge(edgeData.expense);
+            });
+
             renderer.on('clickNode', (event) => {
                 const { node } = event;
                 const nodeData = graph.getNodeAttributes(node);
-                setSelectedNode(nodeData.deputy || nodeData.expense);
+                setSelectedNode(nodeData.deputy);
             });
 
-            renderer.refresh();
+            // renderer.refresh();
 
             const bindTooltip = (event) => {
                 const { node, captor } = event.data;
@@ -209,18 +241,24 @@ const Graph = ({ data }) => {
             .find((id) => graph.getNodeAttributes(id).label.toLowerCase() === searchValue.toLowerCase());
 
         if (nodeId) {
-            const coordinates = graph.getNodeAttributes(nodeId);
-            sigmaRenderer.getCamera().animate(
-                {
-                    x: coordinates.x,
-                    y: coordinates.y,
-                    ratio: 1 / 2,
-                },
-                { duration: 1000 } // Mudei a duração para 1000ms (1 segundo) em vez de 100000ms
-            );
-            console.log(coordinates);
+            const nodePosition = sigmaRenderer.getNodeDisplayData(nodeId);
+
+            console.log(nodePosition);
+
+            const camera = sigmaRenderer.getCamera();
+
+            // camera.animatedZoom(, {
+            //     duration: 500,
+            //     factor: 10,
+            // });
+
+            camera.animate(nodePosition, {
+                duration: 500,
+            })
+
         } else {
-            alert('Nó não encontrado');
+            // Embbed bootstrap alert
+            alert('Deputado não encontrado');
         }
     };
 
@@ -230,25 +268,26 @@ const Graph = ({ data }) => {
             <div className="sigma-tooltip" />
             <div className="GraphSearch">
                 <input
+                    className="GraphSearch-input"
                     type="text"
                     value={searchValue}
                     onChange={(e) => setSearchValue(e.target.value)}
                     placeholder="Digite o nome do deputado"
                 />
-                <button onClick={handleSearch}>Buscar</button>
+                <button className="GraphSearch-button" onClick={handleSearch}>Buscar</button>
                 <select
+                    className="GraphSearch-select"
                     value={layout}
                     onChange={(e) => setLayout(e.target.value)}
                 >
                     <option value="forceAtlas2">ForceAtlas2</option>
-                    {/* Adicione outras opções de layout aqui */}
+                    {/* Add other layout options here */}
                 </select>
             </div>
             {selectedNode && (
-
-                <div style={{ position: 'fixed', top: 0, right: 0, width: '20%' }}>
+                <div className="NodeDetailsContainer">
                     <Card className="NodeDetails">
-                        <Card.Img variant="top" src={selectedNode.photoUrl} bsPrefix='img-fluid' />
+                        <Card.Img className="NodeDetails-image" variant="top" src={selectedNode.photoUrl} />
                         <Card.Body>
                             <Card.Title>{selectedNode.name}</Card.Title>
                             <Card.Text>
@@ -266,16 +305,64 @@ const Graph = ({ data }) => {
                         </Card.Body>
                     </Card>
                 </div>
-
+            )}
+            {selectedEdge && (
+                <div className="EdgeDetailsContainer">
+                    <Card className="EdgeDetails">
+                        <Card.Body>
+                            <Card.Title>{selectedEdge.tipoDespesa}</Card.Title>
+                            <Card.Text>
+                                Ano: {selectedEdge.ano}
+                            </Card.Text>
+                            <Card.Text>
+                                Mês: {selectedEdge.mes}
+                            </Card.Text>
+                            <Card.Text>
+                                Tipo de Despesa: {selectedEdge.tipoDespesa}
+                            </Card.Text>
+                            <Card.Text>
+                                Código do Documento: {selectedEdge.codDocumento}
+                            </Card.Text>
+                            <Card.Text>
+                                Tipo de Documento: {selectedEdge.tipoDocumento}
+                            </Card.Text>
+                            <Card.Text>
+                                Data do Documento: {selectedEdge.dataDocumento}
+                            </Card.Text>
+                            <Card.Text>
+                                Número do Documento: {selectedEdge.numDocumento}
+                            </Card.Text>
+                            <Card.Text>
+                                Valor: {selectedEdge.valorDocumento}
+                            </Card.Text>
+                            <Card.Text>
+                                Valor Glosa: {selectedEdge.valorGlosa}
+                            </Card.Text>
+                            <Card.Text>
+                                Valor Líquido: {selectedEdge.valorLiquido}
+                            </Card.Text>
+                            <Card.Text>
+                                Valor Reembolsado: {selectedEdge.valorReembolsado}
+                            </Card.Text>
+                            <Card.Text>
+                                Valor Restituído: {selectedEdge.valorRestituicao}
+                            </Card.Text>
+                            <Card.Text>
+                                Valor Sem Glosa: {selectedEdge.valorSemGlosa}
+                            </Card.Text>
+                        </Card.Body>
+                    </Card>
+                </div>
             )}
         </div>
     );
+
 };
 
 export default Graph;
 
 function getColours(type) {
     // return random color
-    return '#' + Math.floor(Math.random() * 16777215).toString(16);
+    return '#' + Math.floor(Math.random() * 1677).toString(16);
 }
 

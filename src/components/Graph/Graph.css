@@ -35,3 +35,47 @@
   z-index: 1000;
   width: 300px;
 }
+
+.GraphSearch-input {
+    flex: 1;
+    margin-right: 10px;
+    padding: 5px 10px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.GraphSearch-button {
+    background-color: #4a4a4a;
+    color: #ffffff;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.GraphSearch-button:hover {
+    background-color: #ffa726;
+}
+
+.GraphSearch-select {
+    margin-left: 10px;
+    padding: 5px 10px;
+    font-size: 14px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+}
+
+.NodeDetailsContainer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 20%;
+}
+
+.NodeDetails-image {
+    width: 100%;
+    object-fit: cover;
+}

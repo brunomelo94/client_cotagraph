@@ -4,17 +4,9 @@ import graphology from 'graphology';
 import ForceAtlas2 from 'graphology-layout-forceatlas2';
 import './Graph.css';
 import { Card, Form, Button } from 'react-bootstrap';
-// import {
-//     AiOutlineZoomIn,
-//     AiOutlineZoomOut,
-//     AiOutlineFullscreenExit,
-//     AiOutlineFullscreen,
-//     AiFillPlayCircle,
-//     AiFillPauseCircle,
-// } from "react-icons/ai";
-// import { MdFilterCenterFocus } from "react-icons/md";
-// import { SigmaContainer, ControlsContainer, ZoomControl, FullScreenControl } from "@react-sigma/core";
-// import { LayoutForceAtlas2Control } from "@react-sigma/layout-forceatlas2";
+
+// Import Card, Layout, Deputy
+import DeputyCard from '../Card/Card';
 
 const partyColors = {
     'PT': '#FF0000',

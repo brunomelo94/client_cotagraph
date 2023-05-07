@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Graph from '../../components/Graph/Graph';
 import './Home.css';
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
 
 const Home = () => {
     const [graphData, setGraphData] = useState(null);

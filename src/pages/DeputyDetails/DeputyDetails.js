@@ -13,6 +13,8 @@ const DeputyDetails = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
+                console.log(`${API_BASE_URL}/deputy/${id}`);
+
                 const deputyResponse = await axios.get(`${API_BASE_URL}/deputy/${id}`);
                 setDeputy(deputyResponse.data);
 

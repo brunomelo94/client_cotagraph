@@ -11,44 +11,44 @@ import DeputyCard from '../Card/Card';
 const partyColors = {
     'PT': '#FF0000',
     'PSDB': '#0000FF',
-    'PSOL': '#FF00FF',
+    'PSOL': '#F66C0D',
     'PSB': '#00FF00',
     'DEM': '#FFFF00',
     'MDB': '#00FFFF',
-    'PP': '#FF00FF',
-    'PDT': '#FF00FF',
-    'PL': '#FF00FF',
-    'PSC': '#FF00FF',
-    'PSD': '#FF00FF',
-    'PTB': '#FF00FF',
-    'PV': '#FF00FF',
-    'REPUBLICANOS': '#FF00FF',
-    'SOLIDARIEDADE': '#FF00FF',
-    'AVANTE': '#FF00FF',
-    'CIDADANIA': '#FF00FF',
-    'PATRI': '#FF00FF',
-    'PODE': '#FF00FF',
-    'PROS': '#FF00FF',
-    'PRTB': '#FF00FF',
-    'PSL': '#FF00FF',
-    'PTC': '#FF00FF',
-    'REDE': '#FF00FF',
-    'S.PART.': '#FF00FF',
-    'PCdoB': '#FF00FF',
-    'PMB': '#FF00FF',
-    'PMN': '#FF00FF',
-    'PPL': '#FF00FF',
-    'PR': '#FF00FF',
-    'PRB': '#FF00FF',
-    'PRP': '#FF00FF',
-    'PSB': '#FF00FF',
-    'PSDB': '#FF00FF',
-    'PSDC': '#FF00FF'
+    'PP': '#7A3E9D',
+    'PDT': '#83258D',
+    'PL': '#4B0082',
+    'PSC': '#2E8B57',
+    'PSD': '#008080',
+    'PTB': '#483D8B',
+    'PV': '#32CD32',
+    'REPUBLICANOS': '#DC143C',
+    'SOLIDARIEDADE': '#8B4513',
+    'AVANTE': '#FFD700',
+    'CIDADANIA': '#FF4500',
+    'PATRI': '#8A2BE2',
+    'PODE': '#20B2AA',
+    'PROS': '#228B22',
+    'PRTB': '#800000',
+    'PSL': '#DAA520',
+    'PTC': '#D2691E',
+    'REDE': '#B22222',
+    'S.PART.': '#FFA07A',
+    'PCdoB': '#FF6347',
+    'PMB': '#8B008B',
+    'PMN': '#006400',
+    'PPL': '#ADFF2F',
+    'PR': '#7FFF00',
+    'PRB': '#7CFC00',
+    'PRP': '#00FA9A',
+    'PSB': '#00FF7F',
+    'PSDC': '#4682B4'
 };
 
 const getNodeColor = (party) => {
     return partyColors[party] || '#000000';
 };
+
 
 const Graph = ({ data }) => {
     const containerRef = useRef();
@@ -62,7 +62,7 @@ const Graph = ({ data }) => {
 
     const applyForceAtlas2Layout = (graph) => {
         const settings = {
-            iterations: 12,
+            iterations: 2,
             linLogMode: true,
         };
         ForceAtlas2.assign(graph, settings);
@@ -132,7 +132,7 @@ const Graph = ({ data }) => {
                 const deputyId = expense.deputy;
                 graph.addEdge(deputyId, expenseId, {
                     label: expense.tipoDespesa,
-                    size: Math.log(expense.valorDocumento + 1) / 10,
+                    size: Math.log(expense.valorDocumento + 1) / 50,
                     color: '#0f0',
                     expense: {
                         ano: expense.ano,

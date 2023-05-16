@@ -1,0 +1,17 @@
+.NodeDetailsContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.NodeDetails {
+  max-width: auto;
+  width: auto;
+  text-align: left;
+}
+
+.NodeDetails-image {
+  height: auto;
+  object-fit: cover;
+  margin-bottom: 1rem;
+}

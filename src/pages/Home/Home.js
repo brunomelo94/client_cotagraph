@@ -1,41 +1,76 @@
 // src/pages/Home/Home.js
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useState } from 'react';
 import Graph from '../../components/Graph/Graph';
+import { Container, Form, Button, Row, Col } from 'react-bootstrap';
 import './Home.css';
-const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
 
 const Home = () => {
-    const [graphData, setGraphData] = useState(null);
+    const currentYear = new Date().getFullYear();
+    const [year, setYear] = useState(currentYear);
+    const [month, setMonth] = useState('');
+    const [showGraph, setShowGraph] = useState(false);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                // Fetch deputies and expenses separately
-                const deputiesResponse = await axios.get(`${API_BASE_URL}/deputies`);
-                const expensesResponse = await axios.get(`${API_BASE_URL}/expenses`);
+    const months = [
+        "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+        "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+    ];
 
-                // Combine the received data into a structure suitable for the Graph component
-                const combinedData = {
-                    deputies: deputiesResponse.data,
-                    expenses: expensesResponse.data,
-                };
+    const handleSubmit = (e) => {
+        e.preventDefault();
 
-                // Update the state with the combined data
-                setGraphData(combinedData);
-            } catch (error) {
-                console.error('Error fetching graph data:', error);
-            }
-        };
+        if (year < 2018 || year > currentYear || month === '') {
+            alert("Por favor, insira um ano maior ou igual a 2018 e selecione um mês.");
+            return;
+        }
 
-        fetchData();
-    }, []);
+        setShowGraph(true);
+    };
 
     return (
-        <div className="Home">
-            <h1 className="Home-title">Graph Overview</h1>
-            {graphData && <Graph data={graphData} />}
-        </div>
+        <Container className="Home">
+            <h1 className="Home-title">cotagraph</h1>
+            <Form onSubmit={handleSubmit} className="Form">
+                <Row>
+                    <Col md={4}>
+                        <Form.Group controlId="year">
+                            <Form.Label>Ano</Form.Label>
+                            <Form.Control
+                                type="number"
+                                min="1900"
+                                max={currentYear}
+                                step="1"
+                                value={year}
+                                onChange={(e) => setYear(e.target.value)}
+                                placeholder="Ano"
+                                required
+                            />
+                        </Form.Group>
+                    </Col>
+                    <Col md={4}>
+                        <Form.Group controlId="month">
+                            <Form.Label>Mês</Form.Label>
+                            <Form.Control
+                                as="select"
+                                value={month}
+                                onChange={(e) => setMonth(e.target.value)}
+                                required
+                            >
+                                <option value="">Selecione um mês...</option>
+                                {months.map((month, index) =>
+                                    <option key={index} value={index + 1}>{month}</option>
+                                )}
+                            </Form.Control>
+                        </Form.Group>
+                    </Col>
+                    <Col md={4} className="d-flex align-items-end">
+                        <Button className="btn btn-primary" type="submit">
+                            Obter grafo!
+                        </Button>
+                    </Col>
+                </Row>
+            </Form>
+            {showGraph && <Graph year={year} month={month} />}
+        </Container>
     );
 };
 

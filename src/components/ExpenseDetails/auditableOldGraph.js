@@ -3,6 +3,7 @@ import { Sigma } from 'sigma';
 import graphology from 'graphology';
 import './Graph.css';
 import NodeDetails from '../NodeDetails/NodeDetails';
+import ExpenseDetails from '../ExpenseDetails/ExpenseDetails'; // New component
 import EdgeDetails from '../EdgeDetails/EdgeDetails';
 import axios from 'axios';
 
@@ -18,8 +19,10 @@ const Graph = ({ year, month }) => {
     const [graphData, setGraphData] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [valueOptions, setValueOptions] = useState([]); // New state for deputy names
+    const [selectedExpense, setSelectedExpense] = useState(null); // New state for selected expense
 
     useEffect(() => {
+        setValueOptions([]);
         const fetchData = async () => {
             setIsLoading(true); // Set loading to true at start of fetch
             try {
@@ -52,7 +55,14 @@ const Graph = ({ year, month }) => {
 
         // Add nodes and edges to the graph
         graphData.nodes.forEach((node) => {
-            graph.addNode(node._id, node);
+            if (node.type === 'expense') {
+                // Create a unique id for the expense
+                node._id = `${node.deputyName}-${node.expenseAmount}`;
+            }
+            // Only add the node if it doesn't already exist in the graph
+            if (!graph.hasNode(node._id)) {
+                graph.addNode(node._id, node);
+            }
         });
 
         graphData.edges.forEach((edge) => {
@@ -66,11 +76,28 @@ const Graph = ({ year, month }) => {
         renderer.on('clickNode', (event) => {
             const { node } = event;
             const nodeData = graph.getNodeAttributes(node);
-            setSelectedNode(nodeData.deputy);
+            if (nodeData.type === 'deputy') { // Assuming type property in nodeData
+                setSelectedNode(nodeData);
+                setSelectedExpense(null); // Clear selected expense
+            } else if (nodeData.type === 'expense') {
+                setSelectedExpense(nodeData);
+                setSelectedNode(null); // Clear selected deputy
 
-            // centrar a câmera no nó clicado e dar zoom
-            // const camera = renderer.getCamera();
-            // camera.animate({ x: nodeData.x, y: nodeData.y, ratio: 0.5 }, { duration: 300 });
+                // Move related deputy nodes closer
+                const edges = graph.edges(node);
+                edges.forEach(edge => {
+                    const otherNode = graph.opposite(node, edge);
+                    const otherNodeData = sigmaRenderer.getNodeDisplayData(otherNode);
+                    const camera = sigmaRenderer.getCamera();
+                    camera.animate({
+                        x: otherNodeData.x,
+                        y: otherNodeData.y,
+                        ratio: 0.005
+                    }, {
+                        duration: 500
+                    });
+                });
+            }
         });
 
 
@@ -101,6 +128,8 @@ const Graph = ({ year, month }) => {
             renderer.kill();
         };
     }, [graphData, layout]);
+
+
     const handleSearch = () => {
         if (!sigmaRenderer) {
             alert('Gráfico não disponível');
@@ -152,7 +181,8 @@ const Graph = ({ year, month }) => {
                 </button>
             </div>
             {selectedNode && <NodeDetails selectedNode={selectedNode} />}
-            {selectedEdge && <EdgeDetails selectedNode={selectedEdge} />}
+            {selectedExpense && <ExpenseDetails selectedExpense={selectedExpense} />} {/* Display ExpenseDetails */}
+            {/* {selectedEdge && <EdgeDetails selectedNode={selectedEdge} />} */}
         </div>
     );
 };

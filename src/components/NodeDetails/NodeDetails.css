@@ -15,3 +15,45 @@
   object-fit: cover;
   margin-bottom: 1rem;
 }
+
+.NodeDetails,
+.ExpenseDetails {
+    width: 100%;
+    max-width: 500px; /* Ajuste para o tamanho máximo que você deseja para os cartões */
+    margin: auto; /* Para centralizar os cartões quando a tela é maior que o max-width */
+}
+
+.NodeDetails-title,
+.ExpenseDetails-title {
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.NodeDetails-text,
+.ExpenseDetails-text {
+    font-size: 1em;
+    color: #333;
+}
+
+.NodeDetails-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #343a40;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.NodeDetails-description {
+  font-size: 1rem;
+  font-weight: 400;
+  color: #343a40;
+  margin-bottom: 0.5rem;
+}
+
+.NodeDetails-link {
+  font-size: 1rem;
+  font-weight: 400;
+  color: #343a40;
+  margin-bottom: 0.5rem;
+}

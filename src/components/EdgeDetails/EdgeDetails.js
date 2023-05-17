@@ -7,6 +7,8 @@ function EdgeDetails({ selectedEdge }) {
         return null;
     }
 
+    console.log(selectedEdge);
+
     return (
         <div className="EdgeDetailsContainer">
             <Card className="EdgeDetails" style={{ width: '18rem' }}>

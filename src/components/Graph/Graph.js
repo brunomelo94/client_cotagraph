@@ -45,17 +45,28 @@ const Graph = ({ year, month }) => {
     useEffect(() => {
         if (!graphData) {
             // TODO: show loading
-            return () => { }
+            return () => null;
         }
 
         const graph = new graphology();
 
         // Add nodes and edges to the graph
         graphData.nodes.forEach((node) => {
+            // If node is a expense, add ir only if it is not added yet
+            node._id = node.expense ? `${node.expense.cnpjCpfFornecedor}-${node.expense.valorLiquido}` : node._id;
             graph.addNode(node._id, node);
         });
 
+        // console.log(graph.nodes());
+
         graphData.edges.forEach((edge) => {
+            edge.target = graph.findNode(node => {
+                let hereNode = graph.getNodeAttributes(node);
+                return hereNode.expense && hereNode.expense.cnpjCpfFornecedor === edge.expense.cnpjCpfFornecedor;
+            });
+
+            // console.log(edge.target);
+
             graph.addEdge(edge.source, edge.target, edge);
         });
 
@@ -66,7 +77,7 @@ const Graph = ({ year, month }) => {
         renderer.on('clickNode', (event) => {
             const { node } = event;
             const nodeData = graph.getNodeAttributes(node);
-            setSelectedNode(nodeData.deputy);
+            setSelectedNode(nodeData);
 
             // centrar a câmera no nó clicado e dar zoom
             // const camera = renderer.getCamera();
@@ -101,6 +112,7 @@ const Graph = ({ year, month }) => {
             renderer.kill();
         };
     }, [graphData, layout]);
+
     const handleSearch = () => {
         if (!sigmaRenderer) {
             alert('Gráfico não disponível');
@@ -132,29 +144,37 @@ const Graph = ({ year, month }) => {
 
     return (
         <div className="GraphContainer">
-            {isLoading && <img src="loading.gif" alt="Loading" />} {/* Loading gif */}
-            <div ref={containerRef} className="Graph" />
-            <div className="sigma-tooltip" />
-            <div className="GraphSearch">
-                <select /* Changed from input to select */
-                    className="GraphSearch-input"
-                    value={searchValue}
-                    onChange={(e) => setSearchValue(e.target.value)}
-                >
-                    {valueOptions.map((value) => (
-                        <option key={value} value={value}>
-                            {value}
-                        </option>
-                    ))}
-                </select>
-                <button className="GraphSearch-button" onClick={handleSearch}>
-                    Buscar
-                </button>
-            </div>
-            {selectedNode && <NodeDetails selectedNode={selectedNode} />}
-            {selectedEdge && <EdgeDetails selectedNode={selectedEdge} />}
+            {isLoading ? (
+                <img src="..\Loading_icon.gif" alt="Loading" className="loading-gif" /> // Loading gif
+            ) : (
+                <>
+                    <div ref={containerRef} className="Graph" />
+                    <div className="sigma-tooltip" />
+                    <div className="GraphSearch">
+                        <select /* Changed from input to select */
+                            className="GraphSearch-input"
+                            value={searchValue}
+                            onChange={(e) => setSearchValue(e.target.value)}
+                        >
+                                {valueOptions.map((value, index) => (
+                                    <option key={index} value={value}>
+                                        {value}
+                                    </option>
+                                ))}
+                            </select>
+                            <button className="GraphSearch-button" onClick={handleSearch}>
+                                Buscar
+                            </button>
+                        </div>
+                        {selectedNode && selectedNode.deputy && <NodeDetails selectedNode={selectedNode.deputy} />}
+                        {selectedNode && selectedNode.expense && <NodeDetails expense={selectedNode.expense} />}
+                        {selectedEdge && <EdgeDetails selectedNode={selectedEdge} />}
+                </>
+            )}
         </div>
     );
+
+
 };
 
 export default Graph;

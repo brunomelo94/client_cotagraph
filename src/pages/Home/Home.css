@@ -50,6 +50,7 @@
     font-weight: 600;
     transition: background-color 0.3s ease; /* Add a transition for hover effect */
     z-index: 1; /* Ensure the button is in front of the background image */
+    margin-top: 10px;
 }
 
 .Button:hover {
@@ -61,4 +62,13 @@
 .Button:active {
     background-color: #004085; /* Change background color when active */
     z-index: 1; /* Ensure the button is in front of the background image */
+}
+
+.Form-button {
+    display: flex;
+    justify-content: center;
+    z-index: 1; /* Ensure the button is in front of the background image */
+    margin-top: 14px;
+    margin-left: 0px;
+    margin-right: auto;
 }

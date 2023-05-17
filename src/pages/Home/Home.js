@@ -63,7 +63,7 @@ const Home = () => {
                         </Form.Group>
                     </Col>
                     <Col md={4} className="d-flex align-items-end">
-                        <Button className="btn btn-primary" type="submit">
+                        <Button className="Form-button" type="submit">
                             Obter grafo!
                         </Button>
                     </Col>

@@ -4,8 +4,9 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 30px;
-    min-height: 120vh; /* Ensure the container takes up the full viewport height */
+    padding: 30px; /* Increase padding for more space */
+    min-height: 90vh;
+    min-width: 95vw;
     z-index: 1;
 }
 
@@ -17,58 +18,58 @@
     bottom: 0;
     left: 0;
     background-image: url("../../../public/charge_cota_1.jpeg");
-    background-size: cover;
-    background-position: center;
+    background-position: auto;
     background-repeat: no-repeat;
-    opacity: 0.1; /* Adjust the opacity to make the image semi-transparent */
+    background-size: cover;
+    opacity: 0.2;
     z-index: -1;
 }
 
 .Home-title {
-    font-size: 48px; 
-    font-weight: 700; 
-    color: #343a40; 
-    margin-bottom: 30px;
-    text-transform: uppercase; 
-    letter-spacing: 2px; 
-    z-index: 1; /* Ensure the title is in front of the background image */
+    font-size: 58px;
+    font-weight: 700;
+    color: #343a40;
+    margin-bottom: 50px; /* Increase margin for more space */
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    z-index: 1;
 }
 
 .Form {
     width: 100%;
-    max-width: 600px; 
-    margin-bottom: 40px;
-    z-index: 1; /* Ensure the form is in front of the background image */
+    max-width: 600px;
+    margin-bottom: 50px; /* Increase margin for more space */
+    z-index: 1;
 }
 
 .Button {
-    background-color: #007bff; /* Set button background color */
+    background-color: #343a40; /* Change button color to match theme */
     border: none;
     border-radius: 5px;
-    padding: 10px 20px; /* Add padding to the button */
+    padding: 15px 30px; /* Increase padding for larger button */
     color: #ffffff;
     font-weight: 600;
-    transition: background-color 0.3s ease; /* Add a transition for hover effect */
-    z-index: 1; /* Ensure the button is in front of the background image */
-    margin-top: 10px;
+    transition: background-color 0.3s ease;
+    z-index: 1;
+    margin-top: 20px; /* Increase margin for more space */
 }
 
 .Button:hover {
-    background-color: #0056b3; /* Change background color on hover */
+    background-color: #23272b; /* Slightly darker shade for hover */
     cursor: pointer;
-    z-index: 1; /* Ensure the button is in front of the background image */
+    z-index: 1;
 }
 
 .Button:active {
-    background-color: #004085; /* Change background color when active */
-    z-index: 1; /* Ensure the button is in front of the background image */
+    background-color: #131516; /* Even darker shade for active */
+    z-index: 1;
 }
 
 .Form-button {
     display: flex;
     justify-content: center;
-    z-index: 1; /* Ensure the button is in front of the background image */
-    margin-top: 14px;
+    z-index: 1;
+    margin-top: 20px; /* Increase margin for more space */
     margin-left: 0px;
     margin-right: auto;
 }

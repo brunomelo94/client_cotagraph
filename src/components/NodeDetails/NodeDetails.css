@@ -1,59 +1,48 @@
+/* Mobile-first CSS */
 .NodeDetailsContainer {
   display: flex;
-  justify-content: center;
+  flex-direction: column-reverse;
+  align-items: center;
   margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 
-.NodeDetails {
-  max-width: auto;
-  width: auto;
-  text-align: left;
+.NodeDetails, 
+.ExpenseDetails {
+  max-width: 100%;
+  width: 100%;
+  text-align: justify;
+  min-width: 100px;
+  margin-bottom: 1rem;
 }
 
 .NodeDetails-image {
   height: auto;
   object-fit: cover;
+  width: 100%; /* garante que a imagem se ajuste ao tamanho do card no mobile */
   margin-bottom: 1rem;
-}
-
-.NodeDetails,
-.ExpenseDetails {
-    width: 100%;
-    max-width: 500px; /* Ajuste para o tamanho máximo que você deseja para os cartões */
-    margin: auto; /* Para centralizar os cartões quando a tela é maior que o max-width */
 }
 
 .NodeDetails-title,
 .ExpenseDetails-title {
-    font-size: 1.5em;
-    font-weight: bold;
+  font-size: 1.2em; /* um pouco menor no mobile */
+  font-weight: bold;
 }
 
-.NodeDetails-text,
-.ExpenseDetails-text {
-    font-size: 1em;
-    color: #333;
-}
+/* Estilos para telas maiores */
+@media (min-width: 768px) {
+  .NodeDetailsContainer {
+    flex-direction: row;
+    justify-content: space-between;
+  }
 
-.NodeDetails-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #343a40;
-  margin-bottom: 0.5rem;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-}
+  .NodeDetails, 
+  .ExpenseDetails {
+    max-width: 500px;
+  }
 
-.NodeDetails-description {
-  font-size: 1rem;
-  font-weight: 400;
-  color: #343a40;
-  margin-bottom: 0.5rem;
-}
-
-.NodeDetails-link {
-  font-size: 1rem;
-  font-weight: 400;
-  color: #343a40;
-  margin-bottom: 0.5rem;
+  .NodeDetails-title,
+  .ExpenseDetails-title {
+    font-size: 1.5em; /* um pouco maior em telas maiores */
+  }
 }

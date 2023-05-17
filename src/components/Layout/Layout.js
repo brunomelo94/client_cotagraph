@@ -10,7 +10,9 @@ const Layout = ({ children }) => {
                 <Link to="/" className="Layout-link">cotagraph</Link>
             </header>
             <main className="Layout-main">{children}</main>
-            <footer className="Layout-footer">Utilitários</footer>
+            <footer className="Layout-footer">
+                <Link to="/utilitarios" className="Layout-link">Utilitários</Link>
+            </footer>
         </div>
     );
 };

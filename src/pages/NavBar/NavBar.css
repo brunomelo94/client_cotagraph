@@ -1,0 +1,34 @@
+/* src/components/NavBar/NavBar.css */
+.NavBar {
+    background-color: #4a4a4a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60px;
+}
+
+.NavBar ul {
+    list-style-type: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0;
+    margin: 0;
+}
+
+.NavBar ul li {
+    margin: 0 15px;
+}
+
+.NavBar a {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 600;
+    transition: color 0.3s;
+}
+
+.NavBar a:hover,
+.NavBar a.active {
+    color: #ffa726;
+}

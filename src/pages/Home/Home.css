@@ -1,0 +1,75 @@
+/* src/pages/Home/Home.css */
+.Home {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px; /* Increase padding for more space */
+    min-height: 90vh;
+    min-width: 95vw;
+    z-index: 1;
+}
+
+.Home::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-image: url("../../../public/charge_cota_1.jpeg");
+    background-position: auto;
+    background-repeat: no-repeat;
+    background-size: cover;
+    opacity: 0.2;
+    z-index: -1;
+}
+
+.Home-title {
+    font-size: 58px;
+    font-weight: 700;
+    color: #343a40;
+    margin-bottom: 50px; /* Increase margin for more space */
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    z-index: 1;
+}
+
+.Form {
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 50px; /* Increase margin for more space */
+    z-index: 1;
+}
+
+.Button {
+    background-color: #343a40; /* Change button color to match theme */
+    border: none;
+    border-radius: 5px;
+    padding: 15px 30px; /* Increase padding for larger button */
+    color: #ffffff;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+    z-index: 1;
+    margin-top: 20px; /* Increase margin for more space */
+}
+
+.Button:hover {
+    background-color: #23272b; /* Slightly darker shade for hover */
+    cursor: pointer;
+    z-index: 1;
+}
+
+.Button:active {
+    background-color: #131516; /* Even darker shade for active */
+    z-index: 1;
+}
+
+.Form-button {
+    display: flex;
+    justify-content: center;
+    z-index: 1;
+    margin-top: 20px; /* Increase margin for more space */
+    margin-left: 0px;
+    margin-right: auto;
+}

@@ -1,0 +1,48 @@
+/* Mobile-first CSS */
+.NodeDetailsContainer {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.NodeDetails, 
+.ExpenseDetails {
+  max-width: 100%;
+  width: 100%;
+  text-align: justify;
+  min-width: 100px;
+  margin-bottom: 1rem;
+}
+
+.NodeDetails-image {
+  height: auto;
+  object-fit: cover;
+  width: 100%; /* garante que a imagem se ajuste ao tamanho do card no mobile */
+  margin-bottom: 1rem;
+}
+
+.NodeDetails-title,
+.ExpenseDetails-title {
+  font-size: 1.2em; /* um pouco menor no mobile */
+  font-weight: bold;
+}
+
+/* Estilos para telas maiores */
+@media (min-width: 768px) {
+  .NodeDetailsContainer {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .NodeDetails, 
+  .ExpenseDetails {
+    max-width: 500px;
+  }
+
+  .NodeDetails-title,
+  .ExpenseDetails-title {
+    font-size: 1.5em; /* um pouco maior em telas maiores */
+  }
+}

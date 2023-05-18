@@ -2,9 +2,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
 
 .Layout {
-  display: flex;
+  display: auto;
   flex-direction: column;
-  min-height: 100vh;
+  /* min-height: auto; */
   font-family: 'Roboto', Arial, sans-serif; /* Updated to a modern, readable font */
   color: #333;
 }
@@ -14,7 +14,7 @@
   padding: auto;
   text-align: center;
   color: #ffffff;
-  font-size: 2.0rem; /* Made the header text larger */
+  font-size: auto; /* Made the header text larger */
   font-weight: auto; /* Made the header text bolder */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Added a subtle shadow for depth */
 }

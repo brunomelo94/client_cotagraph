@@ -36,7 +36,7 @@ const Home = () => {
                             <Form.Label>Ano</Form.Label>
                             <Form.Control
                                 type="number"
-                                min="1900"
+                                min="2018"
                                 max={currentYear}
                                 step="1"
                                 value={year}
@@ -55,7 +55,7 @@ const Home = () => {
                                 onChange={(e) => setMonth(e.target.value)}
                                 required
                             >
-                                <option value="">Selecione um mês...</option>
+                                <option value="">Um mês...</option>
                                 {months.map((month, index) =>
                                     <option key={index} value={index + 1}>{month}</option>
                                 )}

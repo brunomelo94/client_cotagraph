@@ -1,12 +1,12 @@
-/* src/pages/Home/Home.css */
 .Home {
     position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 30px; /* Increase padding for more space */
-    min-height: 90vh;
-    min-width: 95vw;
+    padding: auto;
+    /* Increase padding for more space */
+    min-height: 100vh;
+    /* Use the full viewport height */
     z-index: 1;
 }
 
@@ -18,40 +18,45 @@
     bottom: 0;
     left: 0;
     background-image: url("../../../public/charge_cota_1.jpeg");
-    background-position: auto;
-    background-repeat: no-repeat;
     background-size: cover;
-    opacity: 0.2;
+    /* change fill to cover */
+    background-position: center;
+    /* change auto to center */
+    background-repeat: no-repeat;
+    opacity: 0.3;
     z-index: -1;
 }
 
 .Home-title {
-    font-size: 58px;
-    font-weight: 700;
+    font-size: auto;
+    font-weight: auto;
     color: #343a40;
-    margin-bottom: 50px; /* Increase margin for more space */
-    text-transform: uppercase;
+    margin-bottom: auto; /* Increase margin for more space */
+    text-transform: auto;
     letter-spacing: 2px;
+    padding-top: 1em;
     z-index: 1;
 }
 
 .Form {
-    width: 100%;
-    max-width: 600px;
-    margin-bottom: 50px; /* Increase margin for more space */
+    /* padding-top: 2em; */
+    width: auto;
+    max-width: auto;
+    margin-bottom: auto; /* Increase margin for more space */
     z-index: 1;
+    padding-bottom: auto;
 }
 
 .Button {
     background-color: #343a40; /* Change button color to match theme */
     border: none;
     border-radius: 5px;
-    padding: 15px 30px; /* Increase padding for larger button */
+    padding: auto; /* Increase padding for larger button */
     color: #ffffff;
-    font-weight: 600;
+    font-weight: auto;
     transition: background-color 0.3s ease;
     z-index: 1;
-    margin-top: 20px; /* Increase margin for more space */
+    margin-top: auto; /* Increase margin for more space */
 }
 
 .Button:hover {
@@ -69,7 +74,8 @@
     display: flex;
     justify-content: center;
     z-index: 1;
-    margin-top: 20px; /* Increase margin for more space */
-    margin-left: 0px;
+    text-align: center;
+    margin-top: 1em; /* Increase margin for more space */
+    margin-left: auto;
     margin-right: auto;
 }

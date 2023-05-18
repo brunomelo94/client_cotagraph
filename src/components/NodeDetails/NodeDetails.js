@@ -10,6 +10,9 @@ function NodeDetails({ selectedNode, expense }) {
         return null;
     }
 
+    const { photoUrl, id, name, email, uf, party } = selectedNode || {};
+    const { tipoDespesa, nomeFornecedor, cnpjCpfFornecedor } = expense || {};
+
     return (
         <Row className="NodeDetailsContainer">
             {selectedNode && (
@@ -18,16 +21,16 @@ function NodeDetails({ selectedNode, expense }) {
                         <Card.Img
                             className="NodeDetails-image"
                             variant="top"
-                            src={selectedNode.photoUrl}
+                            src={photoUrl}
                         />
                         <Card.Body>
                             <Card.Title className="NodeDetails-title">
-                                <Link to={`/deputy/${selectedNode.id}`}>{selectedNode.name}</Link>
+                                <Link to={`/deputy/${id}`}>{name}</Link>
                             </Card.Title>
-                            <Card.Text>Nome: {selectedNode.name}</Card.Text>
-                            <Card.Text>email: {selectedNode.email}</Card.Text>
-                            <Card.Text>Estado: {selectedNode.uf}</Card.Text>
-                            <Card.Text>Partido: {selectedNode.party}</Card.Text>
+                            <Card.Text>Nome: {name}</Card.Text>
+                            <Card.Text>email: {email}</Card.Text>
+                            <Card.Text>Estado: {uf}</Card.Text>
+                            <Card.Text>Partido: {party}</Card.Text>
                         </Card.Body>
                     </Card>
                 </Col>
@@ -37,9 +40,9 @@ function NodeDetails({ selectedNode, expense }) {
                 <Col xs={12} md={6}>
                     <Card className="ExpenseDetails">
                         <Card.Body>
-                            <Card.Title className="ExpenseDetails-title">{expense.tipoDespesa}</Card.Title>
-                            <Card.Text>Nome do Fornecedor: {expense.nomeFornecedor}</Card.Text>
-                            <Card.Text>CNPJ/CPF do Fornecedor: {expense.cnpjCpfFornecedor}</Card.Text>
+                            <Card.Title className="ExpenseDetails-title">{tipoDespesa}</Card.Title>
+                            <Card.Text>Nome do Fornecedor: {nomeFornecedor}</Card.Text>
+                            <Card.Text>CNPJ/CPF do Fornecedor: {cnpjCpfFornecedor}</Card.Text>
                         </Card.Body>
                     </Card>
                 </Col>

@@ -1,54 +1,53 @@
 .GraphContainer {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  padding: 20px; /* Add padding around the graph container */
-}
-
-@media (min-width: 768px) {
-    .GraphContainer {
-        flex-direction: row;
-        justify-content: space-around;
-    }
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: auto;
+    padding-bottom: 2em;
+    padding-top: 2em;
 }
 
 .Graph {
     width: 100%;
-    height: 500px;
+    height: 25em;
     position: relative;
-    background-color: #ffffff; /* Add a white background color to the graph */
-    border-radius: 5px; /* Add border radius to the graph */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow */
+    background-color: #ffffff;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding-bottom: auto;
 }
 
-
 .sigma-tooltip {
-  display: none;
-  position: absolute;
-  padding: 5px 10px;
-  background-color: rgba(0, 0, 0, 0.7);
-  color: #fff;
-  border-radius: 5px;
-  font-size: 12px;
+    display: none;
+    position: absolute;
+    padding: 5px 10px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    border-radius: 5px;
+    font-size: 12px;
 }
 
 .GraphSearch {
-  position: absolute;
-  top: 10px;
-  z-index: 10;
-  display: flex; /* Add display flex to align input and button properly */
-  width: 300px;
+    position: absolute;
+    top: 10px;
+    z-index: 10;
+    display: flex;
+    /* Add display flex to align input and button properly */
+    width: 300px;
 }
 
 .GraphCard {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  z-index: 1000;
-  width: 300px;
-  background-color: #ffffff; /* Add a white background color to the graph card */
-  border-radius: 5px; /* Add border radius to the graph card */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow */
+    position: auto;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+    width: auto;
+    background-color: #ffffff;
+    /* Add a white background color to the graph card */
+    border-radius: 5px;
+    /* Add border radius to the graph card */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    /* Add a subtle box shadow */
 }
 
 .GraphSearch-input {
@@ -61,58 +60,82 @@
     width: 100%;
 }
 
-/* GraphSearch-button is to big on component, should use mobile-first */
 .GraphSearch-button {
-    background-color: #007bff; /* Set button background color */
+    background-color: #007bff;
+    /* Set button background color */
     color: #ffffff;
     padding: auto;
     border: none;
     border-radius: 12px;
     cursor: pointer;
-    font-size: px;
+    font-size: 14px;
+    /* Corrigindo valor da font-size */
     transition: background-color 1s;
-    width: auto !important;
-    height: auto;
 }
 
 .GraphSearch-button:hover {
-    background-color: #0056b3; /* Change background color on hover */
+    background-color: #0056b3;
+    /* Change background color on hover */
 }
 
 .GraphSearch-select {
-    margin-left: 10px;
+    margin-left: auto;
     padding: 5px 10px;
-    font-size: 14px;
+    font-size: auto;
     border: 1px solid #cccccc;
-    border-radius: 4px;
+    border-radius: auto;
 }
 
 .NodeDetailsContainer {
     position: fixed;
     top: 0;
-    right: 0;
-    width: 20%;
-    background-color: #f8f9fa; /* Add a light background color */
-    height: 100%; /* Make the container full height */
-    overflow-y: auto; /* Add scroll if the content overflows */
-    padding: 20px; /* Add padding around the node details container */
+    right: 2em;
+    width: 8em;
+    /* background-color should be transparent  */
+    background-color: transparent;
+    height: auto;
+    padding: auto;
+    z-index: 100;
+    border-radius: 2em;
 }
 
 .NodeDetails-image {
-    width: 100%;
+    width: auto;
     object-fit: cover;
-    border-radius: 5px; /* Add border radius to the node details image */
-}
-
-.GraphContainer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh; /* Use a altura que melhor se adequar ao seu design */
+    border-radius: 1.5em;
+    /* Add border radius to the node details image */
 }
 
 .loading-gif {
-    max-width: 100%; /* Isso evitará que a imagem ultrapasse os limites da tela se ela for muito grande */
-    /* Tornar a cor branca transparente */
+    max-width: 100%;
+    max-height: 100%;
     background-color: transparent;
+    /* align-self: right; */
+}
+
+/* Media queries should be defined outside the class rules */
+@media (min-width: 768px) {
+    .GraphContainer {
+        flex-direction: row;
+        justify-content: space-around;
+    }
+}
+
+
+@media (max-width: 768px) {
+    .NodeDetailsContainer {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .NodeDetails,
+    .ExpenseDetails {
+        max-width: auto;
+    }
+
+    .NodeDetails-title,
+    .ExpenseDetails-title {
+        font-size: 1em;
+        /* um pouco maior em telas maiores */
+    }
 }

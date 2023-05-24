@@ -3,70 +3,79 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: auto;
+    padding: 2em;
     /* Increase padding for more space */
     min-height: 100vh;
     /* Use the full viewport height */
     z-index: 1;
 }
 
-.Home::before {
+.BackgroundImage {
     content: "";
     position: absolute;
     top: 0;
     right: 0;
     bottom: 0;
     left: 0;
-    background-image: url("../../../public/charge_cota_1.jpeg");
     background-size: cover;
-    /* change fill to cover */
     background-position: center;
-    /* change auto to center */
     background-repeat: no-repeat;
-    opacity: 0.3;
+    opacity: 0.26;
     z-index: -1;
 }
 
 .Home-title {
-    font-size: auto;
-    font-weight: auto;
+    font-size: 2em;
+        /* Adjust to the proper size */
+        font-weight: 500;
+        /* Adjust to a good readable weight */
     color: #343a40;
-    margin-bottom: auto; /* Increase margin for more space */
-    text-transform: auto;
+    margin-bottom: 2em;
+        /* Increase margin for more space */
+        text-transform: uppercase;
+        /* Set text to uppercase for a modern look */
     letter-spacing: 2px;
     padding-top: 1em;
     z-index: 1;
 }
 
 .Form {
-    /* padding-top: 2em; */
-    width: auto;
-    max-width: auto;
-    margin-bottom: auto; /* Increase margin for more space */
+    width: 100%;
+        /* Set to the full width */
+        max-width: 600px;
+        /* Adjust to a proper size */
+        margin-bottom: 2em;
+        /* Increase margin for more space */
     z-index: 1;
-    padding-bottom: auto;
+    padding-bottom: 1em;
 }
 
 .Button {
-    background-color: #343a40; /* Change button color to match theme */
+    background-color: #343a40;
+        /* Change button color to match theme */
     border: none;
     border-radius: 5px;
-    padding: auto; /* Increase padding for larger button */
+    padding: 10px 20px;
+        /* Increase padding for larger button */
     color: #ffffff;
-    font-weight: auto;
+    font-weight: 500;
+        /* Adjust to a good readable weight */
     transition: background-color 0.3s ease;
     z-index: 1;
-    margin-top: auto; /* Increase margin for more space */
+    margin-top: 2em;
+        /* Increase margin for more space */
 }
 
 .Button:hover {
-    background-color: #23272b; /* Slightly darker shade for hover */
+    background-color: #23272b;
+        /* Slightly darker shade for hover */
     cursor: pointer;
     z-index: 1;
 }
 
 .Button:active {
-    background-color: #131516; /* Even darker shade for active */
+    background-color: #131516;
+        /* Even darker shade for active */
     z-index: 1;
 }
 
@@ -75,7 +84,6 @@
     justify-content: center;
     z-index: 1;
     text-align: center;
-    margin-top: 1em; /* Increase margin for more space */
-    margin-left: auto;
-    margin-right: auto;
+    margin-top: 1em;
+        /* Increase margin for more space */
 }

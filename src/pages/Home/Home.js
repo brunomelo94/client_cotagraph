@@ -1,5 +1,5 @@
 // src/pages/Home/Home.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Graph from '../../components/Graph/Graph';
 import { Container, Form, Button, Row, Col } from 'react-bootstrap';
 import './Home.css';
@@ -9,6 +9,14 @@ const Home = () => {
     const [year, setYear] = useState(currentYear);
     const [month, setMonth] = useState('');
     const [showGraph, setShowGraph] = useState(false);
+    const [backgroundImage, setBackgroundImage] = useState("./deputados_gpt_2.png");
+
+    const images = [
+        "./deputados_gpt_3.png",
+        "./deputados_gpt_1.png",
+        "./deputados_gpt_2.png",
+        // Add more images here
+    ];
 
     const months = [
         "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
@@ -26,8 +34,20 @@ const Home = () => {
         setShowGraph(true);
     };
 
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            setBackgroundImage(images[Math.floor(Math.random() * images.length)]);
+        }, 5000); // change background every 30 seconds
+
+        return () => clearInterval(intervalId); // clear interval on component unmount
+    }, []); // empty dependency array means this effect will only run once (like componentDidMount in classes)
+
     return (
         <Container className="Home">
+            <div
+                className="BackgroundImage"
+                style={{ backgroundImage: `url(${backgroundImage})` }}
+            />
             <h1 className="Home-title">cotagraph</h1>
             <Form onSubmit={handleSubmit} className="Form">
                 <Row>

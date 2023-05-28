@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Sigma } from 'sigma';
-import graphology from 'graphology';
+import { DirectedGraph } from 'graphology';
 import './Graph.css';
 import NodeDetails from '../NodeDetails/NodeDetails';
 import EdgeDetails from '../EdgeDetails/EdgeDetails';
@@ -13,11 +13,16 @@ const Graph = ({ year, month }) => {
     const [searchValue, setSearchValue] = useState('');
     const [selectedNode, setSelectedNode] = useState(null);
     const [selectedEdge, setSelectedEdge] = useState(null);
-    const [layout, setLayout] = useState('forceAtlas2');
     const [sigmaRenderer, setSigmaRenderer] = useState(null);
     const [graphData, setGraphData] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
-    const [valueOptions, setValueOptions] = useState([]); // New state for deputy names
+    const [valueOptionsDeputies, setValueOptionsDeputies] = useState([]); // New state for deputy names
+    const [valueOptionsFornecedor, setValueOptionsFornecedor] = useState([]); // New state for deputy names
+
+    const onClose = () => {
+        setSelectedNode(null);
+        setSelectedEdge(null);
+    }
 
     useEffect(() => {
         const fetchData = async () => {
@@ -28,8 +33,20 @@ const Graph = ({ year, month }) => {
                     mes: String(month),
                 });
 
-                const deputyNames = response.data.nodes.map(node => node.label); // Assuming label is the deputy name
-                setValueOptions(deputyNames);
+                console.log(response.data.nodes);
+                // console.log(response.data.edges);
+                // console.log(response.data.attributes);
+
+                // throw new Error('Test error'); // TODO: remove this line
+
+                const deputyNames = response.data.nodes.map(node => node.attributes.deputy ? node.attributes.label : '').filter(Boolean); // Get deputy names from nodes
+                deputyNames.unshift('Busque um Deputado'); // Add empty string to start of array
+
+                const fornecedorNames = response.data.nodes.map(node => node.attributes.fornecedor ? node.attributes.label : '').filter(Boolean); // Get fornecedor names from nodes
+                fornecedorNames.unshift('Busque um Fornecedor'); // Add empty string to start of array
+
+                setValueOptionsFornecedor(fornecedorNames); // Set state with fornecedor names
+                setValueOptionsDeputies(deputyNames);
                 setGraphData(response.data);
             } catch (error) {
                 console.error('Error fetching graph data:', error);
@@ -48,27 +65,10 @@ const Graph = ({ year, month }) => {
             return () => null;
         }
 
-        const graph = new graphology();
+        const graph = new DirectedGraph().import(graphData);
 
-        // Add nodes and edges to the graph
-        graphData.nodes.forEach((node) => {
-            // If node is a expense, add ir only if it is not added yet
-            node._id = node.expense ? `${node.expense.cnpjCpfFornecedor}-${node.expense.valorLiquido}` : node._id;
-            graph.addNode(node._id, node);
-        });
-
-        // console.log(graph.nodes());
-
-        graphData.edges.forEach((edge) => {
-            edge.target = graph.findNode(node => {
-                let hereNode = graph.getNodeAttributes(node);
-                return hereNode.expense && hereNode.expense.cnpjCpfFornecedor === edge.expense.cnpjCpfFornecedor;
-            });
-
-            // console.log(edge.target);
-
-            graph.addEdge(edge.source, edge.target, edge);
-        });
+        //Log the first node
+        console.log(graph.nodes()[0]);
 
         const renderer = new Sigma(graph, containerRef.current);
 
@@ -77,6 +77,9 @@ const Graph = ({ year, month }) => {
         renderer.on('clickNode', (event) => {
             const { node } = event;
             const nodeData = graph.getNodeAttributes(node);
+
+            console.log(nodeData);
+
             setSelectedNode(nodeData);
 
             // centrar a câmera no nó clicado e dar zoom
@@ -84,6 +87,15 @@ const Graph = ({ year, month }) => {
             // camera.animate({ x: nodeData.x, y: nodeData.y, ratio: 0.5 }, { duration: 300 });
         });
 
+        renderer.on('clickEdge', (event) => {
+            console.log('Edge clicked'); // New line
+            const { edge } = event;
+            const edgeData = graph.getEdgeAttributes(edge);
+
+            console.log(edgeData);
+
+            setSelectedEdge(edgeData);
+        });
 
         const bindTooltip = (event) => {
             const { node, captor } = event.data;
@@ -111,7 +123,7 @@ const Graph = ({ year, month }) => {
             renderer.off('outEdge', hideTooltip);
             renderer.kill();
         };
-    }, [graphData, layout]);
+    }, [graphData]);
 
     const handleSearch = () => {
         if (!sigmaRenderer) {
@@ -136,7 +148,7 @@ const Graph = ({ year, month }) => {
                 duration: 500
             });
         } else {
-            // Embbed bootstrap alert
+            // Embed bootstrap alert
             alert('Deputado não encontrado');
         }
     };
@@ -144,7 +156,7 @@ const Graph = ({ year, month }) => {
 
     return (
         <div className="GraphContainer">
-            {isLoading ? (
+            {(isLoading || !graphData) ? (
                 <img src="..\Loading_icon.gif" alt="Loading" className="loading-gif" /> // Loading gif
             ) : (
                 <>
@@ -156,7 +168,7 @@ const Graph = ({ year, month }) => {
                             value={searchValue}
                             onChange={(e) => setSearchValue(e.target.value)}
                         >
-                                {valueOptions.map((value, index) => (
+                                {valueOptionsDeputies.map((value, index) => (
                                     <option key={index} value={value}>
                                         {value}
                                     </option>
@@ -166,9 +178,25 @@ const Graph = ({ year, month }) => {
                                 Buscar
                             </button>
                         </div>
-                        {selectedNode && selectedNode.deputy && <NodeDetails selectedNode={selectedNode.deputy} />}
-                        {selectedNode && selectedNode.expense && <NodeDetails expense={selectedNode.expense} />}
-                        {selectedEdge && <EdgeDetails selectedNode={selectedEdge} />}
+                        <div className="GraphSearchFornecedor">
+                            <select /* Changed from input to select */
+                                className="GraphSearch-input"
+                                value={searchValue}
+                                onChange={(e) => setSearchValue(e.target.value)}
+                            >
+                                {valueOptionsFornecedor.map((value, index) => (
+                                    <option key={index} value={value}>
+                                        {value}
+                                    </option>
+                                ))}
+                            </select>
+                            <button className="GraphSearch-button" onClick={handleSearch}>
+                                Buscar
+                            </button>
+                        </div>
+                        {selectedNode && selectedNode.deputy && <NodeDetails deputy={selectedNode.deputy} onClose={onClose} />}
+                        {selectedNode && selectedNode.fornecedor && <NodeDetails fornecedor={selectedNode.fornecedor} onClose={onClose} />}
+                        {selectedEdge && <EdgeDetails selectedEdge={selectedEdge} />}
                 </>
             )}
         </div>

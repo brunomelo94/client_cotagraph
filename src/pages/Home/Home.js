@@ -37,7 +37,7 @@ const Home = () => {
     useEffect(() => {
         const intervalId = setInterval(() => {
             setBackgroundImage(images[Math.floor(Math.random() * images.length)]);
-        }, 5000); // change background every 30 seconds
+        }, 6000); // change background every 30 seconds
 
         return () => clearInterval(intervalId); // clear interval on component unmount
     }, []); // empty dependency array means this effect will only run once (like componentDidMount in classes)
@@ -84,7 +84,7 @@ const Home = () => {
                     </Col>
                     <Col md={4} className="d-flex align-items-end">
                         <Button className="Form-button" type="submit">
-                            Obter grafo!
+                            Obter grafo! 
                         </Button>
                     </Col>
                 </Row>

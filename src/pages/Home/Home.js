@@ -9,12 +9,13 @@ const Home = () => {
     const [year, setYear] = useState(currentYear);
     const [month, setMonth] = useState('');
     const [showGraph, setShowGraph] = useState(false);
-    const [backgroundImage, setBackgroundImage] = useState("./deputados_gpt_2.png");
+    const[submitClicked, setSubmitClicked] = useState(false);
+    const [backgroundImage, setBackgroundImage] = useState("./deputados_gpt_1.png");
 
     const images = [
+        "./deputados_gpt_2.png",
         "./deputados_gpt_3.png",
         "./deputados_gpt_1.png",
-        "./deputados_gpt_2.png",
         // Add more images here
     ];
 
@@ -31,16 +32,32 @@ const Home = () => {
             return;
         }
 
-        setShowGraph(true);
+        setSubmitClicked(true);
     };
 
     useEffect(() => {
-        const intervalId = setInterval(() => {
-            setBackgroundImage(images[Math.floor(Math.random() * images.length)]);
-        }, 6000); // change background every 30 seconds
+        setShowGraph(false);
+    }, [year, month]);
 
-        return () => clearInterval(intervalId); // clear interval on component unmount
-    }, []); // empty dependency array means this effect will only run once (like componentDidMount in classes)
+    useEffect(() => {
+        if (submitClicked) {
+            setShowGraph(true);
+            setSubmitClicked(false);
+        }
+    }, [submitClicked]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            // Transforma a nova imagem de fundo em uma nova string CSS
+            const newImage = images[Math.floor(Math.random() * images.length)];
+            // Adiciona um parâmetro fictício à URL da imagem
+            const newBackgroundImage = `url(${newImage}?t=${Date.now()})`;
+            setBackgroundImage(newBackgroundImage);
+        }, 15000);
+
+        return () => clearInterval(intervalId);
+    }, []); 
 
     return (
         <Container className="Home">

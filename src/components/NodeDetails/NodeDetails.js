@@ -44,8 +44,8 @@ function NodeDetails({ deputy, fornecedor, onClose }) {
                     <Card className="ExpenseDetails">
                         <Button variant="light" className="closeButton" onClick={onClose}>X</Button>
                         <Card.Body>
-                            <Card.Title className="ExpenseDetails-title">{nomeFornecedor}
-                                <Link to={`/fornecedor/${cnpjCpfFornecedor}`}>{cnpjCpfFornecedor}</Link>
+                            <Card.Title className="ExpenseDetails-title">
+                                <Link to={`/fornecedor/${cnpjCpfFornecedor}`}>{nomeFornecedor}</Link>
                             </Card.Title>
                             <Card.Text>CNPJ/CPF do Fornecedor: {cnpjCpfFornecedor}</Card.Text>
                             <Card.Text>Tipo de despesa: {tipoDespesa}</Card.Text>

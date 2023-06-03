@@ -6,6 +6,7 @@
     padding: 2em;
     /* Increase padding for more space */
     min-height: 100vh;
+        /* Use the full viewport height */
     /* Use the full viewport height */
     z-index: 1;
 }
@@ -22,6 +23,7 @@
     background-repeat: no-repeat;
     opacity: 0.26;
     z-index: -1;
+    transition: background-image 1s ease-in-out;
 }
 
 .Home-title {

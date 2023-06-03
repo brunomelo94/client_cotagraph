@@ -1,9 +1,11 @@
 /* Mobile-first CSS */
 .NodeDetailsContainer {
   align-items: center;
-  margin-top: 4rem;
+  margin-top: 2rem;
+  /* margin-left: 12em; */
   margin-bottom: auto;
-  margin-right: auto;
+  margin-right: 2.5em;
+  font-size: small;
 }
 
 .NodeDetails,
@@ -24,7 +26,6 @@
 
 .NodeDetails-title,
 .ExpenseDetails-title {
-  font-size: auto;
   font-weight: bold;
 }
 

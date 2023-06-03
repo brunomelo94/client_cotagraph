@@ -1,0 +1,19 @@
+chart-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chart {
+    flex: 1;
+}
+
+.legend-container {
+    flex: 1;
+    overflow-y: auto;
+    max-height: 400px;
+}
+
+.legend-container .recharts-legend-item-text {
+    font-size: 0.75rem;
+}

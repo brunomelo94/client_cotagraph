@@ -12,8 +12,8 @@ function App() {
       <Layout>
         <Routes>
           <Route path="/" element={<Home />} />
-          {/* <Route path="/deputy/:id" element={<DeputyDetails />} />
-          <Route path="/fornecedor/:cnpjCpfFornecedor" element={<FornecedorDetails />} /> */}
+          <Route path="/deputy/:id" element={<DeputyDetails />} />
+          <Route path="/fornecedor/:cnpjCpfFornecedor" element={<FornecedorDetails />} />
         </Routes>
       </Layout>
     </Router>

@@ -60,56 +60,58 @@ const Home = () => {
     //     return () => clearInterval(intervalId);
     // }, []); 
 
-    return (
-        <Container className="Home">
-            <div
-                className="BackgroundImage"
-                style={{ backgroundImage: `url(${backgroundImage})` }}
-            />
-            <h1 className="Home-title">cotagraph</h1>
-            <Form onSubmit={handleSubmit} className="Form">
-                <Row>
-                    <Col md={4}>
-                        <Form.Group controlId="year">
-                            <Form.Label>Ano</Form.Label>
-                            <Form.Control
-                                type="number"
-                                min="2018"
-                                max={currentYear}
-                                step="1"
-                                value={year}
-                                onChange={(e) => setYear(e.target.value)}
-                                placeholder="Ano"
-                                required
-                            />
-                        </Form.Group>
-                    </Col>
-                    <Col md={4}>
-                        <Form.Group controlId="month">
-                            <Form.Label>Mês</Form.Label>
-                            <Form.Control
-                                as="select"
-                                value={month}
-                                onChange={(e) => setMonth(e.target.value)}
-                                required
-                            >
-                                <option value="">Um mês...</option>
-                                {months.map((month, index) =>
-                                    <option key={index} value={index + 1}>{month}</option>
-                                )}
-                            </Form.Control>
-                        </Form.Group>
-                    </Col>
-                    <Col md={4} className="d-flex align-items-end">
-                        <Button className="Form-button" type="submit">
-                            Obter grafo! 
-                        </Button>
-                    </Col>
-                </Row>
-            </Form>
-            {showGraph && <Graph year={year} month={month} submitClicked={submitClicked} />}
-        </Container>
-    );
+    return ( <div> <h1> Home </h1> </div> );
+
+    // return (
+    //     <Container className="Home">
+    //         <div
+    //             className="BackgroundImage"
+    //             style={{ backgroundImage: `url(${backgroundImage})` }}
+    //         />
+    //         <h1 className="Home-title">cotagraph</h1>
+    //         <Form onSubmit={handleSubmit} className="Form">
+    //             <Row>
+    //                 <Col md={4}>
+    //                     <Form.Group controlId="year">
+    //                         <Form.Label>Ano</Form.Label>
+    //                         <Form.Control
+    //                             type="number"
+    //                             min="2018"
+    //                             max={currentYear}
+    //                             step="1"
+    //                             value={year}
+    //                             onChange={(e) => setYear(e.target.value)}
+    //                             placeholder="Ano"
+    //                             required
+    //                         />
+    //                     </Form.Group>
+    //                 </Col>
+    //                 <Col md={4}>
+    //                     <Form.Group controlId="month">
+    //                         <Form.Label>Mês</Form.Label>
+    //                         <Form.Control
+    //                             as="select"
+    //                             value={month}
+    //                             onChange={(e) => setMonth(e.target.value)}
+    //                             required
+    //                         >
+    //                             <option value="">Um mês...</option>
+    //                             {months.map((month, index) =>
+    //                                 <option key={index} value={index + 1}>{month}</option>
+    //                             )}
+    //                         </Form.Control>
+    //                     </Form.Group>
+    //                 </Col>
+    //                 <Col md={4} className="d-flex align-items-end">
+    //                     <Button className="Form-button" type="submit">
+    //                         Obter grafo! 
+    //                     </Button>
+    //                 </Col>
+    //             </Row>
+    //         </Form>
+    //         {showGraph && <Graph year={year} month={month} submitClicked={submitClicked} />}
+    //     </Container>
+    // );
 };
 
 export default Home;

@@ -4,10 +4,6 @@ import Graph from '../../components/Graph/Graph';
 import { Container, Form, Button, Row, Col } from 'react-bootstrap';
 import './Home.css';
 
-// I need to user a context to pass the submitClicked state to the Graph component
-
-
-
 const Home = () => {
     const currentYear = new Date().getFullYear();
     const [year, setYear] = useState(currentYear);
@@ -52,17 +48,17 @@ const Home = () => {
     }, [submitClicked]);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    useEffect(() => {
-        const intervalId = setInterval(() => {
-            // Transforma a nova imagem de fundo em uma nova string CSS
-            const newImage = images[Math.floor(Math.random() * images.length)];
-            // Adiciona um parâmetro fictício à URL da imagem
-            const newBackgroundImage = `url(${newImage}?t=${Date.now()})`;
-            setBackgroundImage(newBackgroundImage);
-        }, 15000);
+    // useEffect(() => {
+    //     const intervalId = setInterval(() => {
+    //         // Transforma a nova imagem de fundo em uma nova string CSS
+    //         const newImage = images[Math.floor(Math.random() * images.length)];
+    //         // Adiciona um parâmetro fictício à URL da imagem
+    //         const newBackgroundImage = `url(${newImage}?t=${Date.now()})`;
+    //         setBackgroundImage(newBackgroundImage);
+    //     }, 15000);
 
-        return () => clearInterval(intervalId);
-    }, []); 
+    //     return () => clearInterval(intervalId);
+    // }, []); 
 
     return (
         <Container className="Home">

@@ -10,7 +10,6 @@ const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
 
 const Graph = ({ year, month, submitClicked }) => {
     const containerRef = useRef();
-    const [searchValue, setSearchValue] = useState('');
 
     const [searchValueDeputy, setSearchValueDeputy] = useState('');
     const [searchValueFornecedor, setSearchValueFornecedor] = useState('');
@@ -23,6 +22,7 @@ const Graph = ({ year, month, submitClicked }) => {
     const [valueOptionsDeputies, setValueOptionsDeputies] = useState([]); // New state for deputy names
     const [valueOptionsFornecedor, setValueOptionsFornecedor] = useState([]); // New state for deputy names
     const [graphNotFound, setGraphNotFound] = useState(false);
+    const [submitedClickedHere, setSubmitedClickedHere] = useState(submitClicked);
 
     const onClose = () => {
         setSelectedNode(null);
@@ -31,9 +31,11 @@ const Graph = ({ year, month, submitClicked }) => {
 
     useEffect(() => {
         const fetchData = async () => {
-            if (!submitClicked) {
-                submitClicked = true;
+            if (!submitedClickedHere) {
+                setSubmitedClickedHere(true);
+
                 console.log('Fetching graph data...');
+                
                 setIsLoading(true); // Set loading to true at start of fetch
                 try {
 

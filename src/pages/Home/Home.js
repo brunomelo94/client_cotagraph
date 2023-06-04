@@ -5,60 +5,60 @@ import { Container, Form, Button, Row, Col } from 'react-bootstrap';
 import './Home.css';
 
 const Home = () => {
-    const currentYear = new Date().getFullYear();
-    const [year, setYear] = useState(currentYear);
-    const [month, setMonth] = useState('');
-    const [showGraph, setShowGraph] = useState(false);
-    const [submitClicked, setSubmitClicked] = useState(false);
-    const [backgroundImage, setBackgroundImage] = useState("./deputados_gpt_1.png");
+    // const currentYear = new Date().getFullYear();
+    // const [year, setYear] = useState(currentYear);
+    // const [month, setMonth] = useState('');
+    // const [showGraph, setShowGraph] = useState(false);
+    // const [submitClicked, setSubmitClicked] = useState(false);
+    // const [backgroundImage, setBackgroundImage] = useState("./deputados_gpt_1.png");
 
-    // Array of images to be used as background 
-    const images = [
-        "./deputados_gpt_2.png",
-        "./deputados_gpt_3.png",
-        "./deputados_gpt_1.png",
-        // Add more images here
-    ];
+    // // Array of images to be used as background 
+    // const images = [
+    //     "./deputados_gpt_2.png",
+    //     "./deputados_gpt_3.png",
+    //     "./deputados_gpt_1.png",
+    //     // Add more images here
+    // ];
 
-    const months = [
-        "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-        "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
-    ];
+    // const months = [
+    //     "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+    //     "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+    // ];
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
+    // const handleSubmit = (e) => {
+    //     e.preventDefault();
 
-        if (year < 2018 || year > currentYear || month === '') {
-            alert("Por favor, insira um ano maior ou igual a 2018 e selecione um mês.");
-            return;
-        }
+    //     if (year < 2018 || year > currentYear || month === '') {
+    //         alert("Por favor, insira um ano maior ou igual a 2018 e selecione um mês.");
+    //         return;
+    //     }
 
-        setSubmitClicked(true);
-    };
+    //     setSubmitClicked(true);
+    // };
 
-    useEffect(() => {
-        setShowGraph(false);
-    }, [year, month]);
-
-    useEffect(() => {
-        if (submitClicked) {
-            setShowGraph(true);
-            setSubmitClicked(false);
-        }
-    }, [submitClicked]);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     // useEffect(() => {
-    //     const intervalId = setInterval(() => {
-    //         // Transforma a nova imagem de fundo em uma nova string CSS
-    //         const newImage = images[Math.floor(Math.random() * images.length)];
-    //         // Adiciona um parâmetro fictício à URL da imagem
-    //         const newBackgroundImage = `url(${newImage}?t=${Date.now()})`;
-    //         setBackgroundImage(newBackgroundImage);
-    //     }, 15000);
+    //     setShowGraph(false);
+    // }, [year, month]);
 
-    //     return () => clearInterval(intervalId);
-    // }, []); 
+    // useEffect(() => {
+    //     if (submitClicked) {
+    //         setShowGraph(true);
+    //         setSubmitClicked(false);
+    //     }
+    // }, [submitClicked]);
+
+    // // eslint-disable-next-line react-hooks/exhaustive-deps
+    // // useEffect(() => {
+    // //     const intervalId = setInterval(() => {
+    // //         // Transforma a nova imagem de fundo em uma nova string CSS
+    // //         const newImage = images[Math.floor(Math.random() * images.length)];
+    // //         // Adiciona um parâmetro fictício à URL da imagem
+    // //         const newBackgroundImage = `url(${newImage}?t=${Date.now()})`;
+    // //         setBackgroundImage(newBackgroundImage);
+    // //     }, 15000);
+
+    // //     return () => clearInterval(intervalId);
+    // // }, []); 
 
     return ( <div> <h1> Home </h1> </div> );
 

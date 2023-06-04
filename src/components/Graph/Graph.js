@@ -22,7 +22,6 @@ const Graph = ({ year, month, submitClicked }) => {
     const [valueOptionsDeputies, setValueOptionsDeputies] = useState([]); // New state for deputy names
     const [valueOptionsFornecedor, setValueOptionsFornecedor] = useState([]); // New state for deputy names
     const [graphNotFound, setGraphNotFound] = useState(false);
-    const [submitedClickedHere, setSubmitedClickedHere] = useState(submitClicked);
 
     const onClose = () => {
         setSelectedNode(null);
@@ -31,11 +30,9 @@ const Graph = ({ year, month, submitClicked }) => {
 
     useEffect(() => {
         const fetchData = async () => {
-            if (!submitedClickedHere) {
-                setSubmitedClickedHere(true);
-
+            if (!submitClicked) {
+                submitClicked = true;
                 console.log('Fetching graph data...');
-                
                 setIsLoading(true); // Set loading to true at start of fetch
                 try {
 

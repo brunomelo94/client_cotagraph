@@ -1,17 +1,22 @@
 // src/pages/Home/Home.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Graph from '../../components/Graph/Graph';
 import { Container, Form, Button, Row, Col } from 'react-bootstrap';
 import './Home.css';
+
+// I need to user a context to pass the submitClicked state to the Graph component
+
+
 
 const Home = () => {
     const currentYear = new Date().getFullYear();
     const [year, setYear] = useState(currentYear);
     const [month, setMonth] = useState('');
     const [showGraph, setShowGraph] = useState(false);
-    const[submitClicked, setSubmitClicked] = useState(false);
+    const [submitClicked, setSubmitClicked] = useState(false);
     const [backgroundImage, setBackgroundImage] = useState("./deputados_gpt_1.png");
 
+    // Array of images to be used as background 
     const images = [
         "./deputados_gpt_2.png",
         "./deputados_gpt_3.png",
@@ -106,7 +111,7 @@ const Home = () => {
                     </Col>
                 </Row>
             </Form>
-            {showGraph && <Graph year={year} month={month} />}
+            {showGraph && <Graph year={year} month={month} submitClicked={submitClicked} />}
         </Container>
     );
 };

@@ -8,9 +8,13 @@ import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
 
-const Graph = ({ year, month }) => {
+const Graph = ({ year, month, submitClicked }) => {
     const containerRef = useRef();
     const [searchValue, setSearchValue] = useState('');
+
+    const [searchValueDeputy, setSearchValueDeputy] = useState('');
+    const [searchValueFornecedor, setSearchValueFornecedor] = useState('');
+
     const [selectedNode, setSelectedNode] = useState(null);
     const [selectedEdge, setSelectedEdge] = useState(null);
     const [sigmaRenderer, setSigmaRenderer] = useState(null);
@@ -18,6 +22,7 @@ const Graph = ({ year, month }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [valueOptionsDeputies, setValueOptionsDeputies] = useState([]); // New state for deputy names
     const [valueOptionsFornecedor, setValueOptionsFornecedor] = useState([]); // New state for deputy names
+    const [graphNotFound, setGraphNotFound] = useState(false);
 
     const onClose = () => {
         setSelectedNode(null);
@@ -26,49 +31,48 @@ const Graph = ({ year, month }) => {
 
     useEffect(() => {
         const fetchData = async () => {
-            setIsLoading(true); // Set loading to true at start of fetch
-            try {
-                const response = await axios.post(`${API_BASE_URL}/graphAPI/getGraph`, {
-                    ano: String(year),
-                    mes: String(month),
-                });
+            if (!submitClicked) {
+                submitClicked = true;
+                console.log('Fetching graph data...');
+                setIsLoading(true); // Set loading to true at start of fetch
+                try {
 
-                console.log(response.data.nodes);
-                // console.log(response.data.edges);
-                // console.log(response.data.attributes);
+                    const response = await axios.post(`${API_BASE_URL}/graphAPI/getGraph`, {
+                        ano: String(year),
+                        mes: String(month),
+                    });
+    
+                    console.log("Data fetched successfully");
+    
+                    const deputyNames = response.data.nodes.map(node => node.attributes.deputy ? node.attributes.label : '').filter(Boolean); // Get deputy names from nodes
+                    deputyNames.unshift('Busque um Deputado'); // Add empty string to start of array
+    
+                    const fornecedorNames = response.data.nodes.map(node => node.attributes.fornecedor ? node.attributes.label : '').filter(Boolean); // Get fornecedor names from nodes
+                    fornecedorNames.unshift('Busque um Fornecedor'); // Add empty string to start of array
+    
+                    setValueOptionsFornecedor(fornecedorNames); // Set state with fornecedor names
+                    setValueOptionsDeputies(deputyNames);
+                    setGraphData(response.data);
 
-                // throw new Error('Test error'); // TODO: remove this line
-
-                const deputyNames = response.data.nodes.map(node => node.attributes.deputy ? node.attributes.label : '').filter(Boolean); // Get deputy names from nodes
-                deputyNames.unshift('Busque um Deputado'); // Add empty string to start of array
-
-                const fornecedorNames = response.data.nodes.map(node => node.attributes.fornecedor ? node.attributes.label : '').filter(Boolean); // Get fornecedor names from nodes
-                fornecedorNames.unshift('Busque um Fornecedor'); // Add empty string to start of array
-
-                setValueOptionsFornecedor(fornecedorNames); // Set state with fornecedor names
-                setValueOptionsDeputies(deputyNames);
-                setGraphData(response.data);
-            } catch (error) {
-                console.error('Error fetching graph data:', error);
-                setGraphData(null);
-            } finally {
-                setIsLoading(false); // Set loading to false at end of fetch
+                    setGraphNotFound(false);
+                } catch (error) {
+                    setGraphNotFound(true);
+                    setGraphData(null);
+                } finally {
+                    setIsLoading(false); // Set loading to false at end of fetch
+                }
             }
         };
 
-        fetchData();
-    }, [year, month]);
+        if (!graphData && !isLoading) {
+            fetchData();
+        }
+    }, [submitClicked]);
 
     useEffect(() => {
-        if (!graphData) {
-            // TODO: show loading
-            return () => null;
-        }
+        if (!graphData) return;
 
         const graph = new DirectedGraph().import(graphData);
-
-        //Log the first node
-        console.log(graph.nodes()[0]);
 
         const renderer = new Sigma(graph, containerRef.current);
 
@@ -125,7 +129,7 @@ const Graph = ({ year, month }) => {
         };
     }, [graphData]);
 
-    const handleSearch = () => {
+    const handleSearchDeputy = () => {
         if (!sigmaRenderer) {
             alert('Gráfico não disponível');
             return;
@@ -133,7 +137,7 @@ const Graph = ({ year, month }) => {
 
         const graph = sigmaRenderer.getGraph();
 
-        const nodeId = graph.nodes().find((id) => graph.getNodeAttributes(id).label.toLowerCase() === searchValue.toLowerCase());
+        const nodeId = graph.nodes().find((id) => graph.getNodeAttributes(id).label.toLowerCase() === searchValueDeputy.toLowerCase());
 
         if (nodeId) {
             const nodePosition = sigmaRenderer.getNodeDisplayData(nodeId);
@@ -153,36 +157,82 @@ const Graph = ({ year, month }) => {
         }
     };
 
+    const handleSearchFornecedor = () => {
+        if (!sigmaRenderer) {
+            alert('Gráfico não disponível');
+            return;
+        }
+
+        const graph = sigmaRenderer.getGraph();
+
+        const nodeId = graph.nodes().find((id) => graph.getNodeAttributes(id).label.toLowerCase() === searchValueFornecedor.toLowerCase());
+
+        if (nodeId) {
+            const nodePosition = sigmaRenderer.getNodeDisplayData(nodeId);
+
+            const camera = sigmaRenderer.getCamera();
+
+            camera.animate({
+                x: nodePosition.x,
+                y: nodePosition.y,
+                ratio: 0.005
+            }, {
+                duration: 500
+            });
+        } else {
+            // Embed bootstrap alert
+            alert('Fornecedor não encontrado');
+        }
+    };
+
 
     return (
         <div className="GraphContainer">
-            {(isLoading || !graphData) ? (
+            {(isLoading) ? (
                 <img src="..\Loading_icon.gif" alt="Loading" className="loading-gif" /> // Loading gif
+            ) : graphNotFound ? (
+                <div style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    flexDirection: 'column',
+                    height: '100%',
+                    color: '',
+                    fontSize: '2em',
+                    fontWeight: 'bold',
+                    textTransform: 'uppercase',
+                    padding: '1em',
+                    textAlign: 'center'
+                }}>
+                    Grafo não encontrado!
+                    <span role="img" aria-label="sad face" style={{ fontSize: '3em' }}>😢</span>
+                </div>
             ) : (
                 <>
                     <div ref={containerRef} className="Graph" />
                     <div className="sigma-tooltip" />
-                    <div className="GraphSearch">
-                        <select /* Changed from input to select */
-                            className="GraphSearch-input"
-                            value={searchValue}
-                            onChange={(e) => setSearchValue(e.target.value)}
-                        >
+                        <div className="GraphSearch">
+                            <select
+                                className="GraphSearch-input"
+                                value={searchValueDeputy}
+                                onChange={(e) => setSearchValueDeputy(e.target.value)}
+                            >
                                 {valueOptionsDeputies.map((value, index) => (
                                     <option key={index} value={value}>
                                         {value}
                                     </option>
                                 ))}
                             </select>
-                            <button className="GraphSearch-button" onClick={handleSearch}>
+                            <button className="GraphSearch-button" onClick={handleSearchDeputy}>
                                 Buscar
                             </button>
                         </div>
+
                         <div className="GraphSearchFornecedor">
-                            <select /* Changed from input to select */
+                            <select
                                 className="GraphSearch-input"
-                                value={searchValue}
-                                onChange={(e) => setSearchValue(e.target.value)}
+                                value={searchValueFornecedor}
+                                onChange={(e) => setSearchValueFornecedor(e.target.value)}
                             >
                                 {valueOptionsFornecedor.map((value, index) => (
                                     <option key={index} value={value}>
@@ -190,7 +240,7 @@ const Graph = ({ year, month }) => {
                                     </option>
                                 ))}
                             </select>
-                            <button className="GraphSearch-button" onClick={handleSearch}>
+                            <button className="GraphSearch-button" onClick={handleSearchFornecedor}>
                                 Buscar
                             </button>
                         </div>
@@ -201,8 +251,6 @@ const Graph = ({ year, month }) => {
             )}
         </div>
     );
-
-
 };
 
 export default Graph;

@@ -7,7 +7,7 @@ function EdgeDetails({ selectedEdge }) {
         return null;
     }
 
-    console.log(selectedEdge);
+    // console.log(selectedEdge);
 
     return (
         <div className="EdgeDetailsContainer">

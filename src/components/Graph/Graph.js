@@ -81,7 +81,7 @@ const Graph = ({ year, month, submitClicked }) => {
             const { node } = event;
             const nodeData = graph.getNodeAttributes(node);
 
-            console.log(nodeData);
+            // console.log(nodeData);
 
             setSelectedNode(nodeData);
 
@@ -95,7 +95,7 @@ const Graph = ({ year, month, submitClicked }) => {
             const { edge } = event;
             const edgeData = graph.getEdgeAttributes(edge);
 
-            console.log(edgeData);
+            // console.log(edgeData);
 
             setSelectedEdge(edgeData);
         });

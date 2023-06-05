@@ -19,7 +19,7 @@ const FornecedorDetails = () => {
         const fetchData = async () => {
             try {
                 // const response = await axios.get(`${API_BASE_URL}/deputy/${id}`);
-                console.log(cnpjCpfFornecedor);
+                // console.log(cnpjCpfFornecedor);
 
                 //Post: example:
                 /*
@@ -52,7 +52,7 @@ const FornecedorDetails = () => {
 
                 setExpenses(expensesResponse.data);
 
-                console.log(expensesResponse.data);
+                // console.log(expensesResponse.data);
             } catch (error) {
                 console.error('Error fetching fornecedor payments data:', error);
             }

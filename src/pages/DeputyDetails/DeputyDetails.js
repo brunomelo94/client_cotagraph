@@ -19,11 +19,11 @@ const DeputyDetails = () => {
 
                 const deputyResponse = await axios.get(`${API_BASE_URL}/api/deputy/${id}`);
                 setDeputy(deputyResponse.data[0]);
-                console.log(deputyResponse.data);
+                // console.log(deputyResponse.data);
 
                 const expensesResponse = await axios.get(`${API_BASE_URL}/api/deputy/${id}/expenses`);
                 setExpenses(expensesResponse.data);
-                console.log(expensesResponse.data);
+                // console.log(expensesResponse.data);
             } catch (error) {
                 console.error('Error fetching deputy data:', error);
             }

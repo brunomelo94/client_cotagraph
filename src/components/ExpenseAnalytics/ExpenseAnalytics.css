@@ -1,4 +1,4 @@
-chart-container {
+.chart-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -16,4 +16,8 @@ chart-container {
 
 .legend-container .recharts-legend-item-text {
     font-size: 0.75rem;
+}
+
+.recharts-label {
+    font-size: 0.75rem !important;
 }

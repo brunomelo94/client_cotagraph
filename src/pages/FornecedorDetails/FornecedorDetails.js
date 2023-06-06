@@ -1,35 +1,21 @@
-// src/pages/DeputyDetails/DeputyDetails.js
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import './FornecedorDetails.css';
 import ExpenseAnalytics from '../../components/ExpenseAnalytics/ExpenseAnalytics';
+import { Container, Card, Table, Button, Row, Col } from 'react-bootstrap';
 
 const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
+const RECORDS_PER_PAGE = 10;
 
 const FornecedorDetails = () => {
     const [expenses, setExpenses] = useState([]);
+    const [page, setPage] = useState(0);
     const { cnpjCpfFornecedor } = useParams();
     const [fornecedor, setFornecedor] = useState(null);
-    // const [ deputados, setDeputados ] = useState([]);
-    // Log fornecedor object to console
-    console.log(cnpjCpfFornecedor);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // const response = await axios.get(`${API_BASE_URL}/deputy/${id}`);
-                // console.log(cnpjCpfFornecedor);
-
-                //Post: example:
-                /*
-                    POST http://localhost:5000/fornecedor/expenses
-                    Content-Type: application/json
-
-                    {
-                        "cnpjCpfFornecedor": "42886333972"
-                    }
-                */
                 const expensesResponse = await axios.post(`${API_BASE_URL}/fornecedor/expenses`, {
                     cnpjCpfFornecedor: cnpjCpfFornecedor
                 });
@@ -39,20 +25,7 @@ const FornecedorDetails = () => {
                     setFornecedor(expensesResponse.data[0]);
                 }
 
-                // For each expense, fetch unique deputies (once for each value) base on field 'deputy' and add it to the expense object, so we can show the deputy name in the table
-                // const DEPUTIES_DICTIONARY = {};
-                // for (const expense of expensesResponse.data) {
-                //     if (!DEPUTIES_DICTIONARY[expense.deputy]) {
-                //         const deputyResponse = await axios.get(`${API_BASE_URL}/deputy/${expense.deputy}`);
-                //         DEPUTIES_DICTIONARY[expense.deputy] = deputyResponse.data;
-                //     } else {
-                //         console.log('Deputy already fetched:', expense.deputy);
-                //     }
-                // }
-
                 setExpenses(expensesResponse.data);
-
-                // console.log(expensesResponse.data);
             } catch (error) {
                 console.error('Error fetching fornecedor payments data:', error);
             }
@@ -62,55 +35,76 @@ const FornecedorDetails = () => {
     }, [cnpjCpfFornecedor]);
 
     if (!expenses || expenses.length === 0) {
-        return <div>Loading...</div>;
+        return <Container>Carregando...</Container>;
     }
 
+    const paginatedExpenses = expenses.slice(page * RECORDS_PER_PAGE, (page + 1) * RECORDS_PER_PAGE);
+
     return (
-        <div className="card">
-            <div className="row no-gutters">
-                <div className="col-md-12">
-                    <div className="card-body">
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <div>
+        <Container className="mt-4"><Card>
+            <Card.Body>
+                <Row className="justify-content-center">
+                    <Col xs={12}>
+                        <Row>
+                            <Col>
                                 <h2 className="card-title">{fornecedor.nomeFornecedor}</h2>
                                 <p className="card-text">CNPJ/CPF Fornecedor: {fornecedor.cnpjCpfFornecedor}</p>
                                 <p className="card-text">Tipo da despesa do fornecedor: {fornecedor.tipoDespesa}</p>
-                            </div>
-                            <div className="analytics-container">
-                                <ExpenseAnalytics data={expenses} />
-                            </div>
-                        </div>
+                            </Col>
+                        </Row>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <ExpenseAnalytics data={expenses} />
+                    </Col>
+                </Row>
+                <Row className="justify-content-center mt-4">
+                    <Col xs={12}>
                         <h3>Despesas</h3>
-                        <table className="table">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Deputado</th>
-                                    <th scope="col">Tipo</th>
-                                    <th scope="col">Fornecedor</th>
-                                    <th scope="col">Data</th>
-                                    <th scope="col">Valor</th>
-                                    <th scope="col">Link Documento</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {expenses.map((expense) => (
-                                    <tr key={expense._id}>
-                                        <td>{expense.deputy}</td>
-                                        <td>{expense.tipoDespesa}</td>
-                                        <td>{expense.nomeFornecedor}</td>
-                                        <td>{new Date(expense.dataDocumento).toLocaleDateString()}</td>
-                                        <td>R$ {expense.valorDocumento.toFixed(2)}</td>
-                                        <td> <a href={expense.urlDocumento} target="_blank">Link</a></td>
+                        <div style={{ maxHeight: '60vh', overflow: 'auto' }}>
+                            <Table striped bordered hover>
+                                <thead>
+                                    <tr>
+                                        <th>Deputado</th>
+                                        <th>Partido</th>
+                                        <th>Tipo</th>
+                                        <th>Data</th>
+                                        <th>Valor</th>
+                                        <th>Link Documento</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
+                                </thead>
+                                <tbody>
+                                    {paginatedExpenses.map((expense) => (
+                                        <tr key={expense._id}>
+                                            <td>
+                                                {expense.photo &&
+                                                    <img src={expense.photo} alt={expense.deputy} width="50" height="50" />
+                                                }
+                                                <br></br> 
+                                                {expense.deputy}
+                                            </td>
+                                            <td>{expense.party}</td>
+                                            <td>{expense.tipoDespesa}</td>
+                                            <td>{new Date(expense.dataDocumento).toLocaleDateString()}</td>
+                                            <td>R$ {expense.valorDocumento.toFixed(2)}</td>
+                                            <td><a href={expense.urlDocumento} target="_blank" rel="noreferrer">Link</a></td>
+                                        </tr>
 
+                                    ))}
+                                </tbody>
+                            </Table>
+                        </div>
+                        <div className="d-flex justify-content-between mt-3">
+                            <Button variant="primary" onClick={() => setPage(prevPage => Math.max(prevPage - 1, 0))} disabled={page === 0}>Anterior</Button>
+                            <Button variant="primary" onClick={() => setPage(prevPage => Math.min(prevPage + 1, Math.ceil(expenses.length / RECORDS_PER_PAGE) - 1))} disabled={page >= Math.ceil(expenses.length / RECORDS_PER_PAGE) - 1}>Próximo</Button>
+                        </div>
+                    </Col>
+                </Row>
+            </Card.Body>
+        </Card>
+        </Container>
+    );
 };
 
 export default FornecedorDetails;

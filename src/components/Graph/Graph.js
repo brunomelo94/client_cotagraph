@@ -5,6 +5,7 @@ import './Graph.css';
 import NodeDetails from '../NodeDetails/NodeDetails';
 import EdgeDetails from '../EdgeDetails/EdgeDetails';
 import axios from 'axios';
+import { Container, Card, Table, Button, Row, Col, Form, Spinner, Alert, Dropdown } from 'react-bootstrap';
 
 const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -40,15 +41,15 @@ const Graph = ({ year, month, submitClicked }) => {
                         ano: String(year),
                         mes: String(month),
                     });
-    
+
                     console.log("Data fetched successfully");
-    
+
                     const deputyNames = response.data.nodes.map(node => node.attributes.deputy ? node.attributes.label : '').filter(Boolean); // Get deputy names from nodes
                     deputyNames.unshift('Busque um Deputado'); // Add empty string to start of array
-    
+
                     const fornecedorNames = response.data.nodes.map(node => node.attributes.fornecedor ? node.attributes.label : '').filter(Boolean); // Get fornecedor names from nodes
                     fornecedorNames.unshift('Busque um Fornecedor'); // Add empty string to start of array
-    
+
                     setValueOptionsFornecedor(fornecedorNames); // Set state with fornecedor names
                     setValueOptionsDeputies(deputyNames);
                     setGraphData(response.data);
@@ -186,69 +187,61 @@ const Graph = ({ year, month, submitClicked }) => {
 
 
     return (
-        <div className="GraphContainer">
+        <Container className="GraphContainer">
             {(isLoading) ? (
                 <img src="..\Loading_icon.gif" alt="Loading" className="loading-gif" /> // Loading gif
             ) : graphNotFound ? (
-                <div style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    flexDirection: 'column',
-                    height: '100%',
-                    color: '',
-                    fontSize: '2em',
-                    fontWeight: 'bold',
-                    textTransform: 'uppercase',
-                    padding: '1em',
-                    textAlign: 'center'
-                }}>
-                    Grafo não encontrado!
-                    <span role="img" aria-label="sad face" style={{ fontSize: '3em' }}>😢</span>
-                </div>
+                <Alert variant="danger">
+                    <Alert.Heading>Grafo não encontrado!</Alert.Heading>
+                    <p>
+                        <span role="img" aria-label="sad-face">
+                            😢
+                        </span>
+                    </p>
+                </Alert>
             ) : (
                 <>
                     <div ref={containerRef} className="Graph" />
                     <div className="sigma-tooltip" />
-                        <div className="GraphSearch">
-                            <select
-                                className="GraphSearch-input"
-                                value={searchValueDeputy}
-                                onChange={(e) => setSearchValueDeputy(e.target.value)}
-                            >
-                                {valueOptionsDeputies.map((value, index) => (
-                                    <option key={index} value={value}>
-                                        {value}
-                                    </option>
-                                ))}
-                            </select>
-                            <button className="GraphSearch-button" onClick={handleSearchDeputy}>
-                                Buscar
-                            </button>
-                        </div>
+                    <div className="GraphSearch">
+                        <select
+                            className="GraphSearch-input"
+                            value={searchValueDeputy}
+                            onChange={(e) => setSearchValueDeputy(e.target.value)}
+                        >
+                            {valueOptionsDeputies.map((value, index) => (
+                                <option key={index} value={value}>
+                                    {value}
+                                </option>
+                            ))}
+                        </select>
+                        <button className="GraphSearch-button" onClick={handleSearchDeputy}>
+                            Buscar
+                        </button>
+                    </div>
 
-                        <div className="GraphSearchFornecedor">
-                            <select
-                                className="GraphSearch-input"
-                                value={searchValueFornecedor}
-                                onChange={(e) => setSearchValueFornecedor(e.target.value)}
-                            >
-                                {valueOptionsFornecedor.map((value, index) => (
-                                    <option key={index} value={value}>
-                                        {value}
-                                    </option>
-                                ))}
-                            </select>
-                            <button className="GraphSearch-button" onClick={handleSearchFornecedor}>
-                                Buscar
-                            </button>
-                        </div>
-                        {selectedNode && selectedNode.deputy && <NodeDetails deputy={selectedNode.deputy} onClose={onClose} />}
-                        {selectedNode && selectedNode.fornecedor && <NodeDetails fornecedor={selectedNode.fornecedor} onClose={onClose} />}
-                        {selectedEdge && <EdgeDetails selectedEdge={selectedEdge} />}
+                    <div className="GraphSearchFornecedor">
+                        <select
+                            className="GraphSearch-input"
+                            value={searchValueFornecedor}
+                            onChange={(e) => setSearchValueFornecedor(e.target.value)}
+                        >
+                            {valueOptionsFornecedor.map((value, index) => (
+                                <option key={index} value={value}>
+                                    {value}
+                                </option>
+                            ))}
+                        </select>
+                        <button className="GraphSearch-button" onClick={handleSearchFornecedor}>
+                            Buscar
+                        </button>
+                    </div>
+                    {selectedNode && selectedNode.deputy && <NodeDetails deputy={selectedNode.deputy} onClose={onClose} />}
+                    {selectedNode && selectedNode.fornecedor && <NodeDetails fornecedor={selectedNode.fornecedor} onClose={onClose} />}
+                    {selectedEdge && <EdgeDetails selectedEdge={selectedEdge} />}
                 </>
             )}
-        </div>
+        </Container>
     );
 };
 

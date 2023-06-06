@@ -1,7 +1,7 @@
 // src/pages/Home/Home.js
 import React, { useState, useEffect } from 'react';
 import Graph from '../../components/Graph/Graph';
-import { Container, Form, Button, Row, Col } from 'react-bootstrap';
+import { Container, Card, Table, Button, Row, Col, Form, Spinner, Alert, Dropdown } from 'react-bootstrap';
 import './Home.css';
 
 // I need to user a context to pass the submitClicked state to the Graph component
@@ -75,15 +75,16 @@ const Home = () => {
                         <Form.Group controlId="year">
                             <Form.Label>Ano</Form.Label>
                             <Form.Control
-                                type="number"
-                                min="2018"
-                                max={currentYear}
-                                step="1"
+                                as="select"
                                 value={year}
                                 onChange={(e) => setYear(e.target.value)}
-                                placeholder="Ano"
                                 required
-                            />
+                            >
+                                <option value="">Selecione um ano...</option>
+                                {[2018, 2019, 2020, 2021, 2022, 2023].map((year, index) =>
+                                    <option key={index} value={year}>{year}</option>
+                                )}
+                            </Form.Control>
                         </Form.Group>
                     </Col>
                     <Col md={4}>

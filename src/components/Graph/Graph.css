@@ -12,7 +12,8 @@
     width: 100%;
     height: 27em;
     position: relative;
-    background-color: #ffffff;
+    /* Background should be 70% transparent */
+    background-color: rgba(255, 255, 255, 0.5);
     border-radius: 1em;
     box-shadow: 0 0.5em 1em rgba(0, 0, 0, 0.1);
     padding-bottom: auto;
@@ -36,7 +37,7 @@
     display: flex;
     align-items: center;
     /* Add display flex to align input and button properly */
-    width: 16em;
+    width: 100%;
 }
 
 .GraphSearchFornecedor {
@@ -48,7 +49,7 @@
     display: flex;
     align-items: center;
     /* Add display flex to align input and button properly */
-    width: 18em;
+    width: 100%;
 }
 
 .GraphCard {
@@ -73,6 +74,7 @@
     border-radius: 2em;
     font-size: 1em;
     width: 100%;
+    max-width: 17em;
 }
 
 .GraphSearch-button {
@@ -86,6 +88,8 @@
     font-size: 1em;
     /* Corrigindo valor da font-size */
     transition: background-color 1s;
+    width: 100%;
+    max-width: 4em;
 }
 
 .GraphSearch-button:hover {

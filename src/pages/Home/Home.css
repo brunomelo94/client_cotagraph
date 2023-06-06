@@ -65,6 +65,8 @@
     transition: background-color 0.3s ease;
     z-index: 1;
     margin-top: 2em;
+    max-width: 4em;
+    width: 100%;
         /* Increase margin for more space */
 }
 

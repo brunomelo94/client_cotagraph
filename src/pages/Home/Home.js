@@ -12,13 +12,13 @@ const Home = () => {
     const [month, setMonth] = useState('');
     const [showGraph, setShowGraph] = useState(false);
     const [submitClicked, setSubmitClicked] = useState(false);
-    const [backgroundImage, setBackgroundImage] = useState("./deputados_gpt_1.png");
+    const [backgroundImage, setBackgroundImage] = useState("./deputados_gpt_1.webp");
 
     // Array of images to be used as background 
     const images = [
-        "./deputados_gpt_2.png",
-        "./deputados_gpt_3.png",
-        "./deputados_gpt_1.png",
+        "./deputados_gpt_2.webp",
+        "./deputados_gpt_3.webp",
+        "./deputados_gpt_1.webp",
         // Add more images here
     ];
 
@@ -29,12 +29,6 @@ const Home = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
-        if (year < 2018 || year > currentYear || month === '') {
-            alert("Por favor, insira um ano maior ou igual a 2018 e selecione um mês.");
-            return;
-        }
-
         setSubmitClicked(true);
     };
 

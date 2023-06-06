@@ -1,83 +1,119 @@
-// src/pages/DeputyDetails/DeputyDetails.js
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import { Card, Table, Form, Button, Container, Row, Col } from 'react-bootstrap';
 import './DeputyDetails.css';
 
 const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
-
+const ITEMS_PER_PAGE = 10;
 
 const DeputyDetails = () => {
     const { id } = useParams();
     const [deputy, setDeputy] = useState(null);
     const [expenses, setExpenses] = useState([]);
+    const [expenseOptions, setExpenseOptions] = useState({ types: [], companies: [] });
+    const [currentPage, setCurrentPage] = useState(1);
+    const [filters, setFilters] = useState({ tipoDespesa: '', minValor: '', maxValor: '', empresa: '', data: '' });
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                console.log(`${API_BASE_URL}/api/deputy/${id}`);
-
                 const deputyResponse = await axios.get(`${API_BASE_URL}/api/deputy/${id}`);
                 setDeputy(deputyResponse.data[0]);
-                // console.log(deputyResponse.data);
 
-                const expensesResponse = await axios.get(`${API_BASE_URL}/api/deputy/${id}/expenses`);
+                const expensesResponse = await axios.get(`${API_BASE_URL}/api/deputy/${id}/expenses`, {
+                    params: {
+                        ...filters,
+                    }
+                });
                 setExpenses(expensesResponse.data);
-                // console.log(expensesResponse.data);
+
+                const expenseTypesResponse = await axios.get(`${API_BASE_URL}/api/expenses/types`);
+                const expenseCompaniesResponse = await axios.get(`${API_BASE_URL}/api/expenses/companies`);
+                setExpenseOptions({ types: expenseTypesResponse.data, companies: expenseCompaniesResponse.data });
+
             } catch (error) {
                 console.error('Error fetching deputy data:', error);
             }
         };
 
         fetchData();
-    }, [id]);
+    }, [id, filters]);
 
     if (!deputy) {
         return <div>Loading...</div>;
-    } 
+    }
+
+    const handleFilterChange = (e) => {
+        const { name, value } = e.target;
+        setFilters(prev => ({ ...prev, [name]: value }));
+    }
+
+    const handlePageChange = (newPage) => {
+        if (newPage < 1 || newPage > Math.ceil(expenses.length / ITEMS_PER_PAGE)) return;
+        setCurrentPage(newPage);
+    }
+
+    const expensesOnPage = expenses.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+
 
     return (
-        <div className="card">
-            <div className="row no-gutters">
-                <div className="col-md-2">
-                    <img src={deputy.photoUrl} className="card-img" alt={deputy.name} />
-                </div>
-                <div className="col-md-9">
-                    <div className="card-body">
-                        <h2 className="card-title">{deputy.name}</h2>
-                        <p className="card-text">Partido: {deputy.party}</p>
-                        <p className="card-text">UF: {deputy.uf}</p>
-                        <a href={`mailto:${deputy.email}`} className="card-text">E-mail: {deputy.email}</a>
-                        <h3>Despesas</h3>
-                        <table className="table">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Tipo</th>
-                                    <th scope="col">Fornecedor</th>
-                                    <th scope="col">Data</th>
-                                    <th scope="col">Valor</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {expenses.map((expense) => (
-                                    <tr key={expense._id}>
-                                        <td>{expense.tipoDespesa}</td>
-                                        <td>{expense.nomeFornecedor}</td>
-                                        <td>{new Date(expense.dataDocumento).toLocaleDateString()}</td>
-                                        <td>R$ {expense.valorDocumento.toFixed(2)}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <Card>
+            <Card.Body>
+                <Container>
+                    <Row>
+                        <Col md={2}>
+                            <Card.Img variant="top" src={deputy.photoUrl} alt={deputy.name} />
+                        </Col>
+                        <Col md={9}>
+                            <Card.Title>{deputy.name}</Card.Title>
+                            <Card.Text>Partido: {deputy.party}</Card.Text>
+                            <Card.Text>UF: {deputy.uf}</Card.Text>
+                            <Card.Text>E-mail: <a href={`mailto:${deputy.email}`}>{deputy.email}</a></Card.Text>
+                            <Card.Title>Despesas</Card.Title>
+                            <Form>
+                                <Form.Group controlId="expenseTypeFilter">
+                                    <Form.Label>Tipo de Despesa</Form.Label>
+                                    <Form.Control as="select" name="tipoDespesa" onChange={handleFilterChange}>
+                                        <option value="">Todos</option>
+                                        {expenseOptions.types.map(type => (
+                                            <option key={type} value={type}>{type}</option>
+                                        ))}
+                                    </Form.Control>
+                                </Form.Group>
+                                {/* Repeat the above for other filters */}
+                                <Button variant="primary" type="submit">Apply filters</Button>
+                            </Form>
+                            <div style={{ overflowY: 'scroll', maxHeight: '300px' }}> {/* Add scroll to table */}
+                                <Table striped bordered hover>
+                                    <thead>
+                                        <tr>
+                                            <th>Tipo</th>
+                                            <th>Fornecedor</th>
+                                            <th>Data</th>
+                                            <th>Valor</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {expensesOnPage.map((expense) => (
+                                            <tr key={expense._id}>
+                                                <td>{expense.tipoDespesa}</td>
+                                                <td>{expense.nomeFornecedor}</td>
+                                                <td>{new Date(expense.dataDocumento).toLocaleDateString()}</td>
+                                                <td>R$ {expense.valorDocumento.toFixed(2)}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </Table>
+                                <Button onClick={() => handlePageChange(currentPage - 1)}>Anterior</Button>
+                                <Button onClick={() => handlePageChange(currentPage + 1)}>Próxima</Button>
+                            </div>
+                        </Col>
+                    </Row>
+                </Container>
+            </Card.Body>
+        </Card>
     );
-
-
-
-
 };
 
 export default DeputyDetails;

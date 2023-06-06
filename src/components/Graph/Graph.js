@@ -192,12 +192,7 @@ const Graph = ({ year, month, submitClicked }) => {
                 <img src="..\Loading_icon.gif" alt="Loading" className="loading-gif" /> // Loading gif
             ) : graphNotFound ? (
                 <Alert variant="danger">
-                    <Alert.Heading>Grafo não encontrado!</Alert.Heading>
-                    <p>
-                        <span role="img" aria-label="sad-face">
-                            😢
-                        </span>
-                    </p>
+                        <Alert.Heading>Grafo não encontrado 😢!</Alert.Heading>
                 </Alert>
             ) : (
                 <>

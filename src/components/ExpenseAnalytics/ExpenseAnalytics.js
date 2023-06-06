@@ -148,17 +148,17 @@ const ExpenseAnalytics = ({ data }) => {
                     </Form.Control>
                 </Col>
             </Row>
-            <Row className="justify-content-center mt-4" style={{ height: '390px' }}>
+            <Row className="justify-content-center mt-4" style={{ height: '100%' }}>
                 <Col>
-                    <ResponsiveContainer width={'100%'} height={350}>
-                        <PieChart fontSize='0.67em'>
+                    <ResponsiveContainer width={'100%'} height={400}>
+                        <PieChart fontSize='50%'>
                             <Pie
                                 dataKey="value"
                                 isAnimationActive={true}
                                 data={dataToDisplay}
                                 cx="50%"
                                 cy="50%"
-                                outerRadius={100}
+                                outerRadius={'73%'}
                                 fill="#8884d8"
                                 label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                                 onClick={onClick}
@@ -169,7 +169,7 @@ const ExpenseAnalytics = ({ data }) => {
                                 }
                             </Pie>
                             <Tooltip formatter={(value, name) => [value, name]} />
-                            {/* <Legend iconSize={3} formatter={(value, entry) => partyColors[entry.party] || entry.party || value} /> */}
+                            <Legend iconSize={3} formatter={(value, entry) => partyColors[entry.party] || entry.party || value} />
                         </PieChart>
                     </ResponsiveContainer>
                     <Button variant="primary" onClick={resetData}>

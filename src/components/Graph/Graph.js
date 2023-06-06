@@ -14,7 +14,6 @@ const Graph = ({ year, month, submitClicked }) => {
 
     const [searchValueDeputy, setSearchValueDeputy] = useState('');
     const [searchValueFornecedor, setSearchValueFornecedor] = useState('');
-
     const [selectedNode, setSelectedNode] = useState(null);
     const [selectedEdge, setSelectedEdge] = useState(null);
     const [sigmaRenderer, setSigmaRenderer] = useState(null);
@@ -23,11 +22,11 @@ const Graph = ({ year, month, submitClicked }) => {
     const [valueOptionsDeputies, setValueOptionsDeputies] = useState([]); // New state for deputy names
     const [valueOptionsFornecedor, setValueOptionsFornecedor] = useState([]); // New state for deputy names
     const [graphNotFound, setGraphNotFound] = useState(false);
-
-    const onClose = () => {
-        setSelectedNode(null);
-        setSelectedEdge(null);
-    }
+    const [rendererState, setRendererState] = useState({
+        hoveredNode: '',
+        selectedNode: '',
+        hoveredNeighbors: [],
+    });
 
     useEffect(() => {
         const fetchData = async () => {
@@ -44,14 +43,23 @@ const Graph = ({ year, month, submitClicked }) => {
 
                     console.log("Data fetched successfully");
 
+                    // For each edge, change type to arrow
+                    response.data.edges.forEach(edge => {
+                        edge.attributes.type = 'arrow';
+                    });
+
                     const deputyNames = response.data.nodes.map(node => node.attributes.deputy ? node.attributes.label : '').filter(Boolean); // Get deputy names from nodes
+
                     deputyNames.unshift('Busque um Deputado'); // Add empty string to start of array
 
                     const fornecedorNames = response.data.nodes.map(node => node.attributes.fornecedor ? node.attributes.label : '').filter(Boolean); // Get fornecedor names from nodes
+
                     fornecedorNames.unshift('Busque um Fornecedor'); // Add empty string to start of array
 
                     setValueOptionsFornecedor(fornecedorNames); // Set state with fornecedor names
+
                     setValueOptionsDeputies(deputyNames);
+
                     setGraphData(response.data);
 
                     setGraphNotFound(false);
@@ -76,19 +84,34 @@ const Graph = ({ year, month, submitClicked }) => {
 
         const renderer = new Sigma(graph, containerRef.current);
 
+        renderer.setSetting("labelRenderedSizeThreshold", 7.5);
+        // renderer.setSetting("enableEdgeClickEvents", true);
+        renderer.setSetting("labelFont", "Roboto");
+        renderer.setSetting("labelSize", 12);
+        renderer.setSetting("labelWeight", 452);
+        renderer.setSetting("allowInvalidContainer", true);
+        renderer.setSetting("labelColor", {
+            attribute: '#000'
+        });
+        // renderer.setSetting("labelDensity", 123);
+        // renderer.setSetting("labelGridCellSize", 512);
+
         setSigmaRenderer(renderer);
+
 
         renderer.on('clickNode', (event) => {
             const { node } = event;
             const nodeData = graph.getNodeAttributes(node);
 
-            // console.log(nodeData);
+            const neighbors = graph.neighbors(node);
+            setRendererState((state) => ({
+                ...state,
+                hoveredNode: node,
+                hoveredNeighbors: neighbors,
+            }));
 
             setSelectedNode(nodeData);
-
-            // centrar a câmera no nó clicado e dar zoom
-            // const camera = renderer.getCamera();
-            // camera.animate({ x: nodeData.x, y: nodeData.y, ratio: 0.5 }, { duration: 300 });
+            renderer.refresh();
         });
 
         renderer.on('clickEdge', (event) => {
@@ -96,9 +119,8 @@ const Graph = ({ year, month, submitClicked }) => {
             const { edge } = event;
             const edgeData = graph.getEdgeAttributes(edge);
 
-            // console.log(edgeData);
-
             setSelectedEdge(edgeData);
+            renderer.refresh();
         });
 
         const bindTooltip = (event) => {
@@ -127,7 +149,61 @@ const Graph = ({ year, month, submitClicked }) => {
             renderer.off('outEdge', hideTooltip);
             renderer.kill();
         };
+
     }, [graphData]);
+
+    useEffect(() => {
+        if (!sigmaRenderer) return;
+
+        const graph = sigmaRenderer.getGraph();
+
+        // Render nodes accordingly to the internal state:
+        // 1. If a node is selected, it is highlighted
+        // 2. If there is query, all non-matching nodes are greyed
+        // 3. If there is a hovered node, all non-neighbor nodes are greyed
+        sigmaRenderer.setSetting("nodeReducer", (node, data) => {
+            const res = { ...data };
+
+            // console.log(data)
+
+            if (rendererState.hoveredNeighbors && rendererState.hoveredNeighbors.length && !rendererState.hoveredNeighbors.find((n) => n === node) && rendererState.hoveredNode !== node) {
+                res.label = null;
+                res.color = "#f6f6f6";
+                //Display label independent of node size, in any zoom level
+                res.labelSize = "fixed";
+                res.labelWeight = 120;
+            }
+
+            if (rendererState.selectedNode === node && node) {
+                res.highlighted = true;
+            }
+
+            return res;
+        });
+
+        // Render edges accordingly to the internal state:
+        // 1. If a node is hovered, the edge is hidden if it is not connected to the node
+        sigmaRenderer.setSetting("edgeReducer", (edge, data) => {
+            const res = { ...data };
+
+            if (rendererState.hoveredNode && !graph.hasExtremity(edge, rendererState.hoveredNode)) {
+                res.hidden = true;
+            }
+
+            return res;
+        });
+
+        sigmaRenderer.setSetting("labelRenderedSizeThreshold", 0);
+
+        sigmaRenderer.refresh();
+    }, [rendererState]);
+
+    useEffect(() => {
+        if (sigmaRenderer && (!selectedNode && !selectedEdge)) {
+            sigmaRenderer.setSetting("labelRenderedSizeThreshold", 9);
+            sigmaRenderer.refresh();
+        }
+    }, [selectedNode, selectedEdge]);
 
     const handleSearchDeputy = () => {
         if (!sigmaRenderer) {
@@ -185,6 +261,16 @@ const Graph = ({ year, month, submitClicked }) => {
         }
     };
 
+    const onClose = () => {
+        setRendererState((state) => ({
+            ...state,
+            hoveredNeighbors: [],
+            hoveredNode: ''
+        }));
+
+        setSelectedNode(null);
+        setSelectedEdge(null);
+    };
 
     return (
         <Container className="GraphContainer">
@@ -192,12 +278,13 @@ const Graph = ({ year, month, submitClicked }) => {
                 <img src="..\Loading_icon.gif" alt="Loading" className="loading-gif" /> // Loading gif
             ) : graphNotFound ? (
                 <Alert variant="danger">
-                        <Alert.Heading>Grafo não encontrado 😢!</Alert.Heading>
+                    <Alert.Heading>Grafo não encontrado 😢!</Alert.Heading>
                 </Alert>
             ) : (
                 <>
                     <div ref={containerRef} className="Graph" />
                     <div className="sigma-tooltip" />
+                            
                     <div className="GraphSearch">
                         <select
                             className="GraphSearch-input"
@@ -231,6 +318,7 @@ const Graph = ({ year, month, submitClicked }) => {
                             Buscar
                         </button>
                     </div>
+                            
                     {selectedNode && selectedNode.deputy && <NodeDetails deputy={selectedNode.deputy} onClose={onClose} />}
                     {selectedNode && selectedNode.fornecedor && <NodeDetails fornecedor={selectedNode.fornecedor} onClose={onClose} />}
                     {selectedEdge && <EdgeDetails selectedEdge={selectedEdge} />}
@@ -239,5 +327,6 @@ const Graph = ({ year, month, submitClicked }) => {
         </Container>
     );
 };
+
 
 export default Graph;

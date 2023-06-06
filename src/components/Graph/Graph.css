@@ -6,6 +6,8 @@
     padding-bottom: 2em;
     padding-top: 2em;
     border-radius: 2em;
+    min-width: 1em;
+    min-height: 1em;
 }
 
 .Graph {

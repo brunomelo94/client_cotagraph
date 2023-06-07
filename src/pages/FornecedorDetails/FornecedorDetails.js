@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import ExpenseAnalytics from '../../components/ExpenseAnalytics/ExpenseAnalytics';
-import { Container, Card, Table, Button, Row, Col } from 'react-bootstrap';
+import { Container, Card, Table, Button, Row, Col, Form } from 'react-bootstrap';
 
 const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
 const RECORDS_PER_PAGE = 10;
@@ -59,11 +59,62 @@ const FornecedorDetails = () => {
                         <ExpenseAnalytics data={expenses} />
                     </Col>
                 </Row>
+
+                {/* Add filter by deputy name, party, expense type with valueoptions and date range with initial and final date */}
+                <Container className="mt-4">
+                    {/* <Card className="mt-4"> */}
+                    <Row>
+                        <Col>
+                            <h3>Filtros</h3>
+                            <Row>
+                                <Col className='mt-4'>
+                                    <Form.Group controlId="formBasicEmail">
+                                        <Form.Label>Nome do deputado</Form.Label>
+                                        <Form.Control type="text" placeholder="Nome do deputado" />
+                                    </Form.Group>
+                                </Col>
+                                <Col className='mt-4'>
+                                    <Form.Group controlId="formBasicEmail">
+                                        <Form.Label>Partido</Form.Label>
+                                        <Form.Control type="text" placeholder="Partido" />
+                                    </Form.Group>
+                                </Col>
+                                <Col className='mt-4'>
+                                    <Form.Group controlId="formBasicEmail">
+                                        <Form.Label>Tipo da despesa</Form.Label>
+                                        <Form.Control type="text" placeholder="Tipo da despesa" />
+                                    </Form.Group>
+                                </Col>
+                                </Row>
+                            <Row>
+                                <Col className='mt-4'>
+                                    <Form.Group controlId="formBasicEmail">
+                                        <Form.Label>Data inicial</Form.Label>
+                                        <Form.Control type="date" placeholder="Data inicial" />
+                                    </Form.Group>
+                                </Col>
+                                <Col className='mt-4'>
+                                    <Form.Group controlId="formBasicEmail">
+                                        <Form.Label>Data final</Form.Label>
+                                        <Form.Control type="date" placeholder="Data final" />
+                                    </Form.Group>
+                                </Col>
+                                <Col className='mt-5'>
+                                    <Button variant="primary" type="submit">
+                                        Filtrar
+                                    </Button>
+                                </Col>
+                            </Row>
+                        </Col>
+                        </Row>
+                    {/* </Card> */}
+                </Container>
+                
                 <Row className="justify-content-center mt-4">
                     <Col xs={12}>
                         <h3>Despesas</h3>
                         <div style={{ maxHeight: '60vh', overflow: 'auto' }}>
-                            <Table striped bordered hover>
+                            <Table striped bordered hover responsive>
                                 <thead>
                                     <tr>
                                         <th>Deputado</th>
@@ -79,9 +130,9 @@ const FornecedorDetails = () => {
                                         <tr key={expense._id}>
                                             <td>
                                                 {expense.photo &&
-                                                    <img src={expense.photo} alt={expense.deputy} width="50" height="50" />
+                                                    <img src={expense.photo} alt={expense.deputy} width="40" height="40" />
                                                 }
-                                                <br></br> 
+                                                <br></br>
                                                 {expense.deputy}
                                             </td>
                                             <td>{expense.party}</td>
@@ -90,14 +141,29 @@ const FornecedorDetails = () => {
                                             <td>R$ {expense.valorDocumento.toFixed(2)}</td>
                                             <td><a href={expense.urlDocumento} target="_blank" rel="noreferrer">Link</a></td>
                                         </tr>
-
                                     ))}
                                 </tbody>
                             </Table>
                         </div>
                         <div className="d-flex justify-content-between mt-3">
-                            <Button variant="primary" onClick={() => setPage(prevPage => Math.max(prevPage - 1, 0))} disabled={page === 0}>Anterior</Button>
-                            <Button variant="primary" onClick={() => setPage(prevPage => Math.min(prevPage + 1, Math.ceil(expenses.length / RECORDS_PER_PAGE) - 1))} disabled={page >= Math.ceil(expenses.length / RECORDS_PER_PAGE) - 1}>Próximo</Button>
+                            <Row>
+                                <Col>
+                                    <p>Mostrando {page * RECORDS_PER_PAGE + 1} até {Math.min((page + 1) * RECORDS_PER_PAGE, expenses.length)} de {expenses.length} despesas</p>
+                                </Col>
+
+                                <Col>
+                                    <Button variant="primary" onClick={() => setPage(prevPage => Math.max(prevPage - 1, 0))} disabled={page === 0}>Anterior</Button>
+                                </Col>
+
+                                {/* Button to go to specific page */}
+                                <Col>
+                                    <input type="number" className="form-control" value={page + 1} onChange={e => setPage(e.target.value - 1)} style={{ width: '100px', display: 'inline' }} /> de {Math.ceil(expenses.length / RECORDS_PER_PAGE)}
+                                </Col>
+
+                                <Col>
+                                    <Button variant="primary" onClick={() => setPage(prevPage => Math.min(prevPage + 1, Math.ceil(expenses.length / RECORDS_PER_PAGE) - 1))} disabled={page >= Math.ceil(expenses.length / RECORDS_PER_PAGE) - 1}>Próximo</Button>
+                                </Col>
+                            </Row>
                         </div>
                     </Col>
                 </Row>

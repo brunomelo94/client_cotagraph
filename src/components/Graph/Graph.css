@@ -8,6 +8,8 @@
     border-radius: 2em;
     min-width: 1em;
     min-height: 1em;
+    overflow-y: auto;
+    padding-bottom: 4rem;
 }
 
 .Graph {
@@ -108,13 +110,11 @@
 }
 
 .NodeDetailsContainer {
-    position: fixed;
-    top: 0;
-    right: 2em;
-    width: 8em;
-    /* background-color should be transparent  */
+    position: absolute;
+    top: -20px;
+    right: 0;
+    width: 8rem;
     background-color: transparent;
-    height: auto;
     padding: auto;
     z-index: 100;
     border-radius: 2em;

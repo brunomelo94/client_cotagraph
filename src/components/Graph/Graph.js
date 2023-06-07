@@ -84,7 +84,7 @@ const Graph = ({ year, month, submitClicked }) => {
 
         const renderer = new Sigma(graph, containerRef.current);
 
-        renderer.setSetting("labelRenderedSizeThreshold", 7.5);
+        renderer.setSetting("labelRenderedSizeThreshold", 7);
         // renderer.setSetting("enableEdgeClickEvents", true);
         renderer.setSetting("labelFont", "Roboto");
         renderer.setSetting("labelSize", 12);

@@ -3,11 +3,9 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 2em;
-    /* Increase padding for more space */
+    padding: auto;
+    /* height: calc(100vh - 4rem); */
     min-height: 100vh;
-        /* Use the full viewport height */
-    /* Use the full viewport height */
     z-index: 1;
 }
 
@@ -27,15 +25,13 @@
 }
 
 .Home-title {
-    font-size: 2em;
-        /* Adjust to the proper size */
-        font-weight: 500;
-        /* Adjust to a good readable weight */
+    font-size: 1.5em;
+    /* Adjusted the font size */
+    font-weight: 500;
     color: #343a40;
-    margin-bottom: 2em;
-        /* Increase margin for more space */
-        text-transform: uppercase;
-        /* Set text to uppercase for a modern look */
+    margin-bottom: 1em;
+    /* Adjusted the margin */
+    text-transform: uppercase;
     letter-spacing: 2px;
     padding-top: 1em;
     z-index: 1;
@@ -43,43 +39,36 @@
 
 .Form {
     width: 100%;
-        /* Set to the full width */
-        max-width: 600px;
-        /* Adjust to a proper size */
-        margin-bottom: 2em;
-        /* Increase margin for more space */
+    max-width: 600px;
+    margin-bottom: 1em;
+    /* Adjusted the margin */
     z-index: 1;
     padding-bottom: 1em;
 }
 
 .Button {
     background-color: #343a40;
-        /* Change button color to match theme */
     border: none;
     border-radius: 5px;
     padding: 10px 20px;
-        /* Increase padding for larger button */
     color: #ffffff;
     font-weight: 500;
-        /* Adjust to a good readable weight */
     transition: background-color 0.3s ease;
     z-index: 1;
-    margin-top: 2em;
+    margin-top: 1em;
+    /* Adjusted the margin */
     max-width: 4em;
     width: 100%;
-        /* Increase margin for more space */
 }
 
 .Button:hover {
     background-color: #23272b;
-        /* Slightly darker shade for hover */
     cursor: pointer;
     z-index: 1;
 }
 
 .Button:active {
     background-color: #131516;
-        /* Even darker shade for active */
     z-index: 1;
 }
 
@@ -89,5 +78,5 @@
     z-index: 1;
     text-align: center;
     margin-top: 1em;
-        /* Increase margin for more space */
+    /* Adjusted the margin */
 }

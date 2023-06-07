@@ -1,45 +1,31 @@
-/* src/components/Layout/Layout.css */
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
-
-.Layout {
-  display: auto;
-  flex-direction: column;
-  /* min-height: auto; */
-  font-family: 'Roboto', Arial, sans-serif; /* Updated to a modern, readable font */
+body {
+  font-family: 'Roboto', Arial, sans-serif;
   color: #333;
 }
 
-.Layout-header {
-  background-color: #343a40;
+.container-fluid {
+  padding: 0px;
+}
+
+.navbar {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: auto;
-  text-align: center;
-  color: #ffffff;
-  font-size: auto; /* Made the header text larger */
-  font-weight: auto; /* Made the header text bolder */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Added a subtle shadow for depth */
 }
 
-.Layout-main {
-  flex: 1;
-  background-color: #f8f9fa;
-  padding: auto; /* Added some padding */
+.navbar-footer {
+  height: 1px;
 }
 
-.Layout-footer {
-  background-color: #343a40;
-  padding: auto;
-  text-align: center;
-  color: #ffffff;
-  font-size: 1rem;
-  font-weight: auto; 
+.navbar-brand-home {
+  font-size: 1.2rem;
+  /* Ajuste o valor de acordo com o que você quer */
+  color: #fff;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  justify-content: center;
 }
 
-.Layout-link {
-    color: inherit;
-    text-decoration: none;
-    transition: color 0.3s ease; /* Added a transition for hover state */
-}
-
-.Layout-link:hover {
-    color: #ff5722; /* Added a hover color */
+.navbar-brand-home:hover {
+  color: #ff5722 !important;
 }

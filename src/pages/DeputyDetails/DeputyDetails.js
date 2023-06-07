@@ -15,10 +15,12 @@ const DeputyDetails = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [filters, setFilters] = useState({ tipoDespesa: '', minValor: '', maxValor: '', empresa: '', data: '' });
 
+
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const deputyResponse = await axios.get(`${API_BASE_URL}/api/deputy/${id}`);
+
                 setDeputy(deputyResponse.data[0]);
 
                 const expensesResponse = await axios.get(`${API_BASE_URL}/api/deputy/${id}/expenses`, {
@@ -26,11 +28,16 @@ const DeputyDetails = () => {
                         ...filters,
                     }
                 });
+
                 setExpenses(expensesResponse.data);
 
-                const expenseTypesResponse = await axios.get(`${API_BASE_URL}/api/expenses/types`);
-                const expenseCompaniesResponse = await axios.get(`${API_BASE_URL}/api/expenses/companies`);
-                setExpenseOptions({ types: expenseTypesResponse.data, companies: expenseCompaniesResponse.data });
+                // const expenseTypesResponse = await axios.get(`${API_BASE_URL}/api/expenses/types`);
+
+                // console.log(expenseTypesResponse.data);
+
+                // const expenseCompaniesResponse = await axios.get(`${API_BASE_URL}/api/expenses/companies`);
+
+                // setExpenseOptions({ types: expenseTypesResponse.data, companies: expenseCompaniesResponse.data });
 
             } catch (error) {
                 console.error('Error fetching deputy data:', error);
@@ -56,13 +63,12 @@ const DeputyDetails = () => {
 
     const expensesOnPage = expenses.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
-
     return (
         <Card>
             <Card.Body>
                 <Container>
                     <Row>
-                        <Col md={2}>
+                        <Col md={2} className="mb-3">
                             <Card.Img variant="top" src={deputy.photoUrl} alt={deputy.name} />
                         </Col>
                         <Col md={9}>
@@ -72,17 +78,35 @@ const DeputyDetails = () => {
                             <Card.Text>E-mail: <a href={`mailto:${deputy.email}`}>{deputy.email}</a></Card.Text>
                             <Card.Title>Despesas</Card.Title>
                             <Form>
-                                <Form.Group controlId="expenseTypeFilter">
-                                    <Form.Label>Tipo de Despesa</Form.Label>
-                                    <Form.Control as="select" name="tipoDespesa" onChange={handleFilterChange}>
-                                        <option value="">Todos</option>
-                                        {expenseOptions.types.map(type => (
-                                            <option key={type} value={type}>{type}</option>
-                                        ))}
-                                    </Form.Control>
-                                </Form.Group>
-                                {/* Repeat the above for other filters */}
-                                <Button variant="primary" type="submit">Apply filters</Button>
+                                <Row className="mb-3">
+                                    <Col>
+                                        <Form.Group controlId="expenseTypeFilter">
+                                            <Form.Label>Tipo de Despesa</Form.Label>
+                                            <Form.Control as="select" name="tipoDespesa" onChange={handleFilterChange}>
+                                                <option value="">Todos</option>
+                                                {expenseOptions.types.map(type => (
+                                                    <option key={type} value={type}>{type}</option>
+                                                ))}
+                                            </Form.Control>
+                                        </Form.Group>
+                                    </Col>
+                                    <Col>
+                                        <Form.Group controlId="expenseCompanyFilter">
+                                            <Form.Label>Nome do Fornecedor</Form.Label>
+                                            <Form.Control as="select" name="nomeFornecedor" onChange={handleFilterChange}>
+                                                <option value="">Todos</option>
+                                                {expenseOptions.companies.map(company => (
+                                                    <option key={company} value={company}>{company}</option>
+                                                ))}
+                                            </Form.Control>
+                                        </Form.Group>
+                                    </Col>
+                                </Row>
+                                <Row className="mb-3">
+                                    <Col>
+                                        <Button variant="primary" type="submit">Buscar!</Button>
+                                    </Col>
+                                </Row>
                             </Form>
                             <div style={{ overflowY: 'scroll', maxHeight: '300px' }}> {/* Add scroll to table */}
                                 <Table striped bordered hover>
@@ -105,8 +129,39 @@ const DeputyDetails = () => {
                                         ))}
                                     </tbody>
                                 </Table>
-                                <Button onClick={() => handlePageChange(currentPage - 1)}>Anterior</Button>
-                                <Button onClick={() => handlePageChange(currentPage + 1)}>Próxima</Button>
+
+                                {/* <Row className="justify-content-center mt-4">
+                                    <Col md="auto">
+                                        <Form.Group controlId="minValueFilter">
+                                            <Form.Label>Valor Mínimo</Form.Label>
+                                            <Form.Control type="number" name="minValor" onChange={handleFilterChange} />
+                                        </Form.Group>
+                                    </Col>
+                                    <Col md="auto">
+                                        <Form.Group controlId="maxValueFilter">
+                                            <Form.Label>Valor Máximo</Form.Label>
+                                            <Form.Control type="number" name="maxValor" onChange={handleFilterChange} />
+                                        </Form.Group>
+                                    </Col>
+                                    <Col md="auto">
+                                        <Form.Group controlId="dateFilter">
+                                            <Form.Label>Data</Form.Label>
+                                            <Form.Control type="date" name="data" onChange={handleFilterChange} />
+                                        </Form.Group>
+                                    </Col>
+                                </Row> */}
+                                
+                                {/* Implement paging //TODO */}
+
+                                <Row className="justify-content-md-center">
+                                    <Col md="auto">
+                                        <Button onClick={() => handlePageChange(currentPage - 1)}>Anterior</Button>
+                                    </Col>
+                                    {/* On the left */}
+                                    <Col md="auto" className='mt-3'>
+                                        <Button onClick={() => handlePageChange(currentPage + 1)}>Próxima</Button>
+                                    </Col>
+                                </Row>
                             </div>
                         </Col>
                     </Row>

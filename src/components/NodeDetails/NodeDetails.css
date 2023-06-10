@@ -1,27 +1,41 @@
-/* Mobile-first CSS */
 .NodeDetailsContainer {
   align-items: center;
-  margin-top: 2rem;
-  /* margin-left: 12em; */
-  margin-bottom: auto;
-  margin-right: 2.5em;
-  font-size: small;
+  margin-top: 32rem;
+  margin-left: 10vh;
+  font-size: 0.7rem;
+  width: 7rem;
+  position: absolute;
+}
+
+.GraphCardWrapper {
+  position: absolute;
+  left: 0.5rem;
+  top: 23rem;
+  /* outros estilos necessários */
 }
 
 .NodeDetails,
 .ExpenseDetails {
-  max-width: 100%;
   width: 100%;
+  left: -1rem;
   text-align: justify;
-  min-width: 110px;
-  margin-bottom: 1rem;
+  min-width: 10vh;
+  margin-bottom: 0.1rem;
+  position: absolute;
+}
+
+.card-title {
+  color: #007BFF;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  text-shadow: 0px 0.2px 0.6px #000000;
 }
 
 .NodeDetails-image {
-  height: auto;
   object-fit: cover;
-  width: auto; /* garante que a imagem se ajuste ao tamanho do card no mobile */
-  margin-bottom: 1rem;
+  width: auto;
+  /* garante que a imagem se ajuste ao tamanho do card no mobile */
+  margin-bottom: 0.1rem;
 }
 
 .NodeDetails-title,
@@ -37,21 +51,23 @@
   border: none;
   background-color: transparent;
 }
+
 /* Estilos para telas maiores */
 @media (min-width: 768px) {
   .NodeDetailsContainer {
-    flex-direction: row;
     justify-content: space-between;
   }
 
-  .NodeDetails,
-  .ExpenseDetails {
-    max-width: auto;
-    height: auto;
-  }
+    .GraphCardWrapper {
+      position: absolute;
+      left: 0.5rem;
+      top: 13vh;
+      /* outros estilos necessários */
+    }
 
   .NodeDetails-title,
   .ExpenseDetails-title {
-    font-size: 1em; /* um pouco maior em telas maiores */
+    font-size: 1.6em;
+    /* um pouco maior em telas maiores */
   }
 }

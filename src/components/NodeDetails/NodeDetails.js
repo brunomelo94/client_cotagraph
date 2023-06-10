@@ -16,14 +16,12 @@ function NodeDetails({ deputy, fornecedor, onClose }) {
 
     return (
         <Row className="NodeDetailsContainer">
-
             {deputy && (
                 <Col xs={12} md={6}>
                     <Card className="NodeDetails">
                         <Button variant="light" className="closeButton" onClick={onClose}>X</Button>
                         <Card.Img
                             className="NodeDetails-image"
-                            variant="top"
                             src={photoUrl}
                         />
                         <Card.Body>

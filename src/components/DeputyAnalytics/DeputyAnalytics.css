@@ -1,0 +1,11 @@
+/* Exemplo básico, você pode customizar conforme a necessidade. */
+.recharts-wrapper {
+    margin: auto;
+    padding: 2rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.recharts-legend-item {
+    font-size: 0.6rem;
+}

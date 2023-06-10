@@ -21,8 +21,7 @@ const ExpenseAnalytics = ({ data }) => {
 
         data.forEach(current => {
             let key = filterBy === 'Partido' ? current.party : current.deputy;
-            // acc[key] = Number((acc[key] || 0)) + Number(current.valorDocumento);
-            
+
             // Format of value should be ex: 100.020,50
             acc[key] = String((acc[key] || 0) + Number(current.valorDocumento));
 
@@ -96,86 +95,113 @@ const ExpenseAnalytics = ({ data }) => {
     };
 
     return (
-        <Container className='mt-4'>
+        <Container className='mt-1'>
             <Row>
                 <Col>
-                    <Form.Label style={{ fontWeight: 'bold' }}>Mês</Form.Label>
-                    <Form.Control as="select" value={selectedMonth} onChange={e => setSelectedMonth(e.target.value)}>
-                        <option value="Todos">Todos</option>
-                        {Array.from({ length: 72 }, (_, i) => {
-                            const year = 2018 + Math.floor(i / 12);
-                            const month = ("0" + (i % 12 + 1)).slice(-2);
-                            const value = `${year}-${month}`;
-                            return <option value={value} key={value}>{value}</option>
-                        })}
-                    </Form.Control>
+                    <Card className="mb-4">
+                        <Card.Body>
+                            <Form.Label style={{ fontWeight: 'bold' }}>Mês</Form.Label>
+                            <Form.Control as="select" value={selectedMonth} onChange={e => setSelectedMonth(e.target.value)}>
+                                <option value="Todos">Todos</option>
+                                {Array.from({ length: 72 }, (_, i) => {
+                                    const year = 2018 + Math.floor(i / 12);
+                                    const month = ("0" + (i % 12 + 1)).slice(-2);
+                                    const value = `${year}-${month}`;
+                                    return <option value={value} key={value}>{value}</option>
+                                })}
+                            </Form.Control>
+                        </Card.Body>
+                    </Card>
                 </Col>
                 <Col>
-                    <Form.Label style={{ fontWeight: 'bold' }}>Filtro por</Form.Label>
-                    <Form.Control as="select" value={filterBy} onChange={e => setFilterBy(e.target.value)}>
-                        <option value="Deputado">Deputado</option>
-                        <option value="Partido">Partido</option>
-                    </Form.Control>
+                    <Card className="mb-4">
+                        <Card.Body>
+                            <Form.Label style={{ fontWeight: 'bold' }}>Filtro por</Form.Label>
+                            <Form.Control as="select" value={filterBy} onChange={e => setFilterBy(e.target.value)}>
+                                <option value="Deputado">Deputado</option>
+                                <option value="Partido">Partido</option>
+                            </Form.Control>
+                        </Card.Body>
+                    </Card>
                 </Col>
                 {filterBy === 'Deputado' &&
                     <Col>
-                        <Form.Label style={{ fontWeight: 'bold' }}>Partido</Form.Label>
-                        <Form.Control as="select" value={selectedParty} onChange={e => setSelectedParty(e.target.value)}>
-                            <option value="">Todos</option>
-                            {Array.from(new Set((data || []).map(item => item.party))).map(party =>
-                                <option value={party} key={party}>{party}</option>
-                            )}
-                        </Form.Control>
+                        <Card className="mb-4">
+                            <Card.Body>
+                                <Form.Label style={{ fontWeight: 'bold' }}>Partido</Form.Label>
+                                <Form.Control as="select" value={selectedParty} onChange={e => setSelectedParty(e.target.value)}>
+                                    <option value="">Todos</option>
+                                    {Array.from(new Set((data || []).map(item => item.party))).map(party =>
+                                        <option value={party} key={party}>{party}</option>
+                                    )}
+                                </Form.Control>
+                            </Card.Body>
+                        </Card>
+
                     </Col>
                 }
             </Row>
-            <Row className="justify-content-center mt-4" style={{ height: '100%' }}>
+            <Row className="justify-content-center mt-1" style={{ height: '100%' }}>
                 <Col>
                     {dataToDisplay && dataToDisplay.length === 0 ? (
                         <div className="alert alert-warning" role="alert">
                             Não existem dados de acordo com o filtro aplicado.
                         </div>
                     ) : (
+                        <Container>
                             <ResponsiveContainer width={'100%'} height={400}>
                                 <PieChart fontSize='60%'>
-                                <Pie
-                                    dataKey="value"
-                                    isAnimationActive={true}
-                                    data={dataToDisplay}
-                                    cx="50%"
-                                    cy="50%"
-                                    outerRadius={'50%'}
-                                    fill="#8884d8"
+                                    <Pie
+                                        dataKey="value"
+                                        isAnimationActive={true}
+                                            data={dataToDisplay.map(item => ({ ...item, name: (item.name || item.party) + ' | R$' })) || []}
+                                        cx="50%"
+                                        cy="50%"
+                                        outerRadius={'50%'}
+                                        fill="#8884d8"
                                         label={
                                             ({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                                         onClick={onClick}
-                                >
-                                    {
-                                        (dataToDisplay || []).map((entry, index) =>
-                                            <Cell key={`cell-${index}`} fill={partyColors(entry.name) || partyColors(entry.party) || generateColor()} />)
-                                    }
-                                </Pie>
-                                <Tooltip formatter={(value, name) => [value, name]} />
-                                <Legend iconSize={6} formatter={(value, entry) => partyColors(entry.party) || entry.party || value} />
-                            </PieChart>
-                        </ResponsiveContainer>)}
-                    <Row className='mt-3' >
-                        <Col>
-                            <Button variant="primary" onClick={resetData} block>
-                                Reset
-                            </Button>
-                        </Col>
-                        <Col md="auto" className='mt-3'>
-                            <Button
-                                variant="primary"
-                                onClick={goBack}
-                                disabled={history && history.length === 0}
-                                block
-                            >
-                                Voltar
-                            </Button>
-                        </Col>
-                    </Row>
+                                    >
+                                        {
+                                            (dataToDisplay || []).map((entry, index) =>
+                                                <Cell key={`cell-${index}`} fill={partyColors(entry.name) || partyColors(entry.party) || generateColor()} />)
+                                        }
+                                    </Pie>
+                                    <Tooltip formatter={(value, name) => [value, name]} />
+                                    <Legend iconSize={6} formatter={(value, entry) => partyColors(entry.party) || entry.party || value} />
+                                </PieChart>
+                            </ResponsiveContainer>
+
+                            <Row className='justify-content-center mt-2'>
+                                <Col>
+                                    <Card className="mb-4">
+                                        <Card.Body>
+                                            <Button variant="primary" onClick={resetData} block>
+                                                Reset do gráfico
+                                            </Button>
+                                        </Card.Body>
+                                    </Card>
+                                </Col>
+                                <Col>
+                                    <Card className="mb-4">
+                                        <Card.Body>
+                                            <Button
+                                                variant="primary"
+                                                onClick={goBack}
+                                                disabled={history && history.length === 0}
+                                                block
+                                            >
+                                                Voltar um nível
+                                            </Button>
+                                        </Card.Body>
+                                    </Card>
+                                </Col>
+                            </Row>
+                        </Container>
+                    )}
+
+
                 </Col>
             </Row>
         </Container>

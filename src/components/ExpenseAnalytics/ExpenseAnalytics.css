@@ -8,6 +8,11 @@
     flex: 1;
 }
 
+.recharts-legend-item {
+    font-size: 0.7rem;
+    font-family: 'Roboto', Arial, sans-serif;
+}
+
 .legend-container {
     flex: 1;
     overflow-y: auto;

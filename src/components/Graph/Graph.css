@@ -1,24 +1,24 @@
 .GraphContainer {
     position: relative;
-    width: 100%;
-    height: 100%;
+    /* width: 100%; */
+    /* height: 100%; */
     padding: auto;
     padding-bottom: 2em;
     padding-top: 2em;
     border-radius: 2em;
     min-width: 1em;
     min-height: 1em;
-    overflow-y: auto;
+    /* overflow-y: auto; */
     padding-bottom: 4rem;
 }
 
 .Graph {
-    width: 100%;
-    height: 27em;
+    width: 150vh;
+    height: 60vh;
     position: relative;
     /* Background should be 70% transparent */
     background-color: rgba(255, 255, 255, 0.5);
-    border-radius: 1em;
+    border-radius: 2em;
     box-shadow: 0 0.5em 1em rgba(0, 0, 0, 0.1);
     padding-bottom: auto;
 }
@@ -57,17 +57,15 @@
 }
 
 .GraphCard {
-    position: auto;
-    top: 1em;
+    position: absolute;
+    /* Alterado de auto para absolute */
+    /* Ajuste este valor de acordo com suas necessidades */
     right: 1em;
     z-index: 1000;
     width: auto;
     background-color: #ffffff;
-    /* Add a white background color to the graph card */
     border-radius: 5px;
-    /* Add border radius to the graph card */
     box-shadow: 0 1em 2em rgba(0, 0, 0, 0.1);
-    /* Add a subtle box shadow */
 }
 
 .GraphSearch-input {
@@ -120,21 +118,14 @@
     border-radius: 2em;
 }
 
-.NodeDetails-image {
-    width: auto;
-    object-fit: cover;
-    border-radius: 1.5em;
-    /* Add border radius to the node details image */
-}
-
 .loading-gif {
-    size: 20em;
+    size: 30em;
     padding: 12%;
     background-color: transparent;
     /* align-self: center; */
     position: absolute;
     /* Center loading gif on the node details container */
-    top: 50%;
+    top: 50vh;
     left: 50%;
     transform: translate(-50%, -50%);
 }
@@ -161,7 +152,7 @@
 
     .NodeDetails-title,
     .ExpenseDetails-title {
-        font-size: 1em;
+        font-size: 1rem;
         /* um pouco maior em telas maiores */
     }
 }

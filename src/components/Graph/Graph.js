@@ -4,6 +4,7 @@ import { DirectedGraph } from 'graphology';
 import './Graph.css';
 import NodeDetails from '../NodeDetails/NodeDetails';
 import EdgeDetails from '../EdgeDetails/EdgeDetails';
+import ColorLegendDespesas from '../ColorLegendDespesas/ColorLegendDespesas';
 import axios from 'axios';
 import { Container, Card, Table, Button, Row, Col, Form, Spinner, Alert, Dropdown } from 'react-bootstrap';
 
@@ -19,21 +20,23 @@ const Graph = ({ year, month, submitClicked }) => {
     const [sigmaRenderer, setSigmaRenderer] = useState(null);
     const [graphData, setGraphData] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
-    const [valueOptionsDeputies, setValueOptionsDeputies] = useState([]); // New state for deputy names
-    const [valueOptionsFornecedor, setValueOptionsFornecedor] = useState([]); // New state for deputy names
+    const [valueOptionsDeputies, setValueOptionsDeputies] = useState([]);
+    const [valueOptionsFornecedor, setValueOptionsFornecedor] = useState([]);
     const [graphNotFound, setGraphNotFound] = useState(false);
     const [rendererState, setRendererState] = useState({
         hoveredNode: '',
         selectedNode: '',
         hoveredNeighbors: [],
     });
+    // Construir dicionário de cores baseado no tipo de despesa para utilizar como legenda abaixo do grafo
+    const [colorTiposDespesa, setColorTiposDespesa] = useState({});
 
     useEffect(() => {
         const fetchData = async () => {
             if (!submitClicked) {
                 submitClicked = true;
                 console.log('Fetching graph data...');
-                setIsLoading(true); // Set loading to true at start of fetch
+                setIsLoading(true);
                 try {
 
                     const response = await axios.post(`${API_BASE_URL}/graphAPI/getGraph`, {
@@ -42,6 +45,31 @@ const Graph = ({ year, month, submitClicked }) => {
                     });
 
                     console.log("Data fetched successfully");
+
+                    console.log(response.data);
+
+                    const colorByDespesas = response.data.edges.reduce((acc, edge) => {
+                        if (edge.attributes.label in acc) {
+                            return acc;
+                        } else {
+                            acc[edge.attributes.label] = {
+                                color: edge.attributes.color,
+                            };
+                            return acc;
+                        }
+                    }, {});
+
+                    try {
+                        response.data.nodes.forEach(node => {
+                            if (node.attributes.fornecedor) {
+                                colorByDespesas[node.attributes.fornecedor.tipoDespesa]['valorTotal'] = (Number(colorByDespesas[node.attributes.fornecedor.tipoDespesa]['valorTotal'] || 0) + node.attributes.payments.reduce((acc, payment) => acc + Number(payment.valorDocumento), 0)).toFixed(2);
+                            }
+                        });
+                    } catch (err) {
+                        console.log(err);
+                    }
+
+                    setColorTiposDespesa(colorByDespesas);
 
                     // For each edge, change type to arrow
                     response.data.edges.forEach(edge => {
@@ -205,6 +233,8 @@ const Graph = ({ year, month, submitClicked }) => {
         }
     }, [selectedNode, selectedEdge]);
 
+    console.log(colorTiposDespesa);
+
     const handleSearchDeputy = () => {
         if (!sigmaRenderer) {
             alert('Gráfico não disponível');
@@ -273,56 +303,83 @@ const Graph = ({ year, month, submitClicked }) => {
     };
 
     return (
-        <Container className="GraphContainer">
+        <Container>
             {(isLoading) ? (
                 <img src="..\Loading_icon.gif" alt="Loading" className="loading-gif" /> // Loading gif
             ) : graphNotFound ? (
                 <Alert variant="danger">
                     <Alert.Heading>Grafo não encontrado 😢!</Alert.Heading>
                 </Alert>
-            ) : (
-                <>
-                    <div ref={containerRef} className="Graph" />
-                    <div className="sigma-tooltip" />
-                            
-                    <div className="GraphSearch">
-                        <select
-                            className="GraphSearch-input"
-                            value={searchValueDeputy}
-                            onChange={(e) => setSearchValueDeputy(e.target.value)}
-                        >
-                            {valueOptionsDeputies.map((value, index) => (
-                                <option key={index} value={value}>
-                                    {value}
-                                </option>
-                            ))}
-                        </select>
-                        <button className="GraphSearch-button" onClick={handleSearchDeputy}>
-                            Buscar
-                        </button>
-                    </div>
+            ) : containerRef && (
+                <Row className="justify-content-md-center">
 
-                    <div className="GraphSearchFornecedor">
-                        <select
-                            className="GraphSearch-input"
-                            value={searchValueFornecedor}
-                            onChange={(e) => setSearchValueFornecedor(e.target.value)}
-                        >
-                            {valueOptionsFornecedor.map((value, index) => (
-                                <option key={index} value={value}>
-                                    {value}
-                                </option>
-                            ))}
-                        </select>
-                        <button className="GraphSearch-button" onClick={handleSearchFornecedor}>
-                            Buscar
-                        </button>
-                    </div>
-                            
-                    {selectedNode && selectedNode.deputy && <NodeDetails deputy={selectedNode.deputy} onClose={onClose} />}
-                    {selectedNode && selectedNode.fornecedor && <NodeDetails fornecedor={selectedNode.fornecedor} onClose={onClose} />}
-                    {selectedEdge && <EdgeDetails selectedEdge={selectedEdge} />}
-                </>
+                    <Row className="justify-content-md-center">
+                        <ColorLegendDespesas colorTiposDespesa={colorTiposDespesa} />
+                    </Row>
+
+                    <Row className="GraphContainer">
+
+                        <Row className="justify-content-md-center">
+                            <div className="GraphSearch">
+                                <select
+                                    className="GraphSearch-input"
+                                    value={searchValueDeputy}
+                                    onChange={(e) => setSearchValueDeputy(e.target.value)}
+                                >
+                                    {valueOptionsDeputies.map((value, index) => (
+                                        <option key={index} value={value}>
+                                            {value}
+                                        </option>
+                                    ))}
+                                </select>
+                                <button className="GraphSearch-button" onClick={handleSearchDeputy}>
+                                    Buscar
+                                </button>
+                            </div>
+                        </Row>
+
+                        <Row ref={containerRef} className="Graph">
+                        </Row>
+
+                        <Row className="justify-content-md-center">
+                            <div className="sigma-tooltip" />
+                        </Row>
+
+
+                        <Row className="justify-content-md-center">
+                            <div className="GraphSearchFornecedor">
+                                <select
+                                    className="GraphSearch-input"
+                                    value={searchValueFornecedor}
+                                    onChange={(e) => setSearchValueFornecedor(e.target.value)}
+                                >
+                                    {valueOptionsFornecedor.map((value, index) => (
+                                        <option key={index} value={value}>
+                                            {value}
+                                        </option>
+                                    ))}
+                                </select>
+                                <button className="GraphSearch-button" onClick={handleSearchFornecedor}>
+                                    Buscar
+                                </button>
+                            </div>
+                        </Row>
+
+                    </Row>
+
+                    {/* <Row> */}
+
+                        <div className="GraphCardWrapper">
+                            <div className="GraphCard">
+                                {selectedNode && selectedNode.deputy && <NodeDetails deputy={selectedNode.deputy} onClose={onClose} />}
+                                {selectedNode && selectedNode.fornecedor && <NodeDetails fornecedor={selectedNode.fornecedor} onClose={onClose} />}
+                                {selectedEdge && <EdgeDetails selectedEdge={selectedEdge} />}
+                            </div>
+                        </div>
+
+                    {/* </Row> */}
+
+                </Row>
             )}
         </Container>
     );

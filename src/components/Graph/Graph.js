@@ -46,8 +46,6 @@ const Graph = ({ year, month, submitClicked }) => {
 
                     console.log("Data fetched successfully");
 
-                    console.log(response.data);
-
                     const colorByDespesas = response.data.edges.reduce((acc, edge) => {
                         if (edge.attributes.label in acc) {
                             return acc;
@@ -59,15 +57,22 @@ const Graph = ({ year, month, submitClicked }) => {
                         }
                     }, {});
 
+
                     try {
                         response.data.nodes.forEach(node => {
                             if (node.attributes.fornecedor) {
                                 colorByDespesas[node.attributes.fornecedor.tipoDespesa]['valorTotal'] = (Number(colorByDespesas[node.attributes.fornecedor.tipoDespesa]['valorTotal'] || 0) + node.attributes.payments.reduce((acc, payment) => acc + Number(payment.valorDocumento), 0)).toFixed(2);
+
+                                if (!node.attributes.fornecedor.cnpjCpfFornecedor) {
+                                    console.log(node.attributes);
+                                    node.attributes.fornecedor.cnpjCpfFornecedor = node.attributes.fornecedor.nomeFornecedor;
+                                }
                             }
                         });
                     } catch (err) {
                         console.log(err);
                     }
+
 
                     setColorTiposDespesa(colorByDespesas);
 
@@ -105,6 +110,8 @@ const Graph = ({ year, month, submitClicked }) => {
         }
     }, [submitClicked]);
 
+    console.log(graphData);
+
     useEffect(() => {
         if (!graphData) return;
 
@@ -129,7 +136,10 @@ const Graph = ({ year, month, submitClicked }) => {
 
         renderer.on('clickNode', (event) => {
             const { node } = event;
+
+
             const nodeData = graph.getNodeAttributes(node);
+            console.log(nodeData);
 
             const neighbors = graph.neighbors(node);
             setRendererState((state) => ({
@@ -233,7 +243,7 @@ const Graph = ({ year, month, submitClicked }) => {
         }
     }, [selectedNode, selectedEdge]);
 
-    console.log(colorTiposDespesa);
+    // console.log(colorTiposDespesa);
 
     const handleSearchDeputy = () => {
         if (!sigmaRenderer) {

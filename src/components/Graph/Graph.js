@@ -128,7 +128,6 @@ const Graph = ({ year, month, submitClicked }) => {
             const { node } = event;
 
             const nodeData = graph.getNodeAttributes(node);
-            console.log(nodeData);
 
             const neighbors = graph.neighbors(node);
             setRendererState((state) => ({
@@ -138,8 +137,6 @@ const Graph = ({ year, month, submitClicked }) => {
             }));
 
             setSelectedNode(nodeData);
-
-            console.log(nodeData);
 
             const nodePosition = renderer.getNodeDisplayData(nodeData.deputy ? nodeData.deputy.id : nodeData.fornecedor.cnpjCpfFornecedor);
 
@@ -157,7 +154,6 @@ const Graph = ({ year, month, submitClicked }) => {
         });
 
         renderer.on('clickEdge', (event) => {
-            console.log('Edge clicked'); // New line
             const { edge } = event;
             const edgeData = graph.getEdgeAttributes(edge);
 
@@ -364,7 +360,7 @@ const Graph = ({ year, month, submitClicked }) => {
     const ColorLegendDespesas = () => {
         return (
             <Container className="mt-2 mb-5 legenda">
-                <Card className="title">As cores representam os tipos de despesas e o valor total para cada um.
+                <Card className="title">As cores representam os tipos de despesas e abaixo o valor total para mês selecionado
 
                 </Card>
                 <DespesasButtons />
@@ -433,6 +429,7 @@ const Graph = ({ year, month, submitClicked }) => {
 
     return (
         <Container>
+
             {(isLoading) ? (
                 <img src="..\Loading_icon.gif" alt="Loading" className="loading-gif" /> // Loading gif
             ) : graphNotFound ? (

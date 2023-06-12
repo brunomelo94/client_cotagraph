@@ -2,6 +2,7 @@
     position: relative;
     padding: 2em;
     padding-bottom: 4rem;
+    min-height: 10vh;
     border-radius: 2em;
     min-width: 1em;
     min-height: 1em;
@@ -10,7 +11,8 @@
 .Graph {
     position: relative;
     width: 100%;
-    height: 60vh;
+    height: 100%;
+    min-height: 50vh;
     background-color: rgba(255, 255, 255, 0.5);
     border-radius: 2em;
     box-shadow: 0 0.5em 1em rgba(0, 0, 0, 0.1);
@@ -25,6 +27,23 @@
     color: #fff;
     border-radius: 5px;
     font-size: 12px;
+}
+
+/* Background image should be always screen size independent of quantity of content */
+.BackgroundImage {
+    position: absolute;
+    min-height: 200vh;
+    opacity: 0.25;
+    z-index: -1;
+    width: 100%;
+    max-width: 100%;
+    min-width: 100%;
+    height: auto;
+    min-height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }
 
 .GraphSearch {
@@ -103,13 +122,14 @@
 
 .NodeDetailsContainer {
     position: absolute;
-    top: -20px;
+    top: 0;
     right: 0;
-    width: 8rem;
+    width: 18vh;
     background-color: transparent;
     padding: auto;
     z-index: 100;
-    border-radius: 2em;
+    border-radius: 3em;
+    align-items: center;
 }
 
 .loading-gif {
@@ -144,7 +164,7 @@
 
     .NodeDetails-title,
     .ExpenseDetails-title {
-        font-size: 1rem;
+        font-size: 0.8rem;
     }
 }
 

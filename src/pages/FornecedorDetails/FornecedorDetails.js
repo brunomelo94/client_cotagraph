@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import ExpenseAnalytics from '../../components/ExpenseAnalytics/ExpenseAnalytics';
 import { Container, Card, Table, Button, Row, Col, Form } from 'react-bootstrap';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import './FornecedorDetails.css';
 
 const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
@@ -16,12 +18,12 @@ const FornecedorDetails = () => {
     const [fornecedor, setFornecedor] = useState(null);
     const [deputadoFiltro, setDeputadoFiltro] = useState('Todos');
     const [partidoFiltro, setPartidoFiltro] = useState('Todos');
-    const [dataInicialFiltro, setDataInicialFiltro] = useState('');
-    const [dataFinalFiltro, setDataFinalFiltro] = useState('');
     // Value options partidos
     const [partidos, setPartidos] = useState([]);
     // Value options deputados
     const [deputados, setDeputados] = useState([]);
+    const [dateRange, setDateRange] = useState([new Date('2018/01/01'), new Date('2023/12/31')]);
+    const [startDate, endDate] = dateRange;
 
     useEffect(() => {
         const fetchData = async () => {
@@ -50,32 +52,30 @@ const FornecedorDetails = () => {
 
     useEffect(() => {
         if (!expenses) return;
-        
+
         const filteredExpenses = expenses.filter((expense) => {
             if (deputadoFiltro !== 'Todos' && expense.deputy !== deputadoFiltro) {
-                    return false;
-                }
-
-                if (partidoFiltro !== 'Todos' && expense.party !== partidoFiltro) {
-                    return false;
-                }
-
-                if (dataInicialFiltro && expense.dataDocumento < dataInicialFiltro) {
-                    return false;
-                }
-
-                if (dataFinalFiltro && expense.dataDocumento > dataFinalFiltro) {
-                    return false;
-                }
-
-                return true;
+                return false;
             }
-        );
+
+            if (partidoFiltro !== 'Todos' && expense.party !== partidoFiltro) {
+                return false;
+            }
+
+            let expenseDate = new Date(expense.dataDocumento);
+            if (startDate && expenseDate < startDate) {
+                return false;
+            }
+
+            if (endDate && expenseDate > endDate) {
+                return false;
+            }
+
+            return true;
+        });
 
         setMutatedExpenses(filteredExpenses);
-    }, [deputadoFiltro, partidoFiltro, dataInicialFiltro, dataFinalFiltro]);
-
-    console.log(mutatedExpenses)
+    }, [deputadoFiltro, partidoFiltro, dateRange, expenses]);
 
     if (!expenses || expenses.length === 0) {
         return <Container>Carregando...</Container>;
@@ -124,8 +124,8 @@ const FornecedorDetails = () => {
                                                         <Form.Label style={{ fontWeight: 'bold' }}>Nome do deputado</Form.Label>
                                                         <Form.Control as="select" onChange={(e) => setDeputadoFiltro(e.target.value)}>
                                                             <option>Todos</option>
-                                                            {deputados.map((deputado) => (
-                                                                <option>{deputado}</option>
+                                                            {deputados.map((deputado, index) => (
+                                                                <option key={index}>{deputado}</option>
                                                             ))}
                                                         </Form.Control>
                                                     </Form.Group>
@@ -139,8 +139,8 @@ const FornecedorDetails = () => {
                                                         <Form.Label style={{ fontWeight: 'bold' }}>Partido</Form.Label>
                                                         <Form.Control as="select" onChange={(e) => setPartidoFiltro(e.target.value)}>
                                                             <option>Todos</option>
-                                                            {partidos.map((partido) => (
-                                                                <option>{partido}</option>
+                                                            {partidos.map((partido, index) => (
+                                                                <option key={index}>{partido}</option>
                                                             ))}
                                                         </Form.Control>
                                                     </Form.Group>
@@ -152,19 +152,19 @@ const FornecedorDetails = () => {
                                         <Col className='mt-1'>
                                             <Card className="mb-1">
                                                 <Card.Body>
-                                                    <Form.Group controlId="formBasicEmail">
-                                                        <Form.Label style={{ fontWeight: 'bold' }}>Data inicial</Form.Label>
-                                                        <Form.Control type="date" placeholder="Data inicial" onChange={(e) => setDataInicialFiltro(e.target.value)} />
-                                                    </Form.Group>
-                                                </Card.Body>
-                                            </Card>
-                                        </Col>
-                                        <Col className='mt-1'>
-                                            <Card className="mb-1">
-                                                <Card.Body>
-                                                    <Form.Group controlId="formBasicEmail">
-                                                        <Form.Label style={{ fontWeight: 'bold' }}>Data final</Form.Label>
-                                                        <Form.Control type="date" placeholder="Data final" onChange={(e) => setDataFinalFiltro(e.target.value)} />
+                                                    <Form.Group controlId="datePicker">
+                                                        <Form.Label style={{ fontWeight: 'bold' }}>Selecione o intervalo de datas</Form.Label>
+                                                        <DatePicker
+                                                            className="datepicker"
+                                                            selectsRange={true}
+                                                            startDate={startDate}
+                                                            endDate={endDate}
+                                                            onChange={(update) => {
+                                                                setDateRange(update);
+                                                            }}
+                                                            dateFormat="MM/yyyy"
+                                                            showMonthYearPicker
+                                                        />
                                                     </Form.Group>
                                                 </Card.Body>
                                             </Card>

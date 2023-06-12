@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { Container, Card, Button, Row, Col, Form } from 'react-bootstrap';
+import { Container, Card, Table, Button, Row, Col, Form } from 'react-bootstrap';
 import './ExpenseAnalytics.css';
 
 const OTHERS_CATEGORY = 'Outros';
@@ -149,34 +149,40 @@ const ExpenseAnalytics = ({ data }) => {
                         </div>
                     ) : (
                         <Container>
-                            <ResponsiveContainer width={'100%'} height={400}>
-                                <PieChart fontSize='60%'>
-                                    <Pie
-                                        dataKey="value"
-                                        isAnimationActive={true}
-                                        data={dataToDisplay.map(item => ({ ...item, name: (item.name || item.party) + ' | R$' })) || []}
-                                        cx="50%"
-                                        cy="50%"
-                                        outerRadius={'50%'}
-                                        fill="#8884d8"
-                                        label={
-                                            ({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                                        onClick={onClick}
-                                    >
-                                        {
-                                            (dataToDisplay || []).map((entry, index) =>
-                                                <Cell key={`cell-${index}`} fill={partyColors(entry.name) || partyColors(entry.party) || generateColor()} />)
-                                        }
-                                    </Pie>
-                                    <Tooltip formatter={(value, name) => [value, name]} />
-                                </PieChart>
-                            </ResponsiveContainer>
+
+                            <Row style={{ overflowX: 'scroll' }} className='justify-content-center'>
+                                <ResponsiveContainer width={800} className='mt-0' height={400} overflowX={'scroll'}>
+                                    <PieChart fontSize='70%' className='mt-4 mb-4' width={600} height={300} overflowX={'scroll'}>
+                                        <Pie
+                                            dataKey="value"
+                                            isAnimationActive={true}
+                                            data={dataToDisplay.map(item => ({ ...item, name: (item.name || item.party) + ' | R$' })) || []}
+                                            cx="50%"
+                                            cy="50%"
+                                            outerRadius={'55%'}
+                                            innerRadius={'2%'}
+                                            fill="#8884d8"
+                                            label={
+                                                ({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                                            onClick={onClick}
+                                        >
+                                            {
+                                                (dataToDisplay || []).map((entry, index) =>
+                                                    <Cell key={`cell-${index}`} fill={partyColors(entry.name) || partyColors(entry.party) || generateColor()} />)
+                                            }
+                                        </Pie>
+                                        <Tooltip formatter={(value, name) => [value, name]} />
+                                        {/* <Legend iconSize={6} formatter={(value, entry) => partyColors(entry.party) || entry.party || value} /> */}
+                                    </PieChart>
+                                </ResponsiveContainer>
+
+                            </Row>
 
                             <Row className='justify-content-center mt-2'>
                                 <Col>
                                     <Card className="mb-4">
                                         <Card.Body>
-                                            <Button variant="primary" onClick={resetData} block>
+                                            <Button variant="primary" onClick={resetData} className="w-100">
                                                 Reset do gráfico
                                             </Button>
                                         </Card.Body>
@@ -189,7 +195,7 @@ const ExpenseAnalytics = ({ data }) => {
                                                 variant="primary"
                                                 onClick={goBack}
                                                 disabled={history && history.length === 0}
-                                                block
+                                                className="w-100"
                                             >
                                                 Voltar um nível
                                             </Button>

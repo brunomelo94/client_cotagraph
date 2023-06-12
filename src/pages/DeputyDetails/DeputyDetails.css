@@ -78,21 +78,10 @@ body {
 }
 
 .analytics-container svg {
-    display: block;
     margin: auto;
 }
 
 @media only screen and (max-width: 600px) {
-
-    /* On small screens, convert the table to block elements for better readability */
-    .table,
-    .table thead,
-    .table tbody,
-    .table th,
-    .table td,
-    .table tr {
-        display: block;
-    }
 
     /* Hide table headers on small screens */
     .table thead {

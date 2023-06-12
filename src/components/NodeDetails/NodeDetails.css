@@ -1,6 +1,6 @@
 .NodeDetailsContainer {
   align-items: center;
-  margin-top: 32rem;
+  margin-top: 75vh;
   margin-left: 10vh;
   font-size: 0.7rem;
   width: 7rem;
@@ -17,7 +17,7 @@
 .NodeDetails,
 .ExpenseDetails {
   width: 100%;
-  left: -1rem;
+  left: -2rem;
   text-align: justify;
   min-width: 10vh;
   margin-bottom: 0.1rem;
@@ -58,12 +58,12 @@
     justify-content: space-between;
   }
 
-    .GraphCardWrapper {
-      position: absolute;
-      left: 0.5rem;
-      top: 13vh;
-      /* outros estilos necessários */
-    }
+  .GraphCardWrapper {
+    position: absolute;
+    left: 0.5rem;
+    top: 13vh;
+    /* outros estilos necessários */
+  }
 
   .NodeDetails-title,
   .ExpenseDetails-title {

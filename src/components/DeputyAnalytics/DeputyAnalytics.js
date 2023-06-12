@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { Container, Card, Table, Button, Row, Col, Form } from 'react-bootstrap';
 import './DeputyAnalytics.css';
 
@@ -76,7 +76,7 @@ const DeputyAnalytics = ({ data }) => {
     };
 
     return (
-        <Container className='mt-1'>
+        <Container>
             <Row>
                 <Col>
                     <Card className="mb-0">
@@ -114,25 +114,24 @@ const DeputyAnalytics = ({ data }) => {
                 </Col>
             </Row>
 
-            <Col className='chart'>
-                <ResponsiveContainer className='mt-0' >
-                    <PieChart fontSize='50%' className='mt-4 mb-4'>
+            <Row style={{ overflowX: 'scroll' }} className='justify-content-center'>
+                <ResponsiveContainer width={800} className='mt-0' height={400} overflowX={'scroll'}>
+                    <PieChart fontSize='70%' className='mt-4 mb-4' width={600} height={300} overflowX={'scroll'}>
                         <Pie
                             data={dataToDisplay.map(item => ({ name: item.name + ' | R$', value: Number(item.value) }))}
                             dataKey="value"
                             nameKey="name"
                             cx="50%"
                             cy="50%"
-                            isAnimationActive={false}
-                            outerRadius={'50%'}
-                            innerRadius={'5%'}
+                            isAnimationActive={true}
+                            outerRadius={'55%'}
+                            innerRadius={'2%'}
                             fill="#8884d8"
                             label={({ name, percent }) => {
                                 let maxLength = 20;
                                 let displayText = name.length > maxLength ? name.slice(0, maxLength) + '...' : name;
                                 return `${displayText}: ${(percent * 100).toFixed(0)}%`;
                             }}
-                            labelLine={true}
                             onClick={onClick}
                         >
                             {dataToDisplay.map((entry, index) => <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />)}
@@ -140,12 +139,15 @@ const DeputyAnalytics = ({ data }) => {
                         <Tooltip />
                     </PieChart>
                 </ResponsiveContainer>
+            </Row>
 
+
+            <Col className='chart mt-4'>
                 <Row className='justify-content-center mt-2'>
                     <Col>
                         <Card className="mb-0">
                             <Card.Body>
-                                <Button variant="primary" onClick={resetData} block>
+                                <Button variant="primary" onClick={resetData} className="w-100">
                                     Reset do gráfico
                                 </Button>
                             </Card.Body>
@@ -158,7 +160,7 @@ const DeputyAnalytics = ({ data }) => {
                                     variant="primary"
                                     onClick={goBack}
                                     disabled={history && history.length === 0}
-                                    block
+                                    className="w-100" S
                                 >
                                     Voltar um nível
                                 </Button>

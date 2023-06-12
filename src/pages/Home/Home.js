@@ -29,7 +29,6 @@ const Home = () => {
         if (!installPromptEvent) return;
         installPromptEvent.prompt();
         const { outcome } = await installPromptEvent.userChoice;
-        console.log('User action was: ', outcome);
         setInstallPromptEvent(null);
     };
 
@@ -64,14 +63,19 @@ const Home = () => {
                 <Container className="Home" fluid>
                     <Row className="justify-content-md-center">
                         <h1 className="Home-title">cotagraph</h1>
-                        {installPromptEvent && <Button onClick={handleInstallClick}>Instalar Aplicativo</Button>}
+                        {installPromptEvent && <Button className="InstallButton" onClick={handleInstallClick}><i className="fas fa-download"></i> Instale nosso App para acompanhar de perto!</Button>}
+                    </Row>
+                    <Row className="justify-content-md-center mb-5">
+                        <h7 className='Description w-65 text-center rounded p-1' style={{ color: '#a6703d' }}>
+                            🙈 descubra o perfil dos gastos de nossos deputados 🙉
+                        </h7>
                     </Row>
                     <Row>
                         <Form onSubmit={handleSubmit} className="Form">
                             <Row>
                                 <Col md={4}>
                                     <Form.Group controlId="year">
-                                        <Form.Label>Ano</Form.Label>
+                                        <Form.Label>Selecione o Ano</Form.Label>
                                         <Form.Control
                                             as="select"
                                             value={year}
@@ -87,14 +91,14 @@ const Home = () => {
                                 </Col>
                                 <Col md={4}>
                                     <Form.Group controlId="month">
-                                        <Form.Label>Mês</Form.Label>
+                                        <Form.Label>Selecione o Mês</Form.Label>
                                         <Form.Control
                                             as="select"
                                             value={month}
                                             onChange={(e) => setMonth(e.target.value)}
                                             required
                                         >
-                                            <option value="">Um mês...</option>
+                                            <option value="">Escolha um mês...</option>
                                             {months.map((month, index) =>
                                                 <option key={index} value={index + 1}>{month}</option>
                                             )}
@@ -103,7 +107,7 @@ const Home = () => {
                                 </Col>
                                 <Col md={4} className="d-flex align-items-end">
                                     <Button className="Form-button" type="submit">
-                                        Obter grafo!
+                                        Visualizar Gastos!
                                     </Button>
                                 </Col>
                             </Row>
@@ -111,7 +115,6 @@ const Home = () => {
                     </Row>
                 </Container>
             </Row>
-
             <Row>
                 {showGraph && <Graph year={year} month={month} submitClicked={submitClicked} />}
 

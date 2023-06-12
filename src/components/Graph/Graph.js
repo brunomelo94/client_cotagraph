@@ -1,18 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Sigma } from 'sigma';
 import { DirectedGraph } from 'graphology';
-import './Graph.css';
 import NodeDetails from '../NodeDetails/NodeDetails';
 import EdgeDetails from '../EdgeDetails/EdgeDetails';
-import ColorLegendDespesas from '../ColorLegendDespesas/ColorLegendDespesas';
 import axios from 'axios';
-import { Container, Card, Table, Button, Row, Col, Form, Spinner, Alert, Dropdown } from 'react-bootstrap';
+import { Container, Card, Button, Row, Col, Alert } from 'react-bootstrap';
+
+import './Graph.css';
+import './Legendas.css'
 
 const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
 
 const Graph = ({ year, month, submitClicked }) => {
     const containerRef = useRef();
-
     const [searchValueDeputy, setSearchValueDeputy] = useState('');
     const [searchValueFornecedor, setSearchValueFornecedor] = useState('');
     const [selectedNode, setSelectedNode] = useState(null);
@@ -28,8 +28,10 @@ const Graph = ({ year, month, submitClicked }) => {
         selectedNode: '',
         hoveredNeighbors: [],
     });
-    // Construir dicionário de cores baseado no tipo de despesa para utilizar como legenda abaixo do grafo
     const [colorTiposDespesa, setColorTiposDespesa] = useState({});
+    const [tipoDeDespesasAtivas, setTipoDeDespesasAtivas] = useState({});
+    const [todosDesativados, setTodosDesativados] = useState(false);
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -51,30 +53,24 @@ const Graph = ({ year, month, submitClicked }) => {
                             return acc;
                         } else {
                             acc[edge.attributes.label] = {
-                                color: edge.attributes.color,
+                                color: edge.attributes && edge.attributes.color,
                             };
                             return acc;
                         }
                     }, {});
 
-
-                    try {
-                        response.data.nodes.forEach(node => {
-                            if (node.attributes.fornecedor) {
-                                colorByDespesas[node.attributes.fornecedor.tipoDespesa]['valorTotal'] = (Number(colorByDespesas[node.attributes.fornecedor.tipoDespesa]['valorTotal'] || 0) + node.attributes.payments.reduce((acc, payment) => acc + Number(payment.valorDocumento), 0)).toFixed(2);
-
-                                if (!node.attributes.fornecedor.cnpjCpfFornecedor) {
-                                    console.log(node.attributes);
-                                    node.attributes.fornecedor.cnpjCpfFornecedor = node.attributes.fornecedor.nomeFornecedor;
-                                }
-                            }
-                        });
-                    } catch (err) {
-                        console.log(err);
-                    }
-
+                    response.data.nodes.forEach(node => {
+                        if (node.attributes.fornecedor) {
+                            colorByDespesas[node.attributes.fornecedor.tipoDespesa]['valorTotal'] = (Number(colorByDespesas[node.attributes.fornecedor.tipoDespesa]['valorTotal'] || 0) + node.attributes.payments.reduce((acc, payment) => acc + Number(payment.valorDocumento), 0)).toFixed(2);
+                        }
+                    });
 
                     setColorTiposDespesa(colorByDespesas);
+
+                    setTipoDeDespesasAtivas(Object.keys(colorByDespesas).reduce((acc, tipoDespesa) => {
+                        acc[tipoDespesa] = true;
+                        return acc;
+                    }, {}));
 
                     // For each edge, change type to arrow
                     response.data.edges.forEach(edge => {
@@ -110,17 +106,14 @@ const Graph = ({ year, month, submitClicked }) => {
         }
     }, [submitClicked]);
 
-    console.log(graphData);
-
     useEffect(() => {
         if (!graphData) return;
 
         const graph = new DirectedGraph().import(graphData);
-
         const renderer = new Sigma(graph, containerRef.current);
 
-        renderer.setSetting("labelRenderedSizeThreshold", 7);
         // renderer.setSetting("enableEdgeClickEvents", true);
+        renderer.setSetting("labelRenderedSizeThreshold", 7);
         renderer.setSetting("labelFont", "Roboto");
         renderer.setSetting("labelSize", 12);
         renderer.setSetting("labelWeight", 452);
@@ -128,15 +121,11 @@ const Graph = ({ year, month, submitClicked }) => {
         renderer.setSetting("labelColor", {
             attribute: '#000'
         });
-        // renderer.setSetting("labelDensity", 123);
-        // renderer.setSetting("labelGridCellSize", 512);
 
         setSigmaRenderer(renderer);
 
-
         renderer.on('clickNode', (event) => {
             const { node } = event;
-
 
             const nodeData = graph.getNodeAttributes(node);
             console.log(nodeData);
@@ -149,6 +138,21 @@ const Graph = ({ year, month, submitClicked }) => {
             }));
 
             setSelectedNode(nodeData);
+
+            console.log(nodeData);
+
+            const nodePosition = renderer.getNodeDisplayData(nodeData.deputy ? nodeData.deputy.id : nodeData.fornecedor.cnpjCpfFornecedor);
+
+            //Came off
+            const camera = renderer.getCamera();
+            camera.animate({
+                x: nodePosition.x,
+                y: nodePosition.y,
+                ratio: 0.3678,
+            }, {
+                duration: 450
+            });
+
             renderer.refresh();
         });
 
@@ -158,6 +162,7 @@ const Graph = ({ year, month, submitClicked }) => {
             const edgeData = graph.getEdgeAttributes(edge);
 
             setSelectedEdge(edgeData);
+
             renderer.refresh();
         });
 
@@ -195,23 +200,14 @@ const Graph = ({ year, month, submitClicked }) => {
 
         const graph = sigmaRenderer.getGraph();
 
-        // Render nodes accordingly to the internal state:
-        // 1. If a node is selected, it is highlighted
-        // 2. If there is query, all non-matching nodes are greyed
-        // 3. If there is a hovered node, all non-neighbor nodes are greyed
         sigmaRenderer.setSetting("nodeReducer", (node, data) => {
             const res = { ...data };
-
-            // console.log(data)
-
             if (rendererState.hoveredNeighbors && rendererState.hoveredNeighbors.length && !rendererState.hoveredNeighbors.find((n) => n === node) && rendererState.hoveredNode !== node) {
                 res.label = null;
                 res.color = "#f6f6f6";
-                //Display label independent of node size, in any zoom level
                 res.labelSize = "fixed";
                 res.labelWeight = 120;
             }
-
             if (rendererState.selectedNode === node && node) {
                 res.highlighted = true;
             }
@@ -219,15 +215,11 @@ const Graph = ({ year, month, submitClicked }) => {
             return res;
         });
 
-        // Render edges accordingly to the internal state:
-        // 1. If a node is hovered, the edge is hidden if it is not connected to the node
         sigmaRenderer.setSetting("edgeReducer", (edge, data) => {
             const res = { ...data };
-
-            if (rendererState.hoveredNode && !graph.hasExtremity(edge, rendererState.hoveredNode)) {
+            if (rendererState.hoveredNode && !graph.hasExtremity(edge, rendererState.hoveredNode) || !tipoDeDespesasAtivas[String(res.label)]) {
                 res.hidden = true;
             }
-
             return res;
         });
 
@@ -236,6 +228,7 @@ const Graph = ({ year, month, submitClicked }) => {
         sigmaRenderer.refresh();
     }, [rendererState]);
 
+    // Refresh label size if no node is selected (closed card)
     useEffect(() => {
         if (sigmaRenderer && (!selectedNode && !selectedEdge)) {
             sigmaRenderer.setSetting("labelRenderedSizeThreshold", 9);
@@ -243,7 +236,27 @@ const Graph = ({ year, month, submitClicked }) => {
         }
     }, [selectedNode, selectedEdge]);
 
-    // console.log(colorTiposDespesa);
+    // Esconder arestas que o tipo de despesa não está ativo
+    useEffect(() => {
+        if (!sigmaRenderer || selectedNode) return;
+        // Esconder arestas que o tipo de despesa não está ativo 
+        sigmaRenderer.setSetting("edgeReducer", (edge, data) => {
+            const res = { ...data };
+
+            if (tipoDeDespesasAtivas) {
+                if (tipoDeDespesasAtivas[String(res.label)]) {
+                    res.hidden = false;
+                } else {
+                    res.hidden = true;
+                }
+            }
+            return res;
+        });
+
+        sigmaRenderer.refresh();
+    }, [tipoDeDespesasAtivas, rendererState]);
+
+    const totalDespesas = Object.values(colorTiposDespesa).reduce((acc, curr) => Number(acc || 0) + Number(curr.valorTotal || 0), 0);
 
     const handleSearchDeputy = () => {
         if (!sigmaRenderer) {
@@ -312,6 +325,112 @@ const Graph = ({ year, month, submitClicked }) => {
         setSelectedEdge(null);
     };
 
+    //** INIT - Legendas, controladores de legenda e de arestas e despesas **//
+    const mapTiposDespesa = (colorTiposDespesa, todosDesativados, tipoDeDespesasAtivas, totalDespesas) => {
+        return Object.entries(colorTiposDespesa)
+            .sort((a, b) => b[1].valorTotal - a[1].valorTotal)
+            .map(([tipoDespesa, corValor], index) => {
+                if (!corValor) return null;
+
+                const valorTotalNum = Number(corValor.valorTotal);
+                if (isNaN(valorTotalNum)) {
+                    return null;
+                }
+                const percentual = ((valorTotalNum / Number(totalDespesas)) * 100).toFixed(2);
+                const valorTotalBr = valorTotalNum.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+
+                return (
+                    <Col key={index} className="legendaItem">
+                        <div className="legendaColor" style={{ backgroundColor: todosDesativados ? 'transparent' : (tipoDeDespesasAtivas[tipoDespesa] ? corValor.color : 'transparent') }}>
+                            {tipoDespesa}
+                        </div>
+                        <div className="valorInfo">
+                            <div>
+                                <Row className="total">Total: R${valorTotalBr} </Row>
+                                <Row className="percentual">Percentual: {percentual}%</Row>
+                            </div>
+
+                            <ToggleDespesaButton
+                                tipoDespesa={tipoDespesa}
+                                isActive={!todosDesativados && tipoDeDespesasAtivas[tipoDespesa]}
+                                toggleDespesa={toggleDespesa}
+                            />
+                        </div>
+                    </Col>
+                )
+            })
+    }
+
+    const ColorLegendDespesas = () => {
+        return (
+            <Container className="mt-2 mb-5 legenda">
+                <Card className="title">As cores representam os tipos de despesas e o valor total para cada um.
+
+                </Card>
+                <DespesasButtons />
+                <Row className="legendaContainer">
+                    {mapTiposDespesa(colorTiposDespesa, todosDesativados, tipoDeDespesasAtivas, totalDespesas)}
+                </Row>
+            </Container>
+        )
+    };
+
+    const ToggleDespesaButton = React.memo(({ tipoDespesa, isActive, toggleDespesa }) => (
+        <Row className="justify-content-md-center">
+            <Button size="sm" onClick={(event) => {
+                event.preventDefault();
+                toggleDespesa(tipoDespesa);
+            }} variant={isActive ? "primary" : "secondary"}>
+                {isActive ? "Ligado" : "Desligado"}
+            </Button>
+        </Row>
+    ));
+
+    const toggleDespesa = (tipoDespesa) => {
+        setTipoDeDespesasAtivas(prevTipoDeDespesasAtivas => ({
+            ...prevTipoDeDespesasAtivas,
+            [tipoDespesa]: !prevTipoDeDespesasAtivas[tipoDespesa]
+        }));
+        setTodosDesativados(false);
+    };
+
+    const DespesasButtons = () => {
+        return (
+            <div style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+            }}>
+                <Button style={{ margin: "10px" }} onClick={ativarTodos}>Ativar todos</Button>
+                <Button style={{ margin: "10px" }} onClick={desativarTodos}>Desativar todos</Button>
+            </div>
+        )
+    };
+
+    const ativarTodos = () => {
+        setTipoDeDespesasAtivas(prev => {
+            const newObject = { ...prev };
+            for (let key in newObject) {
+                newObject[key] = true;
+            }
+            return newObject;
+        });
+        setTodosDesativados(false);
+    };
+
+    const desativarTodos = () => {
+        setTipoDeDespesasAtivas(prev => {
+            const newObject = { ...prev };
+            for (let key in newObject) {
+                newObject[key] = false;
+            }
+            return newObject;
+        });
+        setTodosDesativados(true);
+    };
+
+    //** END - Legendas, controladores de legenda e de arestas e despesas **//
+
     return (
         <Container>
             {(isLoading) ? (
@@ -324,11 +443,10 @@ const Graph = ({ year, month, submitClicked }) => {
                 <Row className="justify-content-md-center">
 
                     <Row className="justify-content-md-center">
-                        <ColorLegendDespesas colorTiposDespesa={colorTiposDespesa} />
+                        <ColorLegendDespesas />
                     </Row>
 
                     <Row className="GraphContainer">
-
                         <Row className="justify-content-md-center">
                             <div className="GraphSearch">
                                 <select
@@ -350,11 +468,6 @@ const Graph = ({ year, month, submitClicked }) => {
 
                         <Row ref={containerRef} className="Graph">
                         </Row>
-
-                        <Row className="justify-content-md-center">
-                            <div className="sigma-tooltip" />
-                        </Row>
-
 
                         <Row className="justify-content-md-center">
                             <div className="GraphSearchFornecedor">
@@ -379,13 +492,13 @@ const Graph = ({ year, month, submitClicked }) => {
 
                     {/* <Row> */}
 
-                        <div className="GraphCardWrapper">
-                            <div className="GraphCard">
-                                {selectedNode && selectedNode.deputy && <NodeDetails deputy={selectedNode.deputy} onClose={onClose} />}
-                                {selectedNode && selectedNode.fornecedor && <NodeDetails fornecedor={selectedNode.fornecedor} onClose={onClose} />}
-                                {selectedEdge && <EdgeDetails selectedEdge={selectedEdge} />}
-                            </div>
+                    <div className="GraphCardWrapper">
+                        <div className="GraphCard">
+                            {selectedNode && selectedNode.deputy && <NodeDetails deputy={selectedNode.deputy} onClose={onClose} />}
+                            {selectedNode && selectedNode.fornecedor && <NodeDetails fornecedor={selectedNode.fornecedor} onClose={onClose} />}
+                            {selectedEdge && <EdgeDetails selectedEdge={selectedEdge} />}
                         </div>
+                    </div>
 
                     {/* </Row> */}
 

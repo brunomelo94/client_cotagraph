@@ -1,4 +1,3 @@
-/* Exemplo básico, você pode customizar conforme a necessidade. */
 .recharts-wrapper {
     margin: auto;
     padding: 2rem;
@@ -6,6 +5,36 @@
     border-radius: 4px;
 }
 
+.chart-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-height: 400px;
+}
+
+.chart {
+    flex: 1;
+}
+
+.legend-container {
+    flex: 1;
+    overflow-y: auto;
+    max-height: 100%;
+}
+
+.legend-container .recharts-legend-item-text {
+    font-size: 15rem;
+}
+
 .recharts-legend-item {
-    font-size: 0.6rem;
+    font-size: 0.7rem;
+    font-family: 'Roboto', Arial, sans-serif;
+}
+
+.recharts-legend-item-text {
+    font-size: 1.5rem;
+}
+
+.recharts-label {
+    font-size: 1.5rem !important;
 }

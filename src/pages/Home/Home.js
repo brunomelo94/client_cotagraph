@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Graph from '../../components/Graph/Graph';
 import { Container, Card, Table, Button, Row, Col, Form, Spinner, Alert, Dropdown } from 'react-bootstrap';
 import './Home.css';
+import Image from 'react-bootstrap/Image';
 
 // I need to user a context to pass the submitClicked state to the Graph component
 
@@ -54,62 +55,67 @@ const Home = () => {
     }, [submitClicked]);
 
     return (
-        <Container>      <div
-            className="BackgroundImage"
-            style={{ backgroundImage: `url(${backgroundImage})` }}
-        />
-            <Container className="Home">
-                <Row className="justify-content-md-center">
-                    <h1 className="Home-title">cotagraph</h1>
-                    {installPromptEvent && <Button onClick={handleInstallClick}>Instalar Aplicativo</Button>}
-                </Row>
-                <Row>
-                    <Form onSubmit={handleSubmit} className="Form">
-                        <Row>
-                            <Col md={4}>
-                                <Form.Group controlId="year">
-                                    <Form.Label>Ano</Form.Label>
-                                    <Form.Control
-                                        as="select"
-                                        value={year}
-                                        onChange={(e) => setYear(e.target.value)}
-                                        required
-                                    >
-                                        <option value="">Selecione um ano...</option>
-                                        {[2018, 2019, 2020, 2021, 2022, 2023].map((year, index) =>
-                                            <option key={index} value={year}>{year}</option>
-                                        )}
-                                    </Form.Control>
-                                </Form.Group>
-                            </Col>
-                            <Col md={4}>
-                                <Form.Group controlId="month">
-                                    <Form.Label>Mês</Form.Label>
-                                    <Form.Control
-                                        as="select"
-                                        value={month}
-                                        onChange={(e) => setMonth(e.target.value)}
-                                        required
-                                    >
-                                        <option value="">Um mês...</option>
-                                        {months.map((month, index) =>
-                                            <option key={index} value={index + 1}>{month}</option>
-                                        )}
-                                    </Form.Control>
-                                </Form.Group>
-                            </Col>
-                            <Col md={4} className="d-flex align-items-end">
-                                <Button className="Form-button" type="submit">
-                                    Obter grafo!
-                                </Button>
-                            </Col>
-                        </Row>
-                    </Form>
-                </Row>
-                {/* <Row> */}
-                    {showGraph && <Graph year={year} month={month} submitClicked={submitClicked} />}
-                {/* </Row> */}
-            </Container>
+        <Container>
+            <Image
+                src={backgroundImage} fluid
+                className='BackgroundImage'
+            />
+            <Row>
+                <Container className="Home" fluid>
+                    <Row className="justify-content-md-center">
+                        <h1 className="Home-title">cotagraph</h1>
+                        {installPromptEvent && <Button onClick={handleInstallClick}>Instalar Aplicativo</Button>}
+                    </Row>
+                    <Row>
+                        <Form onSubmit={handleSubmit} className="Form">
+                            <Row>
+                                <Col md={4}>
+                                    <Form.Group controlId="year">
+                                        <Form.Label>Ano</Form.Label>
+                                        <Form.Control
+                                            as="select"
+                                            value={year}
+                                            onChange={(e) => setYear(e.target.value)}
+                                            required
+                                        >
+                                            <option value="">Selecione um ano...</option>
+                                            {[2018, 2019, 2020, 2021, 2022, 2023].map((year, index) =>
+                                                <option key={index} value={year}>{year}</option>
+                                            )}
+                                        </Form.Control>
+                                    </Form.Group>
+                                </Col>
+                                <Col md={4}>
+                                    <Form.Group controlId="month">
+                                        <Form.Label>Mês</Form.Label>
+                                        <Form.Control
+                                            as="select"
+                                            value={month}
+                                            onChange={(e) => setMonth(e.target.value)}
+                                            required
+                                        >
+                                            <option value="">Um mês...</option>
+                                            {months.map((month, index) =>
+                                                <option key={index} value={index + 1}>{month}</option>
+                                            )}
+                                        </Form.Control>
+                                    </Form.Group>
+                                </Col>
+                                <Col md={4} className="d-flex align-items-end">
+                                    <Button className="Form-button" type="submit">
+                                        Obter grafo!
+                                    </Button>
+                                </Col>
+                            </Row>
+                        </Form>
+                    </Row>
+                </Container>
+            </Row>
+
+            <Row>
+                {showGraph && <Graph year={year} month={month} submitClicked={submitClicked} />}
+
+            </Row>
         </Container>
 
     );

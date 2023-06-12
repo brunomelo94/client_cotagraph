@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { Container, Card, Table, Button, Row, Col, Form } from 'react-bootstrap';
 import './DeputyAnalytics.css';
 
@@ -14,12 +14,10 @@ const DeputyAnalytics = ({ data }) => {
     const [selectedMonth, setSelectedMonth] = useState('Todos');
     const [selectTipoDespesa, setSelectTipoDespesa] = useState('Todos');
 
-    // Extração dos meses únicos do conjunto de dados
     const uniqueMonths = useMemo(() => Array.from(new Set(data.map(({ mes, ano }) => `${ano}-${String(mes).padStart(2, '0')}`))), [data]);
-
     const uniqueTipoDespesa = useMemo(() => Array.from(new Set(data.map(({ tipoDespesa }) => tipoDespesa))), [data]);
 
-    const aggregateData = (data, filterBy) => {
+    const aggregateData = (data) => {
         let acc = {};
 
         data.forEach(current => {
@@ -32,29 +30,16 @@ const DeputyAnalytics = ({ data }) => {
         let topTen = sortedKeys.slice(0, 10);
         let others = sortedKeys.slice(10).reduce((a, b) => Number(a) + Number(acc[b]), 0);
 
-        console.log({
-            total,
-            sortedKeys,
-            topTen,
-            others
-        })
-
-        if (topTen.length === 0 && others === 0) {
-            return data;
-        }
-
-        let formattedData = (topTen || []).map((key, index) => ({ name: key, value: acc[key], percent: (acc[key] / total).toFixed(2) }));
+        let formattedData = topTen.map((key, index) => ({ name: key, value: acc[key], percent: (acc[key] / total).toFixed(2) }));
 
         if (others > 0) {
-            let othersData = (sortedKeys.slice(10) || []).map((key, index) => ({ name: key, value: acc[key], percent: acc[key] / total }));
+            let othersData = sortedKeys.slice(10).map((key, index) => ({ name: key, value: acc[key], percent: acc[key] / total }));
             let topTenOthers = othersData.slice(0, 10);
             let restOfOthers = othersData.slice(10).reduce((a, b) => a + b.value, 0);
 
             topTenOthers.push({ name: OTHERS_CATEGORY, value: restOfOthers, percent: restOfOthers / total });
             formattedData.push({ name: OTHERS_CATEGORY, value: others, percent: others / total, data: topTenOthers });
         }
-
-        console.log(formattedData)
 
         return formattedData;
     };
@@ -64,20 +49,12 @@ const DeputyAnalytics = ({ data }) => {
             data.filter(item => {
                 let mes = ("0" + item.mes).slice(-2);
                 let ano = ("0000" + item.ano).slice(-4);
-                return (selectedMonth === 'Todos' || ano + '-' + mes === selectedMonth);
+                return (selectedMonth === 'Todos' || ano + '-' + mes === selectedMonth) &&
+                    (selectTipoDespesa === 'Todos' || item.tipoDespesa === selectTipoDespesa);
             })
         );
         setDataToDisplay(aggregatedData);
-    }, [data, selectedMonth]);
-
-    useEffect(() => {
-        const aggregatedData = aggregateData(
-            data.filter(item => {
-                return (selectTipoDespesa === 'Todos' || item.tipoDespesa === selectTipoDespesa);
-            })
-        );
-        setDataToDisplay(aggregatedData);
-    }, [data, selectTipoDespesa]);
+    }, [data, selectedMonth, selectTipoDespesa]);
 
     const onClick = (_, index) => {
         if (dataToDisplay[index].name === OTHERS_CATEGORY) {
@@ -98,13 +75,11 @@ const DeputyAnalytics = ({ data }) => {
         }
     };
 
-    console.log(dataToDisplay);
-
     return (
-        <Container className='mt-3'>
+        <Container className='mt-1'>
             <Row>
                 <Col>
-                    <Card className="mb-4">
+                    <Card className="mb-0">
                         <Card.Body>
                             <Form>
                                 <Form.Group as={Row} controlId="formMonth">
@@ -121,7 +96,7 @@ const DeputyAnalytics = ({ data }) => {
                     </Card>
                 </Col>
                 <Col>
-                    <Card className="mb-4">
+                    <Card className="mb-3">
                         <Card.Body>
                             <Form>
                                 <Form.Group as={Row} controlId="formTipoDespesa">
@@ -139,33 +114,36 @@ const DeputyAnalytics = ({ data }) => {
                 </Col>
             </Row>
 
-            <Col>
-                <ResponsiveContainer className='mb-4' width="100%" height={400}>
-                    <PieChart fontSize='60%'>
+            <Col className='chart'>
+                <ResponsiveContainer className='mt-0' >
+                    <PieChart fontSize='50%' className='mt-4 mb-4'>
                         <Pie
                             data={dataToDisplay.map(item => ({ name: item.name + ' | R$', value: Number(item.value) }))}
                             dataKey="value"
                             nameKey="name"
-                            cx="40%"
-                            cy="40%"
+                            cx="50%"
+                            cy="50%"
                             isAnimationActive={false}
                             outerRadius={'50%'}
+                            innerRadius={'5%'}
                             fill="#8884d8"
-                            label={
-                                ({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`
-                            }
+                            label={({ name, percent }) => {
+                                let maxLength = 20;
+                                let displayText = name.length > maxLength ? name.slice(0, maxLength) + '...' : name;
+                                return `${displayText}: ${(percent * 100).toFixed(0)}%`;
+                            }}
+                            labelLine={true}
                             onClick={onClick}
                         >
                             {dataToDisplay.map((entry, index) => <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />)}
                         </Pie>
                         <Tooltip />
-                        <Legend iconSize={6} />
                     </PieChart>
                 </ResponsiveContainer>
 
                 <Row className='justify-content-center mt-2'>
                     <Col>
-                        <Card className="mb-4">
+                        <Card className="mb-0">
                             <Card.Body>
                                 <Button variant="primary" onClick={resetData} block>
                                     Reset do gráfico
@@ -174,7 +152,7 @@ const DeputyAnalytics = ({ data }) => {
                         </Card>
                     </Col>
                     <Col>
-                        <Card className="mb-4">
+                        <Card className="mb-0">
                             <Card.Body>
                                 <Button
                                     variant="primary"

@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { Container, Card, Table, Button, Row, Col, Form } from 'react-bootstrap';
+import { Container, Card, Button, Row, Col, Form } from 'react-bootstrap';
 import './ExpenseAnalytics.css';
 
 const OTHERS_CATEGORY = 'Outros';
@@ -154,7 +154,7 @@ const ExpenseAnalytics = ({ data }) => {
                                     <Pie
                                         dataKey="value"
                                         isAnimationActive={true}
-                                            data={dataToDisplay.map(item => ({ ...item, name: (item.name || item.party) + ' | R$' })) || []}
+                                        data={dataToDisplay.map(item => ({ ...item, name: (item.name || item.party) + ' | R$' })) || []}
                                         cx="50%"
                                         cy="50%"
                                         outerRadius={'50%'}
@@ -169,7 +169,6 @@ const ExpenseAnalytics = ({ data }) => {
                                         }
                                     </Pie>
                                     <Tooltip formatter={(value, name) => [value, name]} />
-                                    <Legend iconSize={6} formatter={(value, entry) => partyColors(entry.party) || entry.party || value} />
                                 </PieChart>
                             </ResponsiveContainer>
 
@@ -200,8 +199,6 @@ const ExpenseAnalytics = ({ data }) => {
                             </Row>
                         </Container>
                     )}
-
-
                 </Col>
             </Row>
         </Container>

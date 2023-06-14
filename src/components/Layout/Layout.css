@@ -1,20 +1,38 @@
+html,
 body {
-  font-family: 'Roboto', Arial, sans-serif;
-  color: #333;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: -1;
+  background: url("../../../public/deputados_gpt_1.webp") center center / cover no-repeat fixed;
+  opacity: 0.32;
+}
+
+.App {
+  position: relative;
+  width: 100vw;
+  height: auto;
+  /* Altere isso de 100vh para auto */
+  overflow: auto;
+  /* Remova a cor de fundo semitransparente para o conteúdo */
 }
 
 .container-fluid {
-  padding: 0;
+  padding: 3;
 }
 
 .navbar {
   padding: 0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.navbar-footer {
-  height: 1px;
-  margin: 0 auto;
 }
 
 .navbar-brand-home {
@@ -26,5 +44,25 @@ body {
 }
 
 .navbar-brand-home:hover {
-  color: #ff5722 !important;
+  color: #ff5722;
+}
+
+.App {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: auto;
+}
+
+.BackgroundImage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.25;
+  z-index: -1;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }

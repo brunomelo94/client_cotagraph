@@ -4,7 +4,7 @@ import { DirectedGraph } from 'graphology';
 import NodeDetails from '../NodeDetails/NodeDetails';
 import EdgeDetails from '../EdgeDetails/EdgeDetails';
 import axios from 'axios';
-import { Container, Card, Button, Row, Col, Alert } from 'react-bootstrap';
+import { Container, Card, Button, Row, Col, Alert, Image } from 'react-bootstrap';
 
 import './Graph.css';
 import './Legendas.css'
@@ -147,7 +147,7 @@ const Graph = ({ year, month, submitClicked }) => {
                 y: nodePosition.y,
                 ratio: 0.3678,
             }, {
-                duration: 450
+                duration: 850
             });
 
             renderer.refresh();
@@ -274,7 +274,7 @@ const Graph = ({ year, month, submitClicked }) => {
                 y: nodePosition.y,
                 ratio: 0.01
             }, {
-                duration: 500
+                duration: 850
             });
         } else {
             // Embed bootstrap alert
@@ -302,7 +302,7 @@ const Graph = ({ year, month, submitClicked }) => {
                 y: nodePosition.y,
                 ratio: 0.01
             }, {
-                duration: 500
+                duration: 850
             });
         } else {
             // Embed bootstrap alert
@@ -429,7 +429,6 @@ const Graph = ({ year, month, submitClicked }) => {
 
     return (
         <Container>
-
             {(isLoading) ? (
                 <img src="..\Loading_icon.gif" alt="Loading" className="loading-gif" /> // Loading gif
             ) : graphNotFound ? (

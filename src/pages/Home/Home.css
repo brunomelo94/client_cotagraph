@@ -7,30 +7,11 @@
     z-index: 1;
 }
 
-/* Background image should be always screen size independent of quantity of content */
-.BackgroundImage {
-    position: absolute;
-    min-height: 200vh;
-    opacity: 0.25;
-    z-index: -1;
-    /* width: 100%; */
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
+.HiddenImage {
+    opacity: 0 !important;
 }
 
-.Home-title {
-    font-size: 2em;
-    font-weight: 500;
-    color: #343a40;
-    margin-bottom: 2em;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    padding-top: 1em;
-    z-index: 1;
-}
-
+.Home-title,
 .Piada-title {
     font-size: 2em;
     font-weight: 500;
@@ -50,8 +31,9 @@
     padding-bottom: 1em;
 }
 
-.Button {
-    background-color: #343a40;
+.Button,
+.Form-button {
+    /* background-color: #0080ff; */
     border: none;
     border-radius: 5px;
     padding: 10px 20px;
@@ -79,4 +61,48 @@
     z-index: 1;
     text-align: center;
     margin-top: 1em;
+}
+
+@media (max-width: 600px) {
+
+    .Home-title,
+    .Piada-title {
+        font-size: 1em;
+        margin-bottom: 1em;
+        z-index: 1;
+    }
+
+    .Form {
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 1em;
+        z-index: 1;
+    }
+
+    .Button {
+        margin-top: 1em;
+        z-index: 1;
+    }
+}
+
+@media (max-width: 400px) {
+
+    .Home-title,
+    .Piada-title {
+        font-size: 1.2em;
+        margin-bottom: 1em;
+        z-index: 1;
+    }
+
+    .Form {
+        width: 80%;
+        max-width: 100%;
+        margin-bottom: 1em;
+        z-index: 1;
+    }
+
+    .Button {
+        margin-top: 1em;
+        z-index: 1;
+    }
 }

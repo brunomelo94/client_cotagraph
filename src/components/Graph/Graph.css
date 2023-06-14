@@ -29,23 +29,6 @@
     font-size: 12px;
 }
 
-/* Background image should be always screen size independent of quantity of content */
-.BackgroundImage {
-    position: absolute;
-    min-height: 200vh;
-    opacity: 0.25;
-    z-index: -1;
-    width: 100%;
-    max-width: 100%;
-    min-width: 100%;
-    height: auto;
-    min-height: 100%;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-}
-
 .GraphSearch {
     position: absolute;
     top: 0;

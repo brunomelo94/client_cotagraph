@@ -55,10 +55,6 @@ const Home = () => {
 
     return (
         <Container>
-            <Image
-                src={backgroundImage} fluid
-                className='BackgroundImage'
-            />
             <Row>
                 <Container className="Home" fluid>
                     <Row className="justify-content-md-center">
@@ -67,7 +63,7 @@ const Home = () => {
                     </Row>
                     <Row className="justify-content-md-center mb-5">
                         <h7 className='pl-5 pr-5' style={{ color: '#a6703d' }}>
-                            🙈conheça o perfil dos gastos de <b><u>seus</u></b>  deputados🙉
+                            conheça o perfil dos gastos de <b><u>seus</u></b>  deputados
                         </h7>
                     </Row>
                     <Row>
@@ -117,7 +113,6 @@ const Home = () => {
             </Row>
             <Row>
                 {showGraph && <Graph year={year} month={month} submitClicked={submitClicked} />}
-
             </Row>
         </Container>
 

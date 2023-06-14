@@ -272,7 +272,7 @@ const Graph = ({ year, month, submitClicked }) => {
             camera.animate({
                 x: nodePosition.x,
                 y: nodePosition.y,
-                ratio: 0.005
+                ratio: 0.01
             }, {
                 duration: 500
             });
@@ -300,7 +300,7 @@ const Graph = ({ year, month, submitClicked }) => {
             camera.animate({
                 x: nodePosition.x,
                 y: nodePosition.y,
-                ratio: 0.005
+                ratio: 0.01
             }, {
                 duration: 500
             });
@@ -360,7 +360,7 @@ const Graph = ({ year, month, submitClicked }) => {
     const ColorLegendDespesas = () => {
         return (
             <Container className="mt-2 mb-5 legenda">
-                <Card className="title">As cores representam os tipos de despesas e abaixo o valor total para mês selecionado
+                <Card className="title">As cores representam os tipos de despesas e abaixo o valor total para o mês selecionado:
 
                 </Card>
                 <DespesasButtons />

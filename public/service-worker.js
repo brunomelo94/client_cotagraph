@@ -1,7 +1,9 @@
+const CACHE_NAME = 'app-v' + new Date().getTime();
+
 /* eslint-disable no-restricted-globals */
 self.addEventListener('install', function (event) {
     event.waitUntil(
-        caches.open('app-v1').then(function (cache) {
+        caches.open(CACHE_NAME).then(function (cache) {
             return cache.addAll([
                 '/index.html',
                 '/static/js/main.js',
@@ -23,7 +25,7 @@ self.addEventListener('fetch', function (event) {
             } else {
                 return fetch(event.request)
                     .then(function (res) {
-                        return caches.open('app-v1')
+                        return caches.open(CACHE_NAME)
                             .then(function (cache) {
                                 cache.put(event.request.url, res.clone());
                                 return res;
@@ -31,5 +33,20 @@ self.addEventListener('fetch', function (event) {
                     })
             }
         })
+    );
+});
+
+self.addEventListener('activate', event => {
+    const cacheWhitelist = [CACHE_NAME];
+    event.waitUntil(
+        caches.keys().then(cacheNames =>
+            Promise.all(
+                cacheNames.map(cacheName => {
+                    if (!cacheWhitelist.includes(cacheName)) {
+                        return caches.delete(cacheName);
+                    }
+                })
+            )
+        )
     );
 });

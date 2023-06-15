@@ -62,7 +62,7 @@ const DeputyDetails = () => {
     }, [id, expenses]);
 
     if (!deputy) {
-        return <div>Loading...</div>;
+        return <div>Carregando...</div>;
     }
 
     const handleFilterChange = (e) => {

@@ -397,8 +397,8 @@ const Graph = ({ year, month, submitClicked }) => {
                 justifyContent: "center",
                 alignItems: "center",
             }}>
-                <Button style={{ margin: "10px" }} onClick={ativarTodos}>Ativar todos</Button>
-                <Button style={{ margin: "10px" }} onClick={desativarTodos}>Desativar todos</Button>
+                <Button style={{ margin: "10px" }} onClick={ativarTodos}>Ativar todas arestas</Button>
+                <Button style={{ margin: "10px" }} onClick={desativarTodos}>Desativar todas arestas</Button>
             </div>
         )
     };

@@ -66,11 +66,11 @@ const Home = () => {
                             conheça o perfil dos gastos de <b><u>seus</u></b>  deputados
                         </h7>
                     </Row>
-                    <Row>
+                    <Row className="justify-content-md-center">
                         <Form onSubmit={handleSubmit} className="Form">
                             <Row>
-                                <Col md={4}>
-                                    <Form.Group controlId="year">
+                                <Col>
+                                    <Form.Group controlId="year" className="custom-form-group">
                                         <Form.Label>Selecione o Ano</Form.Label>
                                         <Form.Control
                                             as="select"
@@ -85,8 +85,8 @@ const Home = () => {
                                         </Form.Control>
                                     </Form.Group>
                                 </Col>
-                                <Col md={4}>
-                                    <Form.Group controlId="month">
+                                <Col>
+                                    <Form.Group controlId="month" className="custom-form-group">
                                         <Form.Label>Selecione o Mês</Form.Label>
                                         <Form.Control
                                             as="select"
@@ -101,8 +101,10 @@ const Home = () => {
                                         </Form.Control>
                                     </Form.Group>
                                 </Col>
-                                <Col md={4} className="d-flex align-items-end">
-                                    <Button className="Form-button" type="submit">
+                            </Row>
+                            <Row className="justify-content-md-center">
+                                <Col>
+                                    <Button type="submit" className='mt-3' variant="primary" block>
                                         Visualizar Gastos!
                                     </Button>
                                 </Col>
@@ -115,7 +117,6 @@ const Home = () => {
                 {showGraph && <Graph year={year} month={month} submitClicked={submitClicked} />}
             </Row>
         </Container>
-
     );
 };
 

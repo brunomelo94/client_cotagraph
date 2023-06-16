@@ -5,11 +5,52 @@ import NodeDetails from '../NodeDetails/NodeDetails';
 import EdgeDetails from '../EdgeDetails/EdgeDetails';
 import axios from 'axios';
 import { Container, Card, Button, Row, Col, Alert, Image } from 'react-bootstrap';
+import Select from 'react-select';
 
 import './Graph.css';
 import './Legendas.css'
 
 const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
+
+// const getDeputyNodeColor = (party) => {
+//     const partyColors = {
+//         'PT': '#FF0000',
+//         'PSDB': '#0000FF',
+//         'PSOL': '#F66C0D',
+//         'PSB': '#00FF00',
+//         'DEM': '#FFFF00',
+//         'MDB': '#00FFFF',
+//         'PP': '#7A3E9D',
+//         'PDT': '#83258D',
+//         'PL': '#4B0082',
+//         'PSC': '#2E8B57',
+//         'PSD': '#008080',
+//         'PTB': '#483D8B',
+//         'PV': '#32CD32',
+//         'REPUBLICANOS': '#DC143C',
+//         'SOLIDARIEDADE': '#8B4513',
+//         'AVANTE': '#FFD700',
+//         'CIDADANIA': '#FF4500',
+//         'PATRI': '#8A2BE2',
+//         'PODE': '#20B2AA',
+//         'PROS': '#228B22',
+//         'PRTB': '#800000',
+//         'PSL': '#DAA520',
+//         'PTC': '#D2691E',
+//         'REDE': '#B22222',
+//         'S.PART.': '#FFA07A',
+//         'PCdoB': '#FF6347',
+//         'PMB': '#8B008B',
+//         'PMN': '#006400',
+//         'PPL': '#ADFF2F',
+//         'PR': '#7FFF00',
+//         'PRB': '#7CFC00',
+//         'PRP': '#00FA9A',
+//         'PSDC': '#4682B4'
+//     };
+
+//     return partyColors[party || 'Outros'] || '#000000';
+// };
 
 const Graph = ({ year, month, submitClicked }) => {
     const containerRef = useRef();
@@ -28,9 +69,25 @@ const Graph = ({ year, month, submitClicked }) => {
         selectedNode: '',
         hoveredNeighbors: [],
     });
+
     const [colorTiposDespesa, setColorTiposDespesa] = useState({});
+
     const [tipoDeDespesasAtivas, setTipoDeDespesasAtivas] = useState({});
-    const [todosDesativados, setTodosDesativados] = useState(false);
+    const [todasDespesasDesativadas, setTodasDespesasDesativadas] = useState(false);
+
+    // const [partidosAtivos, setPartidosAtivos] = useState({});
+    // const [todosPartidosDesativados, setTodosPartidosDesativados] = useState(false);
+
+
+    // const partyNames = ['PT', 'PSDB', 'PSOL', 'PSB', 'DEM', 'MDB', 'PP', 'PDT', 'PL', 'PSC', /*... mais partidos*/];
+    // const colorPartidos = {};
+
+    // partyNames.forEach(party => {
+    //     colorPartidos[party] = {
+    //         // valorTotal: getPartyTotalExpenses(party), // função fictícia para ilustrar, você precisará de uma função real para obter o valor total das despesas de cada partido
+    //         color: getDeputyNodeColor(party)
+    //     }
+    // });
 
 
     useEffect(() => {
@@ -59,9 +116,32 @@ const Graph = ({ year, month, submitClicked }) => {
                         }
                     }, {});
 
+                    // const colorByPartidos = response.data.nodes.reduce((acc, node) => {
+                    //     if (node.attributes.deputy) {
+                    //         if (node.attributes.deputy.party in acc) {
+                    //             return acc;
+                    //         } else {
+                    //             acc[node.attributes.deputy.party] = {
+                    //                 color: node.attributes && node.attributes.color,
+                    //             };
+                    //             return acc;
+                    //         }
+                    //     } else {
+                    //         return acc;
+                    //     }
+                    // }, {});
+
                     response.data.nodes.forEach(node => {
                         if (node.attributes.fornecedor) {
+                            // Valor total de despesas por tipo de despesa
                             colorByDespesas[node.attributes.fornecedor.tipoDespesa]['valorTotal'] = (Number(colorByDespesas[node.attributes.fornecedor.tipoDespesa]['valorTotal'] || 0) + node.attributes.payments.reduce((acc, payment) => acc + Number(payment.valorDocumento), 0)).toFixed(2);
+
+                            // // Valor total de despesas por partido
+                            // colorByPartidos[node.attributes.deputy.party]['valorTotal'] = (Number(colorByPartidos[node.attributes.deputy.party]['valorTotal'] || 0) + node.attributes.payments.reduce((acc, payment) => {
+                            //     if (payment.deputy) {
+                            //         let deputy = response.data.nodes
+                            //     }
+                            // } , 0)).toFixed(2);
                         }
                     });
 
@@ -137,6 +217,8 @@ const Graph = ({ year, month, submitClicked }) => {
             }));
 
             setSelectedNode(nodeData);
+
+            console.log(nodeData);
 
             const nodePosition = renderer.getNodeDisplayData(nodeData.deputy ? nodeData.deputy.id : nodeData.fornecedor.cnpjCpfFornecedor);
 
@@ -249,8 +331,42 @@ const Graph = ({ year, month, submitClicked }) => {
             return res;
         });
 
+        //Esconder nós que o tipo de despesa não está ativo
+        sigmaRenderer.setSetting("nodeReducer", (node, data) => {
+            const res = { ...data };
+
+            if (res.fornecedor && tipoDeDespesasAtivas) {
+                if (tipoDeDespesasAtivas[String(res.fornecedor.tipoDespesa)]) {
+                    res.hidden = false;
+                } else {
+                    res.hidden = true;
+                }
+            }
+            return res;
+        });
+
         sigmaRenderer.refresh();
     }, [tipoDeDespesasAtivas, rendererState]);
+
+    // useEffect(() => {
+    //     if (!sigmaRenderer || selectedNode) return;
+
+    //     sigmaRenderer.setSetting("nodeReducer", (node, data) => {
+    //         const res = { ...data };
+
+    //         if (partidosAtivos) {
+    //             if (partidosAtivos[res.deputy && res.deputy.party]) {
+    //                 res.hidden = false;
+    //             } else {
+    //                 res.hidden = true;
+    //             }
+    //         }
+    //         return res;
+    //     });
+
+    //     sigmaRenderer.refresh();
+    // }, [partidosAtivos, rendererState]);
+
 
     const totalDespesas = Object.values(colorTiposDespesa).reduce((acc, curr) => Number(acc || 0) + Number(curr.valorTotal || 0), 0);
 
@@ -277,7 +393,6 @@ const Graph = ({ year, month, submitClicked }) => {
                 duration: 850
             });
         } else {
-            // Embed bootstrap alert
             alert('Deputado não encontrado');
         }
     };
@@ -305,7 +420,6 @@ const Graph = ({ year, month, submitClicked }) => {
                 duration: 850
             });
         } else {
-            // Embed bootstrap alert
             alert('Fornecedor não encontrado');
         }
     };
@@ -321,8 +435,20 @@ const Graph = ({ year, month, submitClicked }) => {
         setSelectedEdge(null);
     };
 
+
+    const ToggleDespesaButton = React.memo(({ tipoDespesa, isActive, toggleDespesa }) => (
+        <Row className="justify-content-md-center">
+            <Button size="sm" onClick={(event) => {
+                event.preventDefault();
+                toggleDespesa(tipoDespesa);
+            }} variant={isActive ? "primary" : "secondary"}>
+                {isActive ? "Ligado" : "Desligado"}
+            </Button>
+        </Row>
+    ));
+
     //** INIT - Legendas, controladores de legenda e de arestas e despesas **//
-    const mapTiposDespesa = (colorTiposDespesa, todosDesativados, tipoDeDespesasAtivas, totalDespesas) => {
+    const mapTiposDespesa = (colorTiposDespesa, todasDespesasDesativadas, tipoDeDespesasAtivas, totalDespesas) => {
         return Object.entries(colorTiposDespesa)
             .sort((a, b) => b[1].valorTotal - a[1].valorTotal)
             .map(([tipoDespesa, corValor], index) => {
@@ -337,7 +463,7 @@ const Graph = ({ year, month, submitClicked }) => {
 
                 return (
                     <Col key={index} className="legendaItem">
-                        <div className="legendaColor" style={{ backgroundColor: todosDesativados ? 'transparent' : (tipoDeDespesasAtivas[tipoDespesa] ? corValor.color : 'transparent') }}>
+                        <div className="legendaColor" style={{ backgroundColor: todasDespesasDesativadas ? 'transparent' : (tipoDeDespesasAtivas[tipoDespesa] ? corValor.color : 'transparent') }}>
                             {tipoDespesa}
                         </div>
                         <div className="valorInfo">
@@ -348,7 +474,7 @@ const Graph = ({ year, month, submitClicked }) => {
 
                             <ToggleDespesaButton
                                 tipoDespesa={tipoDespesa}
-                                isActive={!todosDesativados && tipoDeDespesasAtivas[tipoDespesa]}
+                                isActive={!todasDespesasDesativadas && tipoDeDespesasAtivas[tipoDespesa]}
                                 toggleDespesa={toggleDespesa}
                             />
                         </div>
@@ -360,35 +486,62 @@ const Graph = ({ year, month, submitClicked }) => {
     const ColorLegendDespesas = () => {
         return (
             <Container className="mt-2 mb-5 legenda">
-                <Card className="title">As cores representam os tipos de despesas e abaixo o valor total para o mês selecionado:
-
+                <Card className="title">As cores representam os tipos de despesas e abaixo delas o valor total para o mês selecionado -- o tamanho do nó dos deputados é constante em contraste aos das empresas beneficiárias em que o tamanho do nó é proporcional ao logaritmo na base 10 do valor total das despesas para o mês selecionado.
                 </Card>
                 <DespesasButtons />
                 <Row className="legendaContainer">
-                    {mapTiposDespesa(colorTiposDespesa, todosDesativados, tipoDeDespesasAtivas, totalDespesas)}
+                    {mapTiposDespesa(colorTiposDespesa, todasDespesasDesativadas, tipoDeDespesasAtivas, totalDespesas)}
                 </Row>
             </Container>
         )
     };
-
-    const ToggleDespesaButton = React.memo(({ tipoDespesa, isActive, toggleDespesa }) => (
-        <Row className="justify-content-md-center">
-            <Button size="sm" onClick={(event) => {
-                event.preventDefault();
-                toggleDespesa(tipoDespesa);
-            }} variant={isActive ? "primary" : "secondary"}>
-                {isActive ? "Ligado" : "Desligado"}
-            </Button>
-        </Row>
-    ));
 
     const toggleDespesa = (tipoDespesa) => {
         setTipoDeDespesasAtivas(prevTipoDeDespesasAtivas => ({
             ...prevTipoDeDespesasAtivas,
             [tipoDespesa]: !prevTipoDeDespesasAtivas[tipoDespesa]
         }));
-        setTodosDesativados(false);
+        setTodasDespesasDesativadas(false);
     };
+
+    // const togglePartido = (partido) => {
+    //     setPartidosAtivos(prevPartidosAtivos => ({
+    //         ...prevPartidosAtivos,
+    //         [partido]: !prevPartidosAtivos[partido]
+    //     }));
+    // };
+
+
+    // const TogglePartidoButton = React.memo(({ partido, isActive, togglePartido }) => (
+    //     <Row className="justify-content-md-center">
+    //         <Button size="sm" onClick={(event) => {
+    //             event.preventDefault();
+    //             togglePartido(partido);
+    //         }} variant={isActive ? "primary" : "secondary"}>
+    //             {isActive ? "Ligado" : "Desligado"}
+    //         </Button>
+    //     </Row>
+    // ));
+
+    // const mapPartidos = (colorPartidos, partidosAtivos) => {
+    //     return Object.entries(colorPartidos)
+    //         .map(([partido, corValor], index) => {
+    //             return (
+    //                 <Col key={index} className="legendaItem">
+    //                     <div className="legendaColor" style={{ backgroundColor: partidosAtivos[partido] ? corValor.color : 'transparent' }}>
+    //                         {partido}
+    //                     </div>
+    //                     <div className="valorInfo">
+    //                         <TogglePartidoButton
+    //                             partido={partido}
+    //                             isActive={partidosAtivos[partido]}
+    //                             togglePartido={togglePartido}
+    //                         />
+    //                     </div>
+    //                 </Col>
+    //             )
+    //         })
+    // }
 
     const DespesasButtons = () => {
         return (
@@ -397,8 +550,8 @@ const Graph = ({ year, month, submitClicked }) => {
                 justifyContent: "center",
                 alignItems: "center",
             }}>
-                <Button style={{ margin: "10px" }} onClick={ativarTodos}>Ativar todas arestas</Button>
-                <Button style={{ margin: "10px" }} onClick={desativarTodos}>Desativar todas arestas</Button>
+                <Button style={{ margin: "10px" }} onClick={ativarTodos}>Ativar todas arestas (tipos de despesas)</Button>
+                <Button style={{ margin: "10px" }} onClick={desativarTodos}>Desativar todas arestas (tipos de despesas)</Button>
             </div>
         )
     };
@@ -411,7 +564,7 @@ const Graph = ({ year, month, submitClicked }) => {
             }
             return newObject;
         });
-        setTodosDesativados(false);
+        setTodasDespesasDesativadas(false);
     };
 
     const desativarTodos = () => {
@@ -422,10 +575,26 @@ const Graph = ({ year, month, submitClicked }) => {
             }
             return newObject;
         });
-        setTodosDesativados(true);
+        setTodasDespesasDesativadas(true);
     };
 
-    //** END - Legendas, controladores de legenda e de arestas e despesas **//
+    const customStyles = {
+        control: (provided) => ({
+            ...provided,
+            // padding: '0.2em 0.1em',
+            // border: '0.1em solid #cccccc',
+            borderRadius: '2em',
+            fontSize: '1em',
+            width: '90%',
+            height: '2vh',
+            maxWidth: '17em',
+        }),
+        option: (provided) => ({
+            ...provided,
+            fontSize: '1em',
+        }),
+    };
+
 
     return (
         <Container>
@@ -435,55 +604,49 @@ const Graph = ({ year, month, submitClicked }) => {
                 <Alert variant="danger">
                     <Alert.Heading>Grafo não encontrado 😢!</Alert.Heading>
                 </Alert>
-            ) : containerRef && (
+            ) : graphData && (
                 <Row className="justify-content-md-center">
 
                     <Row className="justify-content-md-center">
                         <ColorLegendDespesas />
+                        {/* {mapPartidos(colorPartidos, partidosAtivos)} */}
                     </Row>
 
                     <Row className="GraphContainer">
-                        <Row className="justify-content-md-center">
-                            <div className="GraphSearch">
-                                <select
+                        <Col className="SearchContainer">
+                            <div className="GraphSearchDeputy">
+                                <Select
+                                    styles={customStyles}
                                     className="GraphSearch-input"
                                     value={searchValueDeputy}
-                                    onChange={(e) => setSearchValueDeputy(e.target.value)}
-                                >
-                                    {valueOptionsDeputies.map((value, index) => (
-                                        <option key={index} value={value}>
-                                            {value}
-                                        </option>
-                                    ))}
-                                </select>
+                                    onChange={(selectedOption) => setSearchValueDeputy(selectedOption.value)}
+                                    options={valueOptionsDeputies.map(value => ({ value, label: value }))}
+                                    isSearchable
+                                />
                                 <button className="GraphSearch-button" onClick={handleSearchDeputy}>
                                     Buscar
                                 </button>
                             </div>
-                        </Row>
+                        </Col>
 
                         <Row ref={containerRef} className="Graph">
                         </Row>
 
-                        <Row className="justify-content-md-center">
+                        <Col className="SearchContainer">
                             <div className="GraphSearchFornecedor">
-                                <select
+                                <Select
+                                    styles={customStyles}
                                     className="GraphSearch-input"
                                     value={searchValueFornecedor}
-                                    onChange={(e) => setSearchValueFornecedor(e.target.value)}
-                                >
-                                    {valueOptionsFornecedor.map((value, index) => (
-                                        <option key={index} value={value}>
-                                            {value}
-                                        </option>
-                                    ))}
-                                </select>
+                                    onChange={(selectedOption) => setSearchValueFornecedor(selectedOption.value)}
+                                    options={valueOptionsFornecedor.map(value => ({ value, label: value }))}
+                                    isSearchable
+                                />
                                 <button className="GraphSearch-button" onClick={handleSearchFornecedor}>
                                     Buscar
                                 </button>
                             </div>
-                        </Row>
-
+                        </Col>
                     </Row>
 
                     {/* <Row> */}
@@ -503,6 +666,8 @@ const Graph = ({ year, month, submitClicked }) => {
         </Container>
     );
 };
+
+
 
 
 export default Graph;

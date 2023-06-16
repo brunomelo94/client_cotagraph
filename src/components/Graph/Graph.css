@@ -1,11 +1,17 @@
 .GraphContainer {
     position: relative;
-    padding: 2em;
+    padding: 1em;
     padding-bottom: 4rem;
     min-height: 10vh;
     border-radius: 2em;
-    min-width: 1em;
-    min-height: 1em;
+    /* overflow: auto; */
+}
+
+.SearchContainer {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 0.3em;
 }
 
 .Graph {
@@ -17,6 +23,7 @@
     border-radius: 2em;
     box-shadow: 0 0.5em 1em rgba(0, 0, 0, 0.1);
     padding-bottom: 0;
+    /* overflow: auto; */
 }
 
 .sigma-tooltip {
@@ -29,27 +36,22 @@
     font-size: 12px;
 }
 
-.GraphSearch {
-    position: absolute;
-    top: 0;
-    z-index: 10;
-    padding: 0.2%;
+.GraphSearchDeputy,
+.GraphSearchFornecedor {
+    width: 50%;
+    max-width: 600px;
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    /* Add display flex to align input and button properly */
-    width: 100%;
+    padding: 0.5em;
+    border-radius: 2em;
+    /* flex-direction: column; */
+    align-items: center;
+    /* background-color: rgba(255, 255, 255, 0.3); */
 }
 
 .GraphSearchFornecedor {
-    position: absolute;
-    z-index: 10;
-    /* top: 0; */
-    /* left: 53.5em; */
-    padding: 0.2%;
-    display: flex;
-    align-items: center;
-    /* Add display flex to align input and button properly */
-    width: 100%;
+    margin-bottom: 1em;
 }
 
 .GraphCard {
@@ -64,35 +66,33 @@
     box-shadow: 0 1em 2em rgba(0, 0, 0, 0.1);
 }
 
+.GraphSearch-input,
+.GraphSearch-button {
+    height: 40px;
+}
+
 .GraphSearch-input {
-    flex: auto;
-    margin-right: 0.1em;
-    padding: 0.2em 0.1em;
-    border: 0.1em solid #cccccc;
-    border-radius: 2em;
-    font-size: 1em;
-    width: 100%;
-    max-width: 17em;
+    flex: 1;
+    margin-right: 0.5em;
+    padding: 0.5em;
+    border: none;
+    margin-bottom: 1em;
+    /* border-radius: 2em; */
+    /* box-shadow: 0 0.5em 1em rgba(0, 0, 0, 0.1); */
 }
 
 .GraphSearch-button {
     background-color: #007bff;
-    /* Set button background color */
     color: #ffffff;
-    padding: auto;
     border: none;
-    border-radius: 1em;
+    border-radius: 2em;
     cursor: pointer;
-    font-size: 1em;
-    /* Corrigindo valor da font-size */
-    transition: background-color 1s;
-    width: 100%;
-    max-width: 4em;
+    padding: 0 1em;
+    transition: background-color 0.3s;
 }
 
 .GraphSearch-button:hover {
     background-color: #0056b3;
-    /* Change background color on hover */
 }
 
 .GraphSearch-select {

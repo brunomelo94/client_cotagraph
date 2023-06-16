@@ -1,6 +1,6 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { Container, Card, Table, Button, Row, Col, Form } from 'react-bootstrap';
+import { Container, Card, Button, Row, Col, Form } from 'react-bootstrap';
 import './ExpenseAnalytics.css';
 
 const OTHERS_CATEGORY = 'Outros';
@@ -14,6 +14,16 @@ const ExpenseAnalytics = ({ data }) => {
     const [othersData, setOthersData] = useState(null);
     const [dataToDisplay, setDataToDisplay] = useState([]);
     const [history, setHistory] = useState([]);
+    const scrollContainerRef = useRef(null);
+
+    const scrollToMiddle = () => {
+        const scrollContainer = scrollContainerRef.current;
+        if (scrollContainer) {
+            const scrollWidth = scrollContainer.scrollWidth;
+            const middleScrollPosition = scrollWidth / 4;
+            scrollContainer.scrollTo(middleScrollPosition, 0);
+        }
+    };
 
     const aggregateData = (data, filterBy) => {
         let acc = {};
@@ -69,6 +79,7 @@ const ExpenseAnalytics = ({ data }) => {
             filterBy
         );
         setDataToDisplay(aggregatedData);
+        scrollToMiddle();
     }, [data, selectedMonth, selectedParty, filterBy]);
 
     const onClick = (_, index) => {
@@ -92,6 +103,7 @@ const ExpenseAnalytics = ({ data }) => {
             setDataToDisplay(history[history.length - 1]);
             setHistory(history.slice(0, -1));
         }
+        scrollToMiddle();
     };
 
     return (
@@ -149,10 +161,9 @@ const ExpenseAnalytics = ({ data }) => {
                         </div>
                     ) : (
                         <Container>
-
-                            <Row style={{ overflowX: 'scroll' }} className='justify-content-center'>
-                                <ResponsiveContainer width={800} className='mt-0' height={400} overflowX={'scroll'}>
-                                    <PieChart fontSize='70%' className='mt-4 mb-4' width={600} height={300} overflowX={'scroll'}>
+                            <Row ref={scrollContainerRef} style={{ overflowX: 'scroll' }} className='justify-content-center'>
+                                <ResponsiveContainer style={{ overflowX: 'scroll' }} width={800} className='mt-0' height={400} overflowX={'scroll'}>
+                                    <PieChart fontSize='70%' className='mt-4 mb-4' width={800} height={300} overflowX={'scroll'}>
                                         <Pie
                                             dataKey="value"
                                             isAnimationActive={true}

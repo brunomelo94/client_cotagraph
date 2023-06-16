@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { Container, Card, Table, Button, Row, Col, Form } from 'react-bootstrap';
 import './DeputyAnalytics.css';
@@ -13,6 +13,16 @@ const DeputyAnalytics = ({ data }) => {
     const [history, setHistory] = useState([]);
     const [selectedMonth, setSelectedMonth] = useState('Todos');
     const [selectTipoDespesa, setSelectTipoDespesa] = useState('Todos');
+    const scrollContainerRef = useRef(null);
+
+    const scrollToMiddle = () => {
+        const scrollContainer = scrollContainerRef.current;
+        if (scrollContainer) {
+            const scrollWidth = scrollContainer.scrollWidth;
+            const middleScrollPosition = scrollWidth / 4;
+            scrollContainer.scrollTo(middleScrollPosition, 0);
+        }
+    };
 
     const uniqueMonths = useMemo(() => Array.from(new Set(data.map(({ mes, ano }) => `${ano}-${String(mes).padStart(2, '0')}`))), [data]);
     const uniqueTipoDespesa = useMemo(() => Array.from(new Set(data.map(({ tipoDespesa }) => tipoDespesa))), [data]);
@@ -54,6 +64,7 @@ const DeputyAnalytics = ({ data }) => {
             })
         );
         setDataToDisplay(aggregatedData);
+        scrollToMiddle();
     }, [data, selectedMonth, selectTipoDespesa]);
 
     const onClick = (_, index) => {
@@ -61,11 +72,13 @@ const DeputyAnalytics = ({ data }) => {
             setHistory([...history, dataToDisplay]);
             setDataToDisplay(dataToDisplay[index].data);
         }
+        scrollToMiddle();
     }
 
     const resetData = () => {
         setHistory([]);
         setDataToDisplay(aggregateData(data));
+        scrollToMiddle();
     };
 
     const goBack = () => {
@@ -73,6 +86,7 @@ const DeputyAnalytics = ({ data }) => {
             setDataToDisplay(history[history.length - 1]);
             setHistory(history.slice(0, -1));
         }
+        scrollToMiddle();
     };
 
     return (
@@ -114,9 +128,9 @@ const DeputyAnalytics = ({ data }) => {
                 </Col>
             </Row>
 
-            <Row style={{ overflowX: 'scroll' }} className='justify-content-center'>
-                <ResponsiveContainer width={800} className='mt-0' height={400} overflowX={'scroll'}>
-                    <PieChart fontSize='70%' className='mt-4 mb-4' width={600} height={300} overflowX={'scroll'}>
+            <Row ref={scrollContainerRef} style={{ overflowX: 'scroll' }} className='justify-content-center'>
+                <Container width={800} className='mt-0' height={400}>
+                    <PieChart fontSize='60%' className='mt-4 mb-4' width={800} height={300}>
                         <Pie
                             data={dataToDisplay.map(item => ({ name: item.name + ' | R$', value: Number(item.value) }))}
                             dataKey="value"
@@ -138,7 +152,7 @@ const DeputyAnalytics = ({ data }) => {
                         </Pie>
                         <Tooltip />
                     </PieChart>
-                </ResponsiveContainer>
+                </Container>
             </Row>
 
 

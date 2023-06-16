@@ -62,9 +62,13 @@ const Home = () => {
                         {installPromptEvent && <Button className="InstallButton" onClick={handleInstallClick}><i className="fas fa-download"></i> Instale nosso App para acompanhar de perto!</Button>}
                     </Row>
                     <Row className="justify-content-md-center mb-5">
-                        <h7 className='pl-5 pr-5' style={{ color: '#a6703d' }}>
-                            conheça o perfil dos gastos de <b><u>seus</u></b>  deputados
-                        </h7>
+                        <h4 className='pl-4 pr-4' style={{ color: '#000094', fontWeight: 'bold' }}>
+                            Conheça o perfil de gastos dos &nbsp;
+                            <span style={{ color: '#ff0421', fontSize: '1.1em' }}>
+                                <u>seus</u>
+                            </span>
+                            &nbsp; deputados!
+                        </h4>
                     </Row>
                     <Row className="justify-content-md-center">
                         <Form onSubmit={handleSubmit} className="Form">

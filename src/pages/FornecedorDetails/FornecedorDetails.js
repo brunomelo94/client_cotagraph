@@ -181,7 +181,7 @@ const FornecedorDetails = () => {
                                         <tr>
                                             <th>Deputado</th>
                                             <th>Partido</th>
-                                            <th>Tipo</th>
+                                            {/* <th>Tipo</th> */}
                                             <th>Data</th>
                                             <th>Valor</th>
                                             <th>Link Documento</th>
@@ -198,7 +198,7 @@ const FornecedorDetails = () => {
                                                     {expense.deputy}
                                                 </td>
                                                 <td>{expense.party}</td>
-                                                <td>{expense.tipoDespesa}</td>
+                                                {/* <td>{expense.tipoDespesa}</td> */}
                                                 <td>{new Date(expense.dataDocumento).toLocaleDateString()}</td>
                                                 <td>R$ {expense.valorDocumento.toFixed(2)}</td>
                                                 <td><a href={expense.urlDocumento} target="_blank" rel="noreferrer">Link</a></td>

@@ -4,7 +4,7 @@ import { DirectedGraph } from 'graphology';
 import NodeDetails from '../NodeDetails/NodeDetails';
 import EdgeDetails from '../EdgeDetails/EdgeDetails';
 import axios from 'axios';
-import { Container, Card, Button, Row, Col, Alert, Image } from 'react-bootstrap';
+import { Container, Card, Button, Row, Col, Alert } from 'react-bootstrap';
 import Select from 'react-select';
 
 import './Graph.css';
@@ -247,7 +247,7 @@ const Graph = ({ year, month, submitClicked }) => {
             res.hidden = true;
         }
         return res;
-    }, []);
+    }, [tipoDeDespesasAtivas]);
 
     useEffect(() => {
         if (!sigmaRenderer) return;
@@ -266,7 +266,7 @@ const Graph = ({ year, month, submitClicked }) => {
         sigmaRenderer.setSetting("labelRenderedSizeThreshold", 0);
 
         sigmaRenderer.refresh();
-    }, [rendererState]);
+    }, [rendererState, sigmaRenderer, nodeReducer, edgeReducer, tipoDeDespesasAtivas]);
 
     // Esconder arestas que o tipo de despesa não está ativo
     useEffect(() => {
@@ -300,7 +300,7 @@ const Graph = ({ year, month, submitClicked }) => {
         });
 
         sigmaRenderer.refresh();
-    }, [tipoDeDespesasAtivas, rendererState]);
+    }, [tipoDeDespesasAtivas, rendererState, sigmaRenderer, selectedNode]);
 
     // Refresh label size if no node is selected (closed card)
     useEffect(() => {

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Sigma } from 'sigma';
 import { DirectedGraph } from 'graphology';
 import NodeDetails from '../NodeDetails/NodeDetails';
@@ -11,46 +11,6 @@ import './Graph.css';
 import './Legendas.css'
 
 const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
-
-// const getDeputyNodeColor = (party) => {
-//     const partyColors = {
-//         'PT': '#FF0000',
-//         'PSDB': '#0000FF',
-//         'PSOL': '#F66C0D',
-//         'PSB': '#00FF00',
-//         'DEM': '#FFFF00',
-//         'MDB': '#00FFFF',
-//         'PP': '#7A3E9D',
-//         'PDT': '#83258D',
-//         'PL': '#4B0082',
-//         'PSC': '#2E8B57',
-//         'PSD': '#008080',
-//         'PTB': '#483D8B',
-//         'PV': '#32CD32',
-//         'REPUBLICANOS': '#DC143C',
-//         'SOLIDARIEDADE': '#8B4513',
-//         'AVANTE': '#FFD700',
-//         'CIDADANIA': '#FF4500',
-//         'PATRI': '#8A2BE2',
-//         'PODE': '#20B2AA',
-//         'PROS': '#228B22',
-//         'PRTB': '#800000',
-//         'PSL': '#DAA520',
-//         'PTC': '#D2691E',
-//         'REDE': '#B22222',
-//         'S.PART.': '#FFA07A',
-//         'PCdoB': '#FF6347',
-//         'PMB': '#8B008B',
-//         'PMN': '#006400',
-//         'PPL': '#ADFF2F',
-//         'PR': '#7FFF00',
-//         'PRB': '#7CFC00',
-//         'PRP': '#00FA9A',
-//         'PSDC': '#4682B4'
-//     };
-
-//     return partyColors[party || 'Outros'] || '#000000';
-// };
 
 const Graph = ({ year, month, submitClicked }) => {
     const containerRef = useRef();
@@ -69,26 +29,9 @@ const Graph = ({ year, month, submitClicked }) => {
         selectedNode: '',
         hoveredNeighbors: [],
     });
-
     const [colorTiposDespesa, setColorTiposDespesa] = useState({});
-
     const [tipoDeDespesasAtivas, setTipoDeDespesasAtivas] = useState({});
     const [todasDespesasDesativadas, setTodasDespesasDesativadas] = useState(false);
-
-    // const [partidosAtivos, setPartidosAtivos] = useState({});
-    // const [todosPartidosDesativados, setTodosPartidosDesativados] = useState(false);
-
-
-    // const partyNames = ['PT', 'PSDB', 'PSOL', 'PSB', 'DEM', 'MDB', 'PP', 'PDT', 'PL', 'PSC', /*... mais partidos*/];
-    // const colorPartidos = {};
-
-    // partyNames.forEach(party => {
-    //     colorPartidos[party] = {
-    //         // valorTotal: getPartyTotalExpenses(party), // função fictícia para ilustrar, você precisará de uma função real para obter o valor total das despesas de cada partido
-    //         color: getDeputyNodeColor(party)
-    //     }
-    // });
-
 
     useEffect(() => {
         const fetchData = async () => {
@@ -98,85 +41,21 @@ const Graph = ({ year, month, submitClicked }) => {
                 setIsLoading(true);
                 try {
 
-                    const response = await axios.post(`${API_BASE_URL}/graphAPI/getGraph`, {
-                        ano: String(year),
-                        mes: String(month),
-                    });
+                    const response = await fetchGraphData();
+                    const processedData = processGraphData(response.data);
 
-                    console.log("Data fetched successfully");
-
-                    const colorByDespesas = response.data.edges.reduce((acc, edge) => {
-                        if (edge.attributes.label in acc) {
-                            return acc;
-                        } else {
-                            acc[edge.attributes.label] = {
-                                color: edge.attributes && edge.attributes.color,
-                            };
-                            return acc;
-                        }
-                    }, {});
-
-                    // const colorByPartidos = response.data.nodes.reduce((acc, node) => {
-                    //     if (node.attributes.deputy) {
-                    //         if (node.attributes.deputy.party in acc) {
-                    //             return acc;
-                    //         } else {
-                    //             acc[node.attributes.deputy.party] = {
-                    //                 color: node.attributes && node.attributes.color,
-                    //             };
-                    //             return acc;
-                    //         }
-                    //     } else {
-                    //         return acc;
-                    //     }
-                    // }, {});
-
-                    response.data.nodes.forEach(node => {
-                        if (node.attributes.fornecedor) {
-                            // Valor total de despesas por tipo de despesa
-                            colorByDespesas[node.attributes.fornecedor.tipoDespesa]['valorTotal'] = (Number(colorByDespesas[node.attributes.fornecedor.tipoDespesa]['valorTotal'] || 0) + node.attributes.payments.reduce((acc, payment) => acc + Number(payment.valorDocumento), 0)).toFixed(2);
-
-                            // // Valor total de despesas por partido
-                            // colorByPartidos[node.attributes.deputy.party]['valorTotal'] = (Number(colorByPartidos[node.attributes.deputy.party]['valorTotal'] || 0) + node.attributes.payments.reduce((acc, payment) => {
-                            //     if (payment.deputy) {
-                            //         let deputy = response.data.nodes
-                            //     }
-                            // } , 0)).toFixed(2);
-                        }
-                    });
-
-                    setColorTiposDespesa(colorByDespesas);
-
-                    setTipoDeDespesasAtivas(Object.keys(colorByDespesas).reduce((acc, tipoDespesa) => {
-                        acc[tipoDespesa] = true;
-                        return acc;
-                    }, {}));
-
-                    // For each edge, change type to arrow
-                    response.data.edges.forEach(edge => {
-                        edge.attributes.type = 'arrow';
-                    });
-
-                    const deputyNames = response.data.nodes.map(node => node.attributes.deputy ? node.attributes.label : '').filter(Boolean); // Get deputy names from nodes
-
-                    deputyNames.unshift('Busque um Deputado'); // Add empty string to start of array
-
-                    const fornecedorNames = response.data.nodes.map(node => node.attributes.fornecedor ? node.attributes.label : '').filter(Boolean); // Get fornecedor names from nodes
-
-                    fornecedorNames.unshift('Busque um Fornecedor'); // Add empty string to start of array
-
-                    setValueOptionsFornecedor(fornecedorNames); // Set state with fornecedor names
-
-                    setValueOptionsDeputies(deputyNames);
-
-                    setGraphData(response.data);
+                    setColorTiposDespesa(processedData.colorByDespesas);
+                    setTipoDeDespesasAtivas(processedData.tipoDeDespesasAtivas);
+                    setValueOptionsFornecedor(processedData.fornecedorNames);
+                    setValueOptionsDeputies(processedData.deputyNames);
+                    setGraphData(processedData.graphData);
 
                     setGraphNotFound(false);
                 } catch (error) {
                     setGraphNotFound(true);
                     setGraphData(null);
                 } finally {
-                    setIsLoading(false); // Set loading to false at end of fetch
+                    setIsLoading(false);
                 }
             }
         };
@@ -186,133 +65,208 @@ const Graph = ({ year, month, submitClicked }) => {
         }
     }, [submitClicked]);
 
+    async function fetchGraphData() {
+        return await axios.post(`${API_BASE_URL}/graphAPI/getGraph`, {
+            ano: String(year),
+            mes: String(month),
+        });
+    }
+
+    function processGraphData(data) {
+        const colorByDespesas = getColorByDespesas(data.edges);
+        updateColorByDespesas(colorByDespesas, data.nodes);
+        const tipoDeDespesasAtivas = getTipoDeDespesasAtivas(colorByDespesas);
+        setEdgeTypeToArrow(data.edges);
+        const deputyNames = getNames(data.nodes, 'deputy');
+        const fornecedorNames = getNames(data.nodes, 'fornecedor');
+
+        return {
+            colorByDespesas,
+            tipoDeDespesasAtivas,
+            deputyNames,
+            fornecedorNames,
+            graphData: data,
+        };
+    }
+
+    function getColorByDespesas(edges) {
+        return edges.reduce((acc, edge) => {
+            if (!(edge.attributes.label in acc)) {
+                acc[edge.attributes.label] = {
+                    color: edge.attributes && edge.attributes.color,
+                };
+            }
+            return acc;
+        }, {});
+    }
+
+    function updateColorByDespesas(colorByDespesas, nodes) {
+        nodes.forEach(node => {
+            if (node.attributes.fornecedor) {
+                colorByDespesas[node.attributes.fornecedor.tipoDespesa]['valorTotal'] = (Number(colorByDespesas[node.attributes.fornecedor.tipoDespesa]['valorTotal'] || 0) + node.attributes.payments.reduce((acc, payment) => acc + Number(payment.valorDocumento), 0)).toFixed(2);
+            }
+        });
+    }
+
+    function getTipoDeDespesasAtivas(colorByDespesas) {
+        return Object.keys(colorByDespesas).reduce((acc, tipoDespesa) => {
+            acc[tipoDespesa] = true;
+            return acc;
+        }, {});
+    }
+
+    function setEdgeTypeToArrow(edges) {
+        edges.forEach(edge => {
+            edge.attributes.type = 'arrow';
+        });
+    }
+
+    function getNames(nodes, attribute) {
+        const names = nodes
+            .map(node => node.attributes[attribute] ? node.attributes.label : '')
+            .filter(Boolean);
+        names.unshift(`Busque um ${attribute === 'deputy' ? 'Deputado' : 'Fornecedor'}`);
+        return names;
+    }
+
+    const rendererSettings = {
+        "labelRenderedSizeThreshold": 6,
+        "labelFont": "Roboto",
+        "labelSize": 12,
+        "labelWeight": 452,
+        "allowInvalidContainer": true,
+        "labelColor": {
+            attribute: '#000'
+        }
+    };
+
+    const handleClickNode = useCallback((event, graph, renderer) => {
+        const { node } = event;
+
+        const nodeData = graph.getNodeAttributes(node);
+
+        const neighbors = graph.neighbors(node);
+        setRendererState((state) => ({
+            ...state,
+            hoveredNode: node,
+            hoveredNeighbors: neighbors,
+        }));
+
+        setSelectedNode(nodeData);
+
+        const nodePosition = renderer.getNodeDisplayData(nodeData.deputy ? nodeData.deputy.id : nodeData.fornecedor.cnpjCpfFornecedor);
+
+        //Came off
+        const camera = renderer.getCamera();
+        camera.animate({
+            x: nodePosition.x,
+            y: nodePosition.y,
+            ratio: 0.3678,
+        }, {
+            duration: 850
+        });
+
+        renderer.refresh();
+    }, []);
+
+    const handleClickEdge = useCallback((event, graph, renderer) => {
+        const { edge } = event;
+        const edgeData = graph.getEdgeAttributes(edge);
+
+        setSelectedEdge(edgeData);
+        renderer.refresh();
+    }, []);
+
+    const bindTooltip = (event) => {
+        const { node, captor } = event.data;
+        const tooltip = document.querySelector('.sigma-tooltip');
+        // tooltip.style.display = 'block';
+        tooltip.style.left = captor.clientX + 'px';
+        tooltip.style.top = captor.clientY + 'px';
+        tooltip.innerHTML = `${node.label}<br>Color: ${node.color}`;
+    };
+
+    const hideTooltip = () => {
+        const tooltip = document.querySelector('.sigma-tooltip');
+        tooltip.style.display = 'none';
+    };
+
     useEffect(() => {
         if (!graphData) return;
 
         const graph = new DirectedGraph().import(graphData);
         const renderer = new Sigma(graph, containerRef.current);
 
-        // renderer.setSetting("enableEdgeClickEvents", true);
-        renderer.setSetting("labelRenderedSizeThreshold", 7);
-        renderer.setSetting("labelFont", "Roboto");
-        renderer.setSetting("labelSize", 12);
-        renderer.setSetting("labelWeight", 452);
-        renderer.setSetting("allowInvalidContainer", true);
-        renderer.setSetting("labelColor", {
-            attribute: '#000'
+        Object.entries(rendererSettings).forEach(([key, value]) => {
+            renderer.setSetting(key, value);
         });
 
         setSigmaRenderer(renderer);
 
-        renderer.on('clickNode', (event) => {
-            const { node } = event;
-
-            const nodeData = graph.getNodeAttributes(node);
-
-            const neighbors = graph.neighbors(node);
-            setRendererState((state) => ({
-                ...state,
-                hoveredNode: node,
-                hoveredNeighbors: neighbors,
-            }));
-
-            setSelectedNode(nodeData);
-
-            console.log(nodeData);
-
-            const nodePosition = renderer.getNodeDisplayData(nodeData.deputy ? nodeData.deputy.id : nodeData.fornecedor.cnpjCpfFornecedor);
-
-            //Came off
-            const camera = renderer.getCamera();
-            camera.animate({
-                x: nodePosition.x,
-                y: nodePosition.y,
-                ratio: 0.3678,
-            }, {
-                duration: 850
-            });
-
-            renderer.refresh();
-        });
-
-        renderer.on('clickEdge', (event) => {
-            const { edge } = event;
-            const edgeData = graph.getEdgeAttributes(edge);
-
-            setSelectedEdge(edgeData);
-
-            renderer.refresh();
-        });
-
-        const bindTooltip = (event) => {
-            const { node, captor } = event.data;
-            const tooltip = document.querySelector('.sigma-tooltip');
-            tooltip.style.display = 'block';
-            tooltip.style.left = captor.clientX + 'px';
-            tooltip.style.top = captor.clientY + 'px';
-            tooltip.innerHTML = `${node.label}<br>Color: ${node.color}`;
+        const eventListeners = {
+            'clickNode': (event) => handleClickNode(event, graph, renderer),
+            'clickEdge': (event) => handleClickEdge(event, graph, renderer),
+            'overNode': bindTooltip,
+            'outNode': hideTooltip,
+            'overEdge': bindTooltip,
+            'outEdge': hideTooltip
         };
 
-        const hideTooltip = () => {
-            const tooltip = document.querySelector('.sigma-tooltip');
-            tooltip.style.display = 'none';
-        };
-
-        renderer.on('overNode', bindTooltip);
-        renderer.on('outNode', hideTooltip);
-        renderer.on('overEdge', bindTooltip);
-        renderer.on('outEdge', hideTooltip);
+        Object.entries(eventListeners).forEach(([event, listener]) => {
+            renderer.on(event, listener);
+        });
 
         return () => {
-            renderer.off('overNode', bindTooltip);
-            renderer.off('outNode', hideTooltip);
-            renderer.off('overEdge', bindTooltip);
-            renderer.off('outEdge', hideTooltip);
+            Object.entries(eventListeners).forEach(([event, listener]) => {
+                renderer.off(event, listener);
+            });
             renderer.kill();
         };
 
-    }, [graphData]);
+    }, [graphData, handleClickNode]);
+
+
+    const nodeReducer = useCallback((node, data, rendererState) => {
+        const res = { ...data };
+        if (rendererState.hoveredNeighbors && rendererState.hoveredNeighbors.length && !rendererState.hoveredNeighbors.find((n) => n === node) && rendererState.hoveredNode !== node) {
+            res.label = null;
+            res.color = "#f6f6f6";
+            res.labelSize = "fixed";
+            res.labelWeight = 120;
+        }
+        if (rendererState.selectedNode === node && node) {
+            res.highlighted = true;
+        }
+
+        return res;
+    }, []);
+
+    const edgeReducer = useCallback((edge, data, rendererState, graph) => {
+        const res = { ...data };
+        if (rendererState.hoveredNode && !graph.hasExtremity(edge, rendererState.hoveredNode) || !tipoDeDespesasAtivas[String(res.label)]) {
+            res.hidden = true;
+        }
+        return res;
+    }, []);
 
     useEffect(() => {
         if (!sigmaRenderer) return;
 
         const graph = sigmaRenderer.getGraph();
 
-        sigmaRenderer.setSetting("nodeReducer", (node, data) => {
-            const res = { ...data };
-            if (rendererState.hoveredNeighbors && rendererState.hoveredNeighbors.length && !rendererState.hoveredNeighbors.find((n) => n === node) && rendererState.hoveredNode !== node) {
-                res.label = null;
-                res.color = "#f6f6f6";
-                res.labelSize = "fixed";
-                res.labelWeight = 120;
-            }
-            if (rendererState.selectedNode === node && node) {
-                res.highlighted = true;
-            }
+        const reducersListeners = {
+            'nodeReducer': (node, data) => nodeReducer(node, data, rendererState),
+            'edgeReducer': (edge, data) => edgeReducer(edge, data, rendererState, graph),
+        };
 
-            return res;
-        });
-
-        sigmaRenderer.setSetting("edgeReducer", (edge, data) => {
-            const res = { ...data };
-            if (rendererState.hoveredNode && !graph.hasExtremity(edge, rendererState.hoveredNode) || !tipoDeDespesasAtivas[String(res.label)]) {
-                res.hidden = true;
-            }
-            return res;
+        Object.entries(reducersListeners).forEach(([event, listener]) => {
+            sigmaRenderer.setSetting(event, listener);
         });
 
         sigmaRenderer.setSetting("labelRenderedSizeThreshold", 0);
 
         sigmaRenderer.refresh();
     }, [rendererState]);
-
-    // Refresh label size if no node is selected (closed card)
-    useEffect(() => {
-        if (sigmaRenderer && (!selectedNode && !selectedEdge)) {
-            sigmaRenderer.setSetting("labelRenderedSizeThreshold", 9);
-            sigmaRenderer.refresh();
-        }
-    }, [selectedNode, selectedEdge]);
 
     // Esconder arestas que o tipo de despesa não está ativo
     useEffect(() => {
@@ -348,29 +302,18 @@ const Graph = ({ year, month, submitClicked }) => {
         sigmaRenderer.refresh();
     }, [tipoDeDespesasAtivas, rendererState]);
 
-    // useEffect(() => {
-    //     if (!sigmaRenderer || selectedNode) return;
-
-    //     sigmaRenderer.setSetting("nodeReducer", (node, data) => {
-    //         const res = { ...data };
-
-    //         if (partidosAtivos) {
-    //             if (partidosAtivos[res.deputy && res.deputy.party]) {
-    //                 res.hidden = false;
-    //             } else {
-    //                 res.hidden = true;
-    //             }
-    //         }
-    //         return res;
-    //     });
-
-    //     sigmaRenderer.refresh();
-    // }, [partidosAtivos, rendererState]);
+    // Refresh label size if no node is selected (closed card)
+    useEffect(() => {
+        if (sigmaRenderer && (!selectedNode && !selectedEdge)) {
+            sigmaRenderer.setSetting("labelRenderedSizeThreshold", 9);
+            sigmaRenderer.refresh();
+        }
+    }, [selectedNode, selectedEdge]);
 
 
     const totalDespesas = Object.values(colorTiposDespesa).reduce((acc, curr) => Number(acc || 0) + Number(curr.valorTotal || 0), 0);
 
-    const handleSearchDeputy = () => {
+    async function handleSearchDeputy() {
         if (!sigmaRenderer) {
             alert('Gráfico não disponível');
             return;
@@ -378,7 +321,7 @@ const Graph = ({ year, month, submitClicked }) => {
 
         const graph = sigmaRenderer.getGraph();
 
-        const nodeId = graph.nodes().find((id) => graph.getNodeAttributes(id).label.toLowerCase() === searchValueDeputy.toLowerCase());
+        const nodeId = graph.nodes().find((id) => graph.getNodeAttributes(id).label.toLowerCase() === searchValueDeputy.value.toLowerCase());
 
         if (nodeId) {
             const nodePosition = sigmaRenderer.getNodeDisplayData(nodeId);
@@ -397,7 +340,7 @@ const Graph = ({ year, month, submitClicked }) => {
         }
     };
 
-    const handleSearchFornecedor = () => {
+    async function handleSearchFornecedor() {
         if (!sigmaRenderer) {
             alert('Gráfico não disponível');
             return;
@@ -405,7 +348,7 @@ const Graph = ({ year, month, submitClicked }) => {
 
         const graph = sigmaRenderer.getGraph();
 
-        const nodeId = graph.nodes().find((id) => graph.getNodeAttributes(id).label.toLowerCase() === searchValueFornecedor.toLowerCase());
+        const nodeId = graph.nodes().find((id) => graph.getNodeAttributes(id).label.toLowerCase() === searchValueFornecedor.value.toLowerCase());
 
         if (nodeId) {
             const nodePosition = sigmaRenderer.getNodeDisplayData(nodeId);
@@ -424,7 +367,7 @@ const Graph = ({ year, month, submitClicked }) => {
         }
     };
 
-    const onClose = () => {
+    async function onClose() {
         setRendererState((state) => ({
             ...state,
             hoveredNeighbors: [],
@@ -435,11 +378,10 @@ const Graph = ({ year, month, submitClicked }) => {
         setSelectedEdge(null);
     };
 
-
     const ToggleDespesaButton = React.memo(({ tipoDespesa, isActive, toggleDespesa }) => (
         <Row className="justify-content-md-center">
             <Button size="sm" onClick={(event) => {
-                event.preventDefault();
+                // event.preventDefault();
                 toggleDespesa(tipoDespesa);
             }} variant={isActive ? "primary" : "secondary"}>
                 {isActive ? "Ligado" : "Desligado"}
@@ -486,7 +428,7 @@ const Graph = ({ year, month, submitClicked }) => {
     const ColorLegendDespesas = () => {
         return (
             <Container className="mt-2 mb-5 legenda">
-                <Card className="title">As cores representam os tipos de despesas e abaixo delas o valor total para o mês selecionado -- o tamanho do nó dos deputados é constante em contraste aos das empresas beneficiárias em que o tamanho do nó é proporcional ao logaritmo na base 10 do valor total das despesas para o mês selecionado.
+                <Card className="title">As cores representam os tipos de despesas e abaixo delas o valor total para o mês selecionado
                 </Card>
                 <DespesasButtons />
                 <Row className="legendaContainer">
@@ -503,45 +445,6 @@ const Graph = ({ year, month, submitClicked }) => {
         }));
         setTodasDespesasDesativadas(false);
     };
-
-    // const togglePartido = (partido) => {
-    //     setPartidosAtivos(prevPartidosAtivos => ({
-    //         ...prevPartidosAtivos,
-    //         [partido]: !prevPartidosAtivos[partido]
-    //     }));
-    // };
-
-
-    // const TogglePartidoButton = React.memo(({ partido, isActive, togglePartido }) => (
-    //     <Row className="justify-content-md-center">
-    //         <Button size="sm" onClick={(event) => {
-    //             event.preventDefault();
-    //             togglePartido(partido);
-    //         }} variant={isActive ? "primary" : "secondary"}>
-    //             {isActive ? "Ligado" : "Desligado"}
-    //         </Button>
-    //     </Row>
-    // ));
-
-    // const mapPartidos = (colorPartidos, partidosAtivos) => {
-    //     return Object.entries(colorPartidos)
-    //         .map(([partido, corValor], index) => {
-    //             return (
-    //                 <Col key={index} className="legendaItem">
-    //                     <div className="legendaColor" style={{ backgroundColor: partidosAtivos[partido] ? corValor.color : 'transparent' }}>
-    //                         {partido}
-    //                     </div>
-    //                     <div className="valorInfo">
-    //                         <TogglePartidoButton
-    //                             partido={partido}
-    //                             isActive={partidosAtivos[partido]}
-    //                             togglePartido={togglePartido}
-    //                         />
-    //                     </div>
-    //                 </Col>
-    //             )
-    //         })
-    // }
 
     const DespesasButtons = () => {
         return (
@@ -585,7 +488,7 @@ const Graph = ({ year, month, submitClicked }) => {
             // border: '0.1em solid #cccccc',
             borderRadius: '2em',
             fontSize: '1em',
-            width: '90%',
+            width: '100em',
             height: '2vh',
             maxWidth: '17em',
         }),
@@ -595,9 +498,8 @@ const Graph = ({ year, month, submitClicked }) => {
         }),
     };
 
-
     return (
-        <Container>
+        <Container fluid className="GraphPage">
             {(isLoading) ? (
                 <img src="..\Loading_icon.gif" alt="Loading" className="loading-gif" /> // Loading gif
             ) : graphNotFound ? (
@@ -609,47 +511,62 @@ const Graph = ({ year, month, submitClicked }) => {
 
                     <Row className="justify-content-md-center">
                         <ColorLegendDespesas />
-                        {/* {mapPartidos(colorPartidos, partidosAtivos)} */}
                     </Row>
 
+
                     <Row className="GraphContainer">
-                        <Col className="SearchContainer">
-                            <div className="GraphSearchDeputy">
-                                <Select
-                                    styles={customStyles}
-                                    className="GraphSearch-input"
-                                    value={searchValueDeputy}
-                                    onChange={(selectedOption) => setSearchValueDeputy(selectedOption.value)}
-                                    options={valueOptionsDeputies.map(value => ({ value, label: value }))}
-                                    isSearchable
-                                />
-                                <button className="GraphSearch-button" onClick={handleSearchDeputy}>
-                                    Buscar
-                                </button>
-                            </div>
-                        </Col>
+
+                        <Container>
+                            <Row>
+                                <Col className="SearchContainer">
+                                    <Row>
+                                        <Col>
+                                            <Select
+                                                styles={customStyles}
+                                                className="GraphSearch-input"
+                                                placeholder="Deputado"
+                                                onChange={(selectedOption) => setSearchValueDeputy(selectedOption)}
+                                                value={valueOptionsDeputies.find(option => option.value === searchValueDeputy)}
+                                                options={valueOptionsDeputies.map(value => ({ value, label: value }))}
+                                                isSearchable
+                                            />
+                                        </Col>
+
+                                        <Col className='mt-2'>
+                                            <Button className="GraphSearch-button" onClick={handleSearchDeputy}>
+                                                Buscar
+                                            </Button>
+                                        </Col>
+                                    </Row>
+                                </Col>
+
+                                <Col className="SearchContainer">
+                                    <Row>
+                                        <Col>
+                                            <Select
+                                                styles={customStyles}
+                                                className="GraphSearch-input"
+                                                onChange={(selectedOption) => setSearchValueFornecedor(selectedOption)}
+                                                value={valueOptionsFornecedor.find(option => option.value === searchValueFornecedor)}
+                                                placeholder="Fornecedor"
+                                                options={valueOptionsFornecedor.map(value => ({ value, label: value }))}
+                                                isSearchable
+                                            />
+                                        </Col>
+
+                                        <Col className='mt-2'>
+                                            <Button className="GraphSearch-button" onClick={handleSearchFornecedor}>
+                                                Buscar
+                                            </Button>
+                                        </Col>
+                                    </Row>
+                                </Col>
+                            </Row>
+                        </Container>
 
                         <Row ref={containerRef} className="Graph">
                         </Row>
-
-                        <Col className="SearchContainer">
-                            <div className="GraphSearchFornecedor">
-                                <Select
-                                    styles={customStyles}
-                                    className="GraphSearch-input"
-                                    value={searchValueFornecedor}
-                                    onChange={(selectedOption) => setSearchValueFornecedor(selectedOption.value)}
-                                    options={valueOptionsFornecedor.map(value => ({ value, label: value }))}
-                                    isSearchable
-                                />
-                                <button className="GraphSearch-button" onClick={handleSearchFornecedor}>
-                                    Buscar
-                                </button>
-                            </div>
-                        </Col>
                     </Row>
-
-                    {/* <Row> */}
 
                     <div className="GraphCardWrapper">
                         <div className="GraphCard">
@@ -658,8 +575,6 @@ const Graph = ({ year, month, submitClicked }) => {
                             {selectedEdge && <EdgeDetails selectedEdge={selectedEdge} />}
                         </div>
                     </div>
-
-                    {/* </Row> */}
 
                 </Row>
             )}

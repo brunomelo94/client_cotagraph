@@ -13,7 +13,6 @@ const Home = () => {
     const [month, setMonth] = useState('');
     const [showGraph, setShowGraph] = useState(false);
     const [submitClicked, setSubmitClicked] = useState(false);
-    const [backgroundImage, setBackgroundImage] = useState("./deputados_gpt_1.webp");
     const [installPromptEvent, setInstallPromptEvent] = useState(null);
 
     useEffect(() => {
@@ -29,7 +28,9 @@ const Home = () => {
         if (!installPromptEvent) return;
         installPromptEvent.prompt();
         const { outcome } = await installPromptEvent.userChoice;
-        setInstallPromptEvent(null);
+        if (outcome === 'accepted') {
+            setInstallPromptEvent(null);
+        }
     };
 
     const months = [
@@ -59,9 +60,17 @@ const Home = () => {
                 <Container className="Home" fluid>
                     <Row className="justify-content-md-center">
                         <h1 className="Home-title">cotagraph</h1>
-                        {installPromptEvent && <Button className="InstallButton" onClick={handleInstallClick}><i className="fas fa-download"></i> Instale nosso App para acompanhar de perto!</Button>}
                     </Row>
-                    <Row className="justify-content-md-center mb-5">
+                    <Row className="justify-content-md-center">
+                        <Button
+                            className="mb-4 InstallButton"
+                            onClick={handleInstallClick}
+                            disabled={installPromptEvent === null}
+                        >
+                            <i className="fas fa-download"></i> {installPromptEvent === null ? 'App instalado!' : 'Instalar App!'}
+                        </Button>
+                    </Row>
+                    <Row className="justify-content-md-center mb-4">
                         <h4 className='pl-4 pr-4' style={{ color: '#000094', fontWeight: 'bold' }}>
                             Conheça o perfil de gastos dos &nbsp;
                             <span style={{ color: '#ff0421', fontSize: '1.1em' }}>
@@ -70,7 +79,8 @@ const Home = () => {
                             &nbsp; deputados!
                         </h4>
                     </Row>
-                    <Row className="justify-content-md-center">
+                    <Row className="justify-content-
+                    -center">
                         <Form onSubmit={handleSubmit} className="Form">
                             <Row>
                                 <Col>
@@ -108,7 +118,7 @@ const Home = () => {
                             </Row>
                             <Row className="justify-content-md-center">
                                 <Col>
-                                    <Button type="submit" className='mt-3' variant="primary" block>
+                                    <Button type="submit" className='mt-3' variant="primary">
                                         Visualizar Gastos!
                                     </Button>
                                 </Col>

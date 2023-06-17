@@ -9,5 +9,7 @@ export default function registerServiceWorker() {
                 console.log('ServiceWorker registration failed: ', err);
             });
         });
+
+
     }
 }

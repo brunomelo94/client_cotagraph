@@ -17,21 +17,15 @@ self.addEventListener('install', function (event) {
     );
 });
 
-self.addEventListener('fetch', function (event) {
+self.addEventListener('fetch', event => {
     event.respondWith(
-        caches.match(event.request).then(function (response) {
-            if (response) {
-                return response;
-            } else {
-                return fetch(event.request)
-                    .then(function (res) {
-                        return caches.open(CACHE_NAME)
-                            .then(function (cache) {
-                                cache.put(event.request.url, res.clone());
-                                return res;
-                            })
-                    })
-            }
+        caches.open('api-cache').then(cache => {
+            return cache.match(event.request).then(response => {
+                return response || fetch(event.request).then(networkResponse => {
+                    cache.put(event.request, networkResponse.clone());
+                    return networkResponse;
+                });
+            });
         })
     );
 });

@@ -44,7 +44,7 @@ const Graph = ({ year, month, submitClicked }) => {
                     const response = await fetchGraphData();
                     const processedData = processGraphData(response.data);
 
-                    setColorTiposDespesa(processedData.colorByDespesas);
+                    setColorTiposDespesa(processedData.colorAndValuesByExpensesTypes);
                     setTipoDeDespesasAtivas(processedData.tipoDeDespesasAtivas);
                     setValueOptionsFornecedor(processedData.fornecedorNames);
                     setValueOptionsDeputies(processedData.deputyNames);
@@ -66,22 +66,68 @@ const Graph = ({ year, month, submitClicked }) => {
     }, [submitClicked]);
 
     async function fetchGraphData() {
-        return await axios.post(`${API_BASE_URL}/graphAPI/getGraph`, {
+        // const cacheName = 'api-cache';
+        // const cacheResponse = await caches.match(`${API_BASE_URL}/graphAPI/getGraph`, {
+        //     method: 'POST',
+        //     body: JSON.stringify({
+        //         ano: String(year),
+        //         mes: String(month),
+        //     })
+        // });
+
+        // if (cacheResponse) {
+        //     // Se a resposta estiver no cache, retorna a resposta do cache
+        //     return cacheResponse.json();
+        // } else {
+        // Caso contrário, busca a resposta do servidor
+        const response = await axios.post(`${API_BASE_URL}/graphAPI/getGraph`, {
             ano: String(year),
             mes: String(month),
         });
+
+        console.log(response);
+
+        // Verifica se a resposta do servidor é bem-sucedida
+        // if (response.ok) {
+        // Converte a resposta para JSON
+        // const responseData = await response.json();
+
+        //         // Armazena a resposta no cache para uso futuro
+        //         const cache = await caches.open(cacheName);
+        //         cache.put(`${API_BASE_URL}/graphAPI/getGraph`, response.clone());
+
+        //         // Retorna a resposta
+        return response;
+        //     } else {
+        //         // Em caso de erro na resposta do servidor, trata o erro
+        //         throw new Error('Erro na resposta do servidor');
+        //     }
+        // }
     }
 
     function processGraphData(data) {
-        const colorByDespesas = getColorByDespesas(data.edges);
-        updateColorByDespesas(colorByDespesas, data.nodes);
-        const tipoDeDespesasAtivas = getTipoDeDespesasAtivas(colorByDespesas);
+
+        console.log("Debug 1");
+
+        const colorAndValuesByExpensesTypes = getColorAndValuesByExpensesTypes(data.colorAndTotalValueByExpenseType);
+
+        console.log("Debug 2");
+
+        // const colorAndValuesByParties = getColorAndValuesByParties(data.colorAndTotalValueByParty);
+
+        // updateColorByDespesas(colorAndValuesByExpensesTypes, data.nodes);
+
+        const tipoDeDespesasAtivas = getTipoDeDespesasAtivas(colorAndValuesByExpensesTypes);
+
         setEdgeTypeToArrow(data.edges);
+
         const deputyNames = getNames(data.nodes, 'deputy');
+
         const fornecedorNames = getNames(data.nodes, 'fornecedor');
 
         return {
-            colorByDespesas,
+            colorAndValuesByExpensesTypes,
+            // colorAndValuesByParties,
             tipoDeDespesasAtivas,
             deputyNames,
             fornecedorNames,
@@ -89,23 +135,24 @@ const Graph = ({ year, month, submitClicked }) => {
         };
     }
 
-    function getColorByDespesas(edges) {
-        return edges.reduce((acc, edge) => {
-            if (!(edge.attributes.label in acc)) {
-                acc[edge.attributes.label] = {
-                    color: edge.attributes && edge.attributes.color,
-                };
-            }
+    function getColorAndValuesByExpensesTypes(colorAndTotalValueByExpenseType) {
+        return colorAndTotalValueByExpenseType.reduce((acc, colorAndTotalValue) => {
+            acc[colorAndTotalValue.expenseType] = {
+                color: colorAndTotalValue.color,
+                totalValue: colorAndTotalValue.totalValue,
+            };
             return acc;
         }, {});
     }
 
-    function updateColorByDespesas(colorByDespesas, nodes) {
-        nodes.forEach(node => {
-            if (node.attributes.fornecedor) {
-                colorByDespesas[node.attributes.fornecedor.tipoDespesa]['valorTotal'] = (Number(colorByDespesas[node.attributes.fornecedor.tipoDespesa]['valorTotal'] || 0) + node.attributes.payments.reduce((acc, payment) => acc + Number(payment.valorDocumento), 0)).toFixed(2);
-            }
-        });
+    function getColorAndValuesByParties(colorAndTotalValueByParty) {
+        return colorAndTotalValueByParty.reduce((acc, colorAndTotalValue) => {
+            acc[colorAndTotalValue.party] = {
+                color: colorAndTotalValue.color,
+                totalValue: colorAndTotalValue.totalValue,
+            };
+            return acc;
+        }, {});
     }
 
     function getTipoDeDespesasAtivas(colorByDespesas) {
@@ -311,7 +358,7 @@ const Graph = ({ year, month, submitClicked }) => {
     }, [selectedNode, selectedEdge]);
 
 
-    const totalDespesas = Object.values(colorTiposDespesa).reduce((acc, curr) => Number(acc || 0) + Number(curr.valorTotal || 0), 0);
+    const totalDespesas = Object.values(colorTiposDespesa).reduce((acc, curr) => Number(acc || 0) + Number(curr.totalValue || 0), 0);
 
     async function handleSearchDeputy() {
         if (!sigmaRenderer) {
@@ -392,16 +439,16 @@ const Graph = ({ year, month, submitClicked }) => {
     //** INIT - Legendas, controladores de legenda e de arestas e despesas **//
     const mapTiposDespesa = (colorTiposDespesa, todasDespesasDesativadas, tipoDeDespesasAtivas, totalDespesas) => {
         return Object.entries(colorTiposDespesa)
-            .sort((a, b) => b[1].valorTotal - a[1].valorTotal)
+            .sort((a, b) => b[1].totalValue - a[1].totalValue)
             .map(([tipoDespesa, corValor], index) => {
                 if (!corValor) return null;
 
-                const valorTotalNum = Number(corValor.valorTotal);
-                if (isNaN(valorTotalNum)) {
+                const totalValueNum = Number(corValor.totalValue);
+                if (isNaN(totalValueNum)) {
                     return null;
                 }
-                const percentual = ((valorTotalNum / Number(totalDespesas)) * 100).toFixed(2);
-                const valorTotalBr = valorTotalNum.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+                const percentual = ((totalValueNum / Number(totalDespesas)) * 100).toFixed(2);
+                const totalValueBr = totalValueNum.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
 
                 return (
                     <Col key={index} className="legendaItem">
@@ -410,7 +457,7 @@ const Graph = ({ year, month, submitClicked }) => {
                         </div>
                         <div className="valorInfo">
                             <div>
-                                <Row className="total">Total: R${valorTotalBr} </Row>
+                                <Row className="total">Total: R${totalValueBr} </Row>
                                 <Row className="percentual">Percentual: {percentual}%</Row>
                             </div>
 

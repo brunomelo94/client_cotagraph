@@ -1,26 +1,26 @@
 .NodeDetailsContainer {
   align-items: center;
-  margin-top: 75vh;
-  margin-left: 10vh;
+  margin-top: 80vh;
+  /* margin-left: 10vh; */
   font-size: 0.7rem;
-  width: 7rem;
+  /* width: 7rem; */
   position: absolute;
 }
 
 .GraphCardWrapper {
   position: absolute;
-  left: 0.5rem;
-  top: 23rem;
+  /* left: 0.5rem; */
+  /* top: 80%; */
   /* outros estilos necessários */
 }
 
 .NodeDetails,
 .ExpenseDetails {
-  width: 100%;
-  left: -2rem;
+  width: 90%;
+  /* left: -2rem; */
   text-align: justify;
-  min-width: 10vh;
-  margin-bottom: 0.1rem;
+  min-width: 8vh;
+  /* margin-bottom: 0.1rem; */
   position: absolute;
 }
 
@@ -35,7 +35,7 @@
   object-fit: cover;
   width: auto;
   /* garante que a imagem se ajuste ao tamanho do card no mobile */
-  margin-bottom: 0.1rem;
+  /* margin-bottom: 0.1rem; */
 }
 
 .NodeDetails-title,
@@ -47,7 +47,7 @@
   position: absolute;
   top: 0;
   right: 0;
-  padding: 5px;
+  /* padding: 5px; */
   border: none;
   background-color: transparent;
 }
@@ -55,19 +55,37 @@
 /* Estilos para telas maiores */
 @media (min-width: 768px) {
   .NodeDetailsContainer {
-    justify-content: space-between;
+    /* justify-content: space-between; */
   }
+
+  .NodeDetailsContainer {
+    align-items: center;
+    margin-top: 40vh;
+    /* margin-left: 10vh; */
+    font-size: 0.7rem;
+    /* width: 7rem; */
+    position: absolute;
+  }
+
 
   .GraphCardWrapper {
     position: absolute;
-    left: 0.5rem;
-    top: 13vh;
+    /* left: 0.5rem;
+    top: 13vh; */
     /* outros estilos necessários */
+    /* width: 80%; */
   }
 
   .NodeDetails-title,
   .ExpenseDetails-title {
-    font-size: 1.6em;
+    width: 70%;
+    /* left: -2rem; */
+    text-align: justify;
+    min-width: 8vh;
+    /* margin-bottom: 0.1rem; */
+    position: absolute;
+
+    font-size: 1.2em;
     /* um pouco maior em telas maiores */
   }
 }

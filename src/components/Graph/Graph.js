@@ -33,16 +33,21 @@ const Graph = ({ year, month, submitClicked }) => {
     const [tipoDeDespesasAtivas, setTipoDeDespesasAtivas] = useState({});
     const [todasDespesasDesativadas, setTodasDespesasDesativadas] = useState(false);
 
+    // const [, setSubmitClicked] = useState(false);
+
     useEffect(() => {
         const fetchData = async () => {
             if (!submitClicked) {
-                submitClicked = true;
                 console.log('Fetching graph data...');
                 setIsLoading(true);
+                // setSubmitClicked(true);
+                submitClicked = true;
                 try {
+                    const response = await fetchGraphData(year, month);
 
-                    const response = await fetchGraphData();
-                    const processedData = processGraphData(response.data);
+                    // console.log(response);
+
+                    const processedData = processGraphData(response);
 
                     setColorTiposDespesa(processedData.colorAndValuesByExpensesTypes);
                     setTipoDeDespesasAtivas(processedData.tipoDeDespesasAtivas);
@@ -65,53 +70,53 @@ const Graph = ({ year, month, submitClicked }) => {
         }
     }, [submitClicked]);
 
-    async function fetchGraphData() {
-        // const cacheName = 'api-cache';
-        // const cacheResponse = await caches.match(`${API_BASE_URL}/graphAPI/getGraph`, {
-        //     method: 'POST',
-        //     body: JSON.stringify({
-        //         ano: String(year),
-        //         mes: String(month),
-        //     })
-        // });
+    async function fetchGraphData(year, month) {
+        const cacheName = 'api-cache';
+        const url = `${API_BASE_URL}/graphAPI/getGraph/${year}/${month}`;
 
-        // if (cacheResponse) {
-        //     // Se a resposta estiver no cache, retorna a resposta do cache
-        //     return cacheResponse.json();
-        // } else {
+        // Tente buscar a resposta do cache
+        const cacheResponse = await caches.match(url);
+        if (cacheResponse) {
+            // Se a resposta estiver no cache, retorna a resposta do cache
+            return cacheResponse.json();
+        }
+
         // Caso contrário, busca a resposta do servidor
-        const response = await axios.post(`${API_BASE_URL}/graphAPI/getGraph`, {
-            ano: String(year),
-            mes: String(month),
-        });
-
-        console.log(response);
+        const response = await axios.get(url);
 
         // Verifica se a resposta do servidor é bem-sucedida
-        // if (response.ok) {
-        // Converte a resposta para JSON
-        // const responseData = await response.json();
+        if (response.status === 200) {
+            // Como estamos usando Axios, precisamos criar uma nova Response
+            const newResponse = new Response(JSON.stringify(response.data), {
+                status: response.status,
+                statusText: response.statusText,
+                headers: { 'Content-Type': 'application/json' }
+            });
 
-        //         // Armazena a resposta no cache para uso futuro
-        //         const cache = await caches.open(cacheName);
-        //         cache.put(`${API_BASE_URL}/graphAPI/getGraph`, response.clone());
+            // Armazena a resposta no cache para uso futuro
 
-        //         // Retorna a resposta
-        return response;
-        //     } else {
-        //         // Em caso de erro na resposta do servidor, trata o erro
-        //         throw new Error('Erro na resposta do servidor');
-        //     }
-        // }
+            // try {
+            //     const cache = await caches.open(cacheName);
+
+            //     cache.put(url, newResponse.clone()).then(() => {
+            //         console.log(response);
+            //     });
+            // } catch (err) {
+            //     console.log(err);
+            // }
+
+            // console.log(response);
+
+            // Retorna a resposta
+            return response.data;
+        } else {
+            // Em caso de erro na resposta do servidor, trata o erro
+            throw new Error('Erro na resposta do servidor');
+        }
     }
 
     function processGraphData(data) {
-
-        console.log("Debug 1");
-
         const colorAndValuesByExpensesTypes = getColorAndValuesByExpensesTypes(data.colorAndTotalValueByExpenseType);
-
-        console.log("Debug 2");
 
         // const colorAndValuesByParties = getColorAndValuesByParties(data.colorAndTotalValueByParty);
 
@@ -612,16 +617,12 @@ const Graph = ({ year, month, submitClicked }) => {
                         </Container>
 
                         <Row ref={containerRef} className="Graph">
-                        </Row>
-                    </Row>
-
-                    <div className="GraphCardWrapper">
-                        <div className="GraphCard">
                             {selectedNode && selectedNode.deputy && <NodeDetails deputy={selectedNode.deputy} onClose={onClose} />}
                             {selectedNode && selectedNode.fornecedor && <NodeDetails fornecedor={selectedNode.fornecedor} onClose={onClose} />}
                             {selectedEdge && <EdgeDetails selectedEdge={selectedEdge} />}
-                        </div>
-                    </div>
+                        </Row>
+                    </Row>
+
 
                 </Row>
             )}

@@ -60,17 +60,6 @@
     padding: auto;
 }
 
-.GraphCard {
-    position: absolute;
-    /* Alterado de auto para absolute */
-    /* Ajuste este valor de acordo com suas necessidades */
-    right: 6vh;
-    z-index: 1000;
-    width: auto;
-    background-color: #ffffff;
-    border-radius: 5px;
-    box-shadow: 0 1em 2em rgba(0, 0, 0, 0.1);
-}
 
 .GraphSearch-input,
 .GraphSearch-button {

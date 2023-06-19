@@ -16,38 +16,35 @@ function NodeDetails({ deputy, fornecedor, onClose }) {
 
     return (
         <Row className="NodeDetailsContainer">
-            {deputy && (
-                <Col xs={12} md={6}>
+            {(deputy || fornecedor) && (
+                <Col className="GraphCardWrapper">
                     <Card className="NodeDetails">
                         <Button variant="light" className="closeButton" onClick={onClose}>X</Button>
-                        <Card.Img
-                            className="NodeDetails-image"
-                            src={photoUrl}
-                        />
-                        <Card.Body>
-                            <Card.Title className="NodeDetails-title">
-                                <Link to={`/deputy/${id}`}>{name}</Link>
-                            </Card.Title>
-                            <Card.Text>Nome: {name}</Card.Text>
-                            <Card.Text>email: {email}</Card.Text>
-                            <Card.Text>Estado: {uf}</Card.Text>
-                            <Card.Text>Partido: {party}</Card.Text>
-                        </Card.Body>
-                    </Card>
-                </Col>
-            )}
-
-            {fornecedor && (
-                <Col xs={12} md={6}>
-                    <Card className="ExpenseDetails">
-                        <Button variant="light" className="closeButton" onClick={onClose}>X</Button>
-                        <Card.Body>
-                            <Card.Title className="ExpenseDetails-title">
-                                <Link to={`/fornecedor/${cnpjCpfFornecedor}`}>{nomeFornecedor}</Link>
-                            </Card.Title>
-                            <Card.Text>CNPJ/CPF do Fornecedor: {cnpjCpfFornecedor}</Card.Text>
-                            <Card.Text>Tipo de despesa: {tipoDespesa}</Card.Text>
-                        </Card.Body>
+                        {deputy ? (
+                            <>
+                                <Card.Img
+                                    className="NodeDetails-image"
+                                    src={photoUrl}
+                                />
+                                <Card.Body>
+                                    <Card.Title className="NodeDetails-title">
+                                        <Link to={`/deputy/${id}`}>{name}</Link>
+                                    </Card.Title>
+                                    <Card.Text>Nome: {name}</Card.Text>
+                                    <Card.Text>email: {email}</Card.Text>
+                                    <Card.Text>Estado: {uf}</Card.Text>
+                                    <Card.Text>Partido: {party}</Card.Text>
+                                </Card.Body>
+                            </>
+                        ) : (
+                            <Card.Body>
+                                <Card.Title className="NodeDetails-title">
+                                    <Link to={`/fornecedor/${cnpjCpfFornecedor}`}>{nomeFornecedor}</Link>
+                                </Card.Title>
+                                <Card.Text>CNPJ/CPF do Fornecedor: {cnpjCpfFornecedor}</Card.Text>
+                                <Card.Text>Tipo de despesa: {tipoDespesa}</Card.Text>
+                            </Card.Body>
+                        )}
                     </Card>
                 </Col>
             )}

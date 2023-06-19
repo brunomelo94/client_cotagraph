@@ -41,10 +41,9 @@
     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, .25);
 }
 
-.Home-title,
-.Piada-title {
+.Home-title {
     font-size: 2em;
-    font-weight: 500;
+    font-weight: 520;
     color: #343a40;
     margin-bottom: 2em;
     text-transform: uppercase;
@@ -53,10 +52,6 @@
     z-index: 1;
 }
 
-.Piada-title {
-    margin-top: 1em;
-    z-index: 1;
-}
 
 .Form {
     width: 100%;
@@ -109,9 +104,12 @@
 
 @media (max-width: 600px) {
 
-    .Home-title,
-    .Piada-title {
-        font-size: 1em;
+    html {
+        font-size: 1rem;
+    }
+
+    .Home-title {
+        font-size: 1.4em;
         margin-bottom: 1em;
         z-index: 1;
     }
@@ -131,8 +129,11 @@
 
 @media (max-width: 400px) {
 
-    .Home-title,
-    .Piada-title {
+    html {
+        font-size: 0.8rem;
+    }
+
+    .Home-title {
         font-size: 1.2em;
         margin-bottom: 1em;
         z-index: 1;

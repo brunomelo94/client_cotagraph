@@ -67,11 +67,11 @@ const Home = () => {
                             onClick={handleInstallClick}
                             disabled={installPromptEvent === null}
                         >
-                            <i className="fas fa-download"></i> {installPromptEvent === null ? 'App instalado!' : 'Instalar App!'}
+                            <i className="fas fa-download"></i> {installPromptEvent === null ? 'App instalado!' : 'Instale o App!'}
                         </Button>
                     </Row>
                     <Row className="justify-content-md-center mb-4">
-                        <h4 className='pl-4 pr-4' style={{ color: '#000094', fontWeight: 'bold' }}>
+                        <h4 className='pl-4 pr-4 display-9 lead' style={{ color: '#000094', fontWeight: 'bold' }}>
                             Conheça o perfil de gastos dos &nbsp;
                             <span style={{ color: '#ff0421', fontSize: '1.1em' }}>
                                 <u>seus</u>

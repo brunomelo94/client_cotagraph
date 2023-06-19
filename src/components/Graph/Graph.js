@@ -6,6 +6,7 @@ import EdgeDetails from '../EdgeDetails/EdgeDetails';
 import axios from 'axios';
 import { Container, Card, Button, Row, Col, Alert } from 'react-bootstrap';
 import Select from 'react-select';
+import VirtualizedSelect from '../VirtualizedSelect/VirtualizedSelect';
 
 import './Graph.css';
 import './Legendas.css'
@@ -441,7 +442,6 @@ const Graph = ({ year, month, submitClicked }) => {
         </Row>
     ));
 
-    //** INIT - Legendas, controladores de legenda e de arestas e despesas **//
     const mapTiposDespesa = (colorTiposDespesa, todasDespesasDesativadas, tipoDeDespesasAtivas, totalDespesas) => {
         return Object.entries(colorTiposDespesa)
             .sort((a, b) => b[1].totalValue - a[1].totalValue)
@@ -595,7 +595,7 @@ const Graph = ({ year, month, submitClicked }) => {
                                 <Col className="SearchContainer">
                                     <Row>
                                         <Col>
-                                            <Select
+                                            <VirtualizedSelect
                                                 styles={customStyles}
                                                 className="GraphSearch-input"
                                                 onChange={(selectedOption) => setSearchValueFornecedor(selectedOption)}

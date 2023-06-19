@@ -1,4 +1,5 @@
 const CACHE_NAME = 'app-v' + new Date().getTime();
+const CACHE_EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 7; // 7 dias
 
 /* eslint-disable no-restricted-globals */
 self.addEventListener('install', function (event) {
@@ -22,26 +23,39 @@ self.addEventListener('install', function (event) {
 self.addEventListener('fetch', event => {
     if (event.request.method === 'GET') {
         event.respondWith(
-            caches.open('api-cache').then(cache => {
-                return cache.match(event.request).then(response => {
-                    // Always clone the response from fetch before it's used because
-                    // it's a stream that can only be consumed once.
-                    const fetchPromise = fetch(event.request).then(networkResponse => {
-                        cache.put(event.request, networkResponse.clone());
-                        return networkResponse;
-                    })
-                        .catch(error => console.error('Erro ao realizar fetch:', error));
-                    // If there's a cached response, use that, otherwise wait for the network.
-                    return response || fetchPromise;
-                })
-                    .catch(error => console.error('Erro ao verificar o cache:', error));
+            fetch(event.request).then(networkResponse => {
+                if (networkResponse.ok) {
+                    // Apenas colocar coisas no cache se a solicitação foi bem sucedida
+                    const clone = networkResponse.clone();
+                    caches.open('api-cache').then(cache => {
+                        cache.put(event.request, clone);
+                    });
+                }
+                return networkResponse;
+            }).catch(async error => {
+                console.error('Erro ao realizar fetch:', error);
+                // Se a solicitação de rede falhar, verifique o cache
+                const cacheResponse = await caches.match(event.request);
+                if (cacheResponse) {
+                    const cachedData = await cacheResponse.json();
+                    // Verifique se os dados estão atualizados
+                    if (Date.now() - cachedData.timestamp < CACHE_EXPIRATION_TIME) {
+                        // Se os dados estiverem atualizados, retorne a resposta do cache
+                        return new Response(JSON.stringify(cachedData.data), {
+                            status: 200,
+                            statusText: "OK",
+                            headers: { 'Content-Type': 'application/json' }
+                        });
+                    }
+                }
+                throw error;  // Se chegamos até aqui, os dados não estão no cache ou eles expiraram, então falha
             })
-                .catch(error => console.error('Erro ao abrir o cache da API:', error))
         );
     } else {
         event.respondWith(fetch(event.request));
     }
 });
+
 
 
 self.addEventListener('activate', event => {

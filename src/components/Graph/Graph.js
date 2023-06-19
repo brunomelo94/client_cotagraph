@@ -7,6 +7,7 @@ import axios from 'axios';
 import { Container, Card, Button, Row, Col, Alert } from 'react-bootstrap';
 import Select from 'react-select';
 import VirtualizedSelect from '../VirtualizedSelect/VirtualizedSelect';
+import LoadingWithFacts from '../LoadingWithFacts/LoadingWithFacts';
 
 import './Graph.css';
 import './Legendas.css'
@@ -74,44 +75,46 @@ const Graph = ({ year, month, submitClicked }) => {
     async function fetchGraphData(year, month) {
         const cacheName = 'api-cache';
         const url = `${API_BASE_URL}/graphAPI/getGraph/${year}/${month}`;
+        const CACHE_EXPIRATION_TIME = 60 * 60 * 1;
 
         // Tente buscar a resposta do cache
         const cacheResponse = await caches.match(url);
         if (cacheResponse) {
-            // Se a resposta estiver no cache, retorna a resposta do cache
-            return cacheResponse.json();
+            const cachedData = await cacheResponse.json();
+
+            // Verifique se os dados estão atualizados
+            if (Date.now() - cachedData.timestamp < CACHE_EXPIRATION_TIME) {
+                // Se os dados estiverem atualizados, retorna a resposta do cache
+                return cachedData.data;
+            }
         }
 
-        // Caso contrário, busca a resposta do servidor
+        // Se chegamos até aqui, ou os dados não estavam no cache ou eles expiraram.
+        // Então, vamos buscar uma nova cópia dos dados.
+
         const response = await axios.get(url);
 
-        // Verifica se a resposta do servidor é bem-sucedida
         if (response.status === 200) {
-            // Como estamos usando Axios, precisamos criar uma nova Response
-            const newResponse = new Response(JSON.stringify(response.data), {
+            const dataToCache = {
+                timestamp: Date.now(),
+                data: response.data,
+            };
+
+            const newResponse = new Response(JSON.stringify(dataToCache), {
                 status: response.status,
                 statusText: response.statusText,
                 headers: { 'Content-Type': 'application/json' }
             });
 
-            // Armazena a resposta no cache para uso futuro
+            try {
+                const cache = await caches.open(cacheName);
+                await cache.put(url, newResponse);
+            } catch (err) {
+                console.error('Failed to put data in cache:', err);
+            }
 
-            // try {
-            //     const cache = await caches.open(cacheName);
-
-            //     cache.put(url, newResponse.clone()).then(() => {
-            //         console.log(response);
-            //     });
-            // } catch (err) {
-            //     console.log(err);
-            // }
-
-            // console.log(response);
-
-            // Retorna a resposta
             return response.data;
         } else {
-            // Em caso de erro na resposta do servidor, trata o erro
             throw new Error('Erro na resposta do servidor');
         }
     }
@@ -125,7 +128,7 @@ const Graph = ({ year, month, submitClicked }) => {
 
         const tipoDeDespesasAtivas = getTipoDeDespesasAtivas(colorAndValuesByExpensesTypes);
 
-        setEdgeTypeToArrow(data.edges);
+        // setEdgeTypeToArrow(data.edges);
 
         const deputyNames = getNames(data.nodes, 'deputy');
 
@@ -358,7 +361,7 @@ const Graph = ({ year, month, submitClicked }) => {
     // Refresh label size if no node is selected (closed card)
     useEffect(() => {
         if (sigmaRenderer && (!selectedNode && !selectedEdge)) {
-            sigmaRenderer.setSetting("labelRenderedSizeThreshold", 9);
+            sigmaRenderer.setSetting("labelRenderedSizeThreshold", 6);
             sigmaRenderer.refresh();
         }
     }, [selectedNode, selectedEdge]);
@@ -456,13 +459,14 @@ const Graph = ({ year, month, submitClicked }) => {
                 const totalValueBr = totalValueNum.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
 
                 return (
-                    <Col key={index} className="legendaItem">
+                    <Col key={index} className="legendaItem text-center">
                         <div className="legendaColor" style={{ backgroundColor: todasDespesasDesativadas ? 'transparent' : (tipoDeDespesasAtivas[tipoDespesa] ? corValor.color : 'transparent') }}>
                             {tipoDespesa}
                         </div>
                         <div className="valorInfo">
                             <div>
-                                <Row className="total">Total: R${totalValueBr} </Row>
+                                <Row className="total">
+                                    Total: R${totalValueBr} </Row>
                                 <Row className="percentual">Percentual: {percentual}%</Row>
                             </div>
 
@@ -479,8 +483,15 @@ const Graph = ({ year, month, submitClicked }) => {
 
     const ColorLegendDespesas = () => {
         return (
-            <Container className="mt-2 mb-5 legenda">
-                <Card className="title">As cores representam os tipos de despesas e abaixo delas o valor total para o mês selecionado
+            <Container>
+                <Card className='totalDespesas text-center' >
+                    As cores representam os tipos de despesas e abaixo delas o valor total para o mês selecionado.
+                    <br />
+                    {/* Center text force */}
+                    <div style={{ height: '100%' }}>
+                        CEAP (Cota para o Exercício da Atividade Parlamentar) do mês:
+                        R${totalDespesas.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                    </div>
                 </Card>
                 <DespesasButtons />
                 <Row className="legendaContainer">
@@ -553,7 +564,7 @@ const Graph = ({ year, month, submitClicked }) => {
     return (
         <Container fluid className="GraphPage">
             {(isLoading) ? (
-                <img src="..\Loading_icon.gif" alt="Loading" className="loading-gif" /> // Loading gif
+                <LoadingWithFacts isLoading={isLoading} />
             ) : graphNotFound ? (
                 <Alert variant="danger">
                     <Alert.Heading>Grafo não encontrado 😢!</Alert.Heading>

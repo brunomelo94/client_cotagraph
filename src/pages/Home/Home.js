@@ -71,9 +71,10 @@ const Home = () => {
                         </Button>
                     </Row>
                     <Row className="justify-content-md-center mb-4">
-                        <h4 className='pl-4 pr-4 display-9 lead' style={{ color: '#000094', fontWeight: 'bold' }}>
+                        {/* Force align center */}
+                        <h4 className='pl-4 pr-4 display-9 lead' style={{ color: '#3f3fe0', fontWeight: 'bold', textAlign: 'center' }}>
                             Conheça o perfil de gastos dos &nbsp;
-                            <span style={{ color: '#ff0421', fontSize: '1.1em' }}>
+                            <span style={{ color: '#e86351', fontSize: '1.1em' }}>
                                 <u>seus</u>
                             </span>
                             &nbsp; deputados!

@@ -35,20 +35,14 @@ const Graph = ({ year, month, submitClicked }) => {
     const [tipoDeDespesasAtivas, setTipoDeDespesasAtivas] = useState({});
     const [todasDespesasDesativadas, setTodasDespesasDesativadas] = useState(false);
 
-    // const [, setSubmitClicked] = useState(false);
-
     useEffect(() => {
         const fetchData = async () => {
             if (!submitClicked) {
                 console.log('Fetching graph data...');
                 setIsLoading(true);
-                // setSubmitClicked(true);
                 submitClicked = true;
                 try {
                     const response = await fetchGraphData(year, month);
-
-                    // console.log(response);
-
                     const processedData = processGraphData(response);
 
                     setColorTiposDespesa(processedData.colorAndValuesByExpensesTypes);
@@ -66,7 +60,6 @@ const Graph = ({ year, month, submitClicked }) => {
                 }
             }
         };
-
         if (!graphData && !isLoading) {
             fetchData();
         }
@@ -77,20 +70,14 @@ const Graph = ({ year, month, submitClicked }) => {
         const url = `${API_BASE_URL}/graphAPI/getGraph/${year}/${month}`;
         const CACHE_EXPIRATION_TIME = 60 * 60 * 1;
 
-        // Tente buscar a resposta do cache
         const cacheResponse = await caches.match(url);
         if (cacheResponse) {
             const cachedData = await cacheResponse.json();
 
-            // Verifique se os dados estão atualizados
             if (Date.now() - cachedData.timestamp < CACHE_EXPIRATION_TIME) {
-                // Se os dados estiverem atualizados, retorna a resposta do cache
                 return cachedData.data;
             }
         }
-
-        // Se chegamos até aqui, ou os dados não estavam no cache ou eles expiraram.
-        // Então, vamos buscar uma nova cópia dos dados.
 
         const response = await axios.get(url);
 
@@ -122,16 +109,9 @@ const Graph = ({ year, month, submitClicked }) => {
     function processGraphData(data) {
         const colorAndValuesByExpensesTypes = getColorAndValuesByExpensesTypes(data.colorAndTotalValueByExpenseType);
 
-        // const colorAndValuesByParties = getColorAndValuesByParties(data.colorAndTotalValueByParty);
-
-        // updateColorByDespesas(colorAndValuesByExpensesTypes, data.nodes);
-
         const tipoDeDespesasAtivas = getTipoDeDespesasAtivas(colorAndValuesByExpensesTypes);
 
-        // setEdgeTypeToArrow(data.edges);
-
         const deputyNames = getNames(data.nodes, 'deputy');
-
         const fornecedorNames = getNames(data.nodes, 'fornecedor');
 
         return {
@@ -212,7 +192,6 @@ const Graph = ({ year, month, submitClicked }) => {
 
         const nodePosition = renderer.getNodeDisplayData(nodeData.deputy ? nodeData.deputy.id : nodeData.fornecedor.cnpjCpfFornecedor);
 
-        //Came off
         const camera = renderer.getCamera();
         camera.animate({
             x: nodePosition.x,
@@ -287,9 +266,11 @@ const Graph = ({ year, month, submitClicked }) => {
         if (rendererState.hoveredNeighbors && rendererState.hoveredNeighbors.length && !rendererState.hoveredNeighbors.find((n) => n === node) && rendererState.hoveredNode !== node) {
             res.label = null;
             res.color = "#f6f6f6";
+            // res.hidden = true;
             res.labelSize = "fixed";
             res.labelWeight = 120;
         }
+
         if (rendererState.selectedNode === node && node) {
             res.highlighted = true;
         }

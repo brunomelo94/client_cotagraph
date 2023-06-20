@@ -17,6 +17,24 @@ const facts = [
     "Os senadores têm uma cota que varia de R$ 21.045,20 a R$ 38.616,18 por mês, também dependendo do estado que representa." // mais coerente2
 ];
 
+function shuffle(array) {
+    let currentIndex = array.length, randomIndex;
+
+    // While there remain elements to shuffle.
+    while (currentIndex != 0) {
+
+        // Pick a remaining element.
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+
+        // And swap it with the current element.
+        [array[currentIndex], array[randomIndex]] = [
+            array[randomIndex], array[currentIndex]];
+    }
+
+    return array;
+}
+
 
 
 const LoadingWithFacts = ({ isLoading }) => {
@@ -35,7 +53,7 @@ const LoadingWithFacts = ({ isLoading }) => {
             {isLoading ? (
                 <div>
                     <Carousel activeIndex={factIndex} onSelect={setFactIndex} controls={false} indicators={false} pause={false}>
-                        {facts.map((fact, index) => (
+                        {shuffle(facts).map((fact, index) => (
                             <Carousel.Item key={index}>
                                 <div className="fact-card">
                                     <h5>Você sabia?</h5>

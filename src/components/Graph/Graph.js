@@ -609,6 +609,7 @@ const Graph = ({ year, month, submitClicked }) => {
                         </Container>
 
                         <Row ref={containerRef} className="Graph">
+
                             {selectedNode && selectedNode.deputy && <NodeDetails deputy={selectedNode.deputy} onClose={onClose} />}
                             {selectedNode && selectedNode.fornecedor && <NodeDetails fornecedor={selectedNode.fornecedor} onClose={onClose} />}
                             {selectedEdge && <EdgeDetails selectedEdge={selectedEdge} />}

@@ -4,7 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css"; // Estilos do Bootstrap, caso ain
 import "./LoadingWithFacts.css";
 
 const facts = [
-    "O CEAP foi criado em 2009!", // correto1
+    "A CEAP foi criado em 2009!", // correto1
     "A CEAP tem como objetivo auxiliar os parlamentares em seus gastos vinculados ao exercício da atividade parlamentar.", // mais específico1
     "O uso do CEAP é regulamentado por uma série de normas e portarias da Câmara dos Deputados.", // mais claro1
     "A CEAP substituiu a verba indenizatória, que possuía uma lista mais restrita de despesas permitidas.", // mais preciso1

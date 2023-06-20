@@ -141,11 +141,12 @@
     .NodeDetails,
     .ExpenseDetails {
         max-width: none;
+        font-size: 0.8rem;
     }
 
     .NodeDetails-title,
     .ExpenseDetails-title {
-        font-size: 0.8rem;
+        font-size: 1rem;
     }
 }
 

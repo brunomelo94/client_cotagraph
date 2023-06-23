@@ -33,7 +33,7 @@
   padding: 5%;
 }
 
-.card-body {
+.NodeDetails-body {
   max-width: 9rem;
 }
 
@@ -59,7 +59,7 @@
     left: 1rem;
   }
 
-  .card-body {
+  .NodeDetails-body {
     max-width: 7rem;
   }
 

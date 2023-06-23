@@ -26,7 +26,7 @@ function NodeDetails({ deputy, fornecedor, onClose }) {
                                     className="NodeDetails-image"
                                     src={photoUrl}
                                 />
-                                <Card.Body>
+                                <Card.Body className='NodeDetails-body'>
                                     <Card.Title className="NodeDetails-title">
                                         <Link to={`/deputy/${id}`}>{name}</Link>
                                     </Card.Title>
@@ -37,7 +37,7 @@ function NodeDetails({ deputy, fornecedor, onClose }) {
                                 </Card.Body>
                             </>
                         ) : (
-                            <Card.Body>
+                            <Card.Body className='NodeDetails-body'>
                                 <Card.Title className="NodeDetails-title">
                                     <Link to={`/fornecedor/${cnpjCpfFornecedor}`}>{nomeFornecedor}</Link>
                                 </Card.Title>

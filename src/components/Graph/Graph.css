@@ -1,6 +1,4 @@
 .GraphPage {
-    /* display: flex; */
-    /* flex-direction: column; */
     justify-content: center;
     align-items: center;
     min-height: 100vh;
@@ -9,27 +7,22 @@
 .GraphContainer {
     position: relative;
     padding: 1em;
-    padding-bottom: 200px;
-    /* min-block-size: 200vh; */
-    min-height: 8vh;
-    border-radius: 2em;
+    padding-bottom: 100px;
+    min-height: 12vh;
+    border-radius: 1em;
     justify-content: center;
-    /* overflow: auto; */
 }
 
 .totalDespesas {
     padding: 1em;
     font-size: 1em;
     font-weight: 500;
-    /* color: #ffffff; */
     border-radius: 1em;
     align-items: center;
     align-content: center;
     justify-content: center;
     justify-self: center;
-    /* box-shadow: 0 0.5em 1em rgba(0, 0, 0, 0.1); */
     z-index: 100;
-    /* background-color: rgba(255, 255, 255, 0.5); */
 }
 
 .SearchContainer {
@@ -45,34 +38,25 @@
     align-items: center;
     padding: 0.5em;
     border-radius: 2em;
-    /* flex-direction: column; */
-    /* background-color: rgba(255, 255, 255, 0.3); */
-
 }
 
 .Graph {
     position: relative;
     width: 100%;
     height: 100%;
-    min-height: 40vh;
+    min-height: 51vh;
     background-color: rgba(255, 255, 255, 0.5);
     border-radius: 2em;
     box-shadow: 0 0.5em 1em rgba(0, 0, 0, 0.1);
-    /* overflow: auto; */
 }
 
 .sigma-tooltip {
     display: none;
     position: absolute;
-    padding: 5px 10px;
     background-color: rgba(0, 0, 0, 0.7);
     color: #fff;
     border-radius: 5px;
     font-size: 16px;
-}
-
-.GraphSearchFornecedor {
-    padding: auto;
 }
 
 
@@ -81,14 +65,13 @@
     height: 40px;
 }
 
+
 .GraphSearch-input {
     flex: 1;
     margin-right: 0.5em;
     padding: 0.5em;
     border: none;
     margin-bottom: 1em;
-    /* border-radius: 2em; */
-    /* box-shadow: 0 0.5em 1em rgba(0, 0, 0, 0.1); */
 }
 
 .GraphSearch-button {
@@ -117,6 +100,7 @@
     .GraphContainer {
         flex-direction: row;
         justify-content: space-around;
+        min-height: 22vh;
     }
 }
 

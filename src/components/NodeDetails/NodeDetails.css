@@ -2,70 +2,68 @@
   position: absolute;
   top: 0;
   right: 0;
-  width: 18vh;
-  background-color: transparent;
-  padding: auto;
   z-index: 100;
-  border-radius: 3em;
+  border-radius: 5em;
   align-items: center;
+  font-size: small;
 }
 
 .GraphCardWrapper {
-  position: absolute;
-  /* left: 0.5rem; */
-  /* right: 2vh; */
-  top: 0;
+  font-size: small;
   z-index: 1000;
-  width: auto;
-  background-color: #ffffff;
   box-shadow: 0 1em 2em rgba(0, 0, 0, 0.1);
 }
 
 .NodeDetails,
 .ExpenseDetails {
-  width: 10rem;
-  left: -1rem;
-  text-align: center;
-  /* min-width: 10vh; */
-  margin-bottom: 0.1rem;
+  left: -6rem;
   position: absolute;
 }
 
 .NodeDetails-image {
   object-fit: cover;
-  width: auto;
-  /* garante que a imagem se ajuste ao tamanho do card no mobile */
-  /* margin-bottom: 0.1rem; */
+  width: 100%;
+  margin-bottom: 0.1rem;
 }
 
 .closeButton {
   position: absolute;
   border: none;
   background-color: transparent;
+  padding: 5%;
+}
+
+.card-body {
+  max-width: 9rem;
 }
 
 /* Diminuir tamanho do card de acordo com o tamanho da tela */
 @media (max-width: 768px) {
   .NodeDetailsContainer {
-    /* width: 100%; */
-    font-size: 1.2rem;
-    width: 18vh;
+    font-size: 1rem;
   }
 
   .GraphCardWrapper {
-    width: 60%;
     padding: 0;
-    margin-left: 4rem;
+    margin-left: 7rem;
   }
 
   .NodeDetails-title,
   .ExpenseDetails-title {
-    font-size: 1.2rem;
+    font-size: 1rem;
   }
 
   .NodeDetails,
   .ExpenseDetails {
+    font-size: 0.8rem;
+    left: 1rem;
+  }
+
+  .card-body {
+    max-width: 7rem;
+  }
+
+  .NodeDetails-image {
     width: 100%;
-    font-size: 1.2rem;
   }
 }

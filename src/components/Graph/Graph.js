@@ -551,15 +551,12 @@ const Graph = ({ year, month, submitClicked }) => {
                     <Alert.Heading>Grafo não encontrado 😢!</Alert.Heading>
                 </Alert>
             ) : graphData && (
-                <Row className="justify-content-md-center">
-
+                <Container className="justify-content-md-center">
                     <Row className="justify-content-md-center">
                         <ColorLegendDespesas />
                     </Row>
 
-
-                    <Row className="GraphContainer">
-
+                    <Container className="GraphContainer">
                         <Container>
                             <Row>
                                 <Col className="SearchContainer">
@@ -608,16 +605,15 @@ const Graph = ({ year, month, submitClicked }) => {
                             </Row>
                         </Container>
 
-                        <Row ref={containerRef} className="Graph">
-
+                        <Container ref={containerRef} className="Graph">
                             {selectedNode && selectedNode.deputy && <NodeDetails deputy={selectedNode.deputy} onClose={onClose} />}
                             {selectedNode && selectedNode.fornecedor && <NodeDetails fornecedor={selectedNode.fornecedor} onClose={onClose} />}
                             {selectedEdge && <EdgeDetails selectedEdge={selectedEdge} />}
-                        </Row>
-                    </Row>
+                        </Container>
 
+                    </Container>
 
-                </Row>
+                </Container>
             )}
         </Container>
     );

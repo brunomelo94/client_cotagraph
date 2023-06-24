@@ -32,6 +32,7 @@ const Graph = ({ year, month, submitClicked }) => {
         hoveredNeighbors: [],
     });
     const [colorTiposDespesa, setColorTiposDespesa] = useState({});
+    const [indexToTipoDeDespesa, setIndexToTipoDeDespesa] = useState({});
     const [tipoDeDespesasAtivas, setTipoDeDespesasAtivas] = useState({});
     const [todasDespesasDesativadas, setTodasDespesasDesativadas] = useState(false);
 
@@ -45,7 +46,15 @@ const Graph = ({ year, month, submitClicked }) => {
                     const response = await fetchGraphData(year, month);
                     const processedData = processGraphData(response);
 
+                    // console.log(processedData);
+
                     setColorTiposDespesa(processedData.colorAndValuesByExpensesTypes);
+
+                    setIndexToTipoDeDespesa(Object.keys(processedData.colorAndValuesByExpensesTypes).reduce((acc, key, index) => {
+                        acc[index] = key;
+                        return acc;
+                    }, {}));
+
                     setTipoDeDespesasAtivas(processedData.tipoDeDespesasAtivas);
                     setValueOptionsFornecedor(processedData.fornecedorNames);
                     setValueOptionsDeputies(processedData.deputyNames);
@@ -149,12 +158,6 @@ const Graph = ({ year, month, submitClicked }) => {
             acc[tipoDespesa] = true;
             return acc;
         }, {});
-    }
-
-    function setEdgeTypeToArrow(edges) {
-        edges.forEach(edge => {
-            edge.attributes.type = 'arrow';
-        });
     }
 
     function getNames(nodes, attribute) {
@@ -280,7 +283,7 @@ const Graph = ({ year, month, submitClicked }) => {
 
     const edgeReducer = useCallback((edge, data, rendererState, graph) => {
         const res = { ...data };
-        if (rendererState.hoveredNode && !graph.hasExtremity(edge, rendererState.hoveredNode) || !tipoDeDespesasAtivas[String(res.label)]) {
+        if (rendererState.hoveredNode && !graph.hasExtremity(edge, rendererState.hoveredNode) || !tipoDeDespesasAtivas[indexToTipoDeDespesa[res.label]]) {
             res.hidden = true;
         }
         return res;
@@ -313,7 +316,7 @@ const Graph = ({ year, month, submitClicked }) => {
             const res = { ...data };
 
             if (tipoDeDespesasAtivas) {
-                if (tipoDeDespesasAtivas[String(res.label)]) {
+                if (tipoDeDespesasAtivas[String(indexToTipoDeDespesa[res.label])]) {
                     res.hidden = false;
                 } else {
                     res.hidden = true;
@@ -327,7 +330,7 @@ const Graph = ({ year, month, submitClicked }) => {
             const res = { ...data };
 
             if (res.fornecedor && tipoDeDespesasAtivas) {
-                if (tipoDeDespesasAtivas[String(res.fornecedor.tipoDespesa)]) {
+                if (tipoDeDespesasAtivas[String(indexToTipoDeDespesa[res.fornecedor && res.fornecedor['tipoDespesa']])]) {
                     res.hidden = false;
                 } else {
                     res.hidden = true;
@@ -441,7 +444,7 @@ const Graph = ({ year, month, submitClicked }) => {
 
                 return (
                     <Col key={index} className="legendaItem text-center">
-                        <div className="legendaColor" style={{ backgroundColor: todasDespesasDesativadas ? 'transparent' : (tipoDeDespesasAtivas[tipoDespesa] ? corValor.color : 'transparent') }}>
+                        <div className="legendaColor" style={{ backgroundColor: todasDespesasDesativadas ? 'transparent' : (tipoDeDespesasAtivas && tipoDeDespesasAtivas[tipoDespesa] ? corValor.color : 'transparent') }}>
                             {tipoDespesa}
                         </div>
                         <div className="valorInfo">
@@ -453,7 +456,7 @@ const Graph = ({ year, month, submitClicked }) => {
 
                             <ToggleDespesaButton
                                 tipoDespesa={tipoDespesa}
-                                isActive={!todasDespesasDesativadas && tipoDeDespesasAtivas[tipoDespesa]}
+                                isActive={!todasDespesasDesativadas && tipoDeDespesasAtivas && tipoDeDespesasAtivas[tipoDespesa]}
                                 toggleDespesa={toggleDespesa}
                             />
                         </div>
@@ -485,7 +488,7 @@ const Graph = ({ year, month, submitClicked }) => {
     const toggleDespesa = (tipoDespesa) => {
         setTipoDeDespesasAtivas(prevTipoDeDespesasAtivas => ({
             ...prevTipoDeDespesasAtivas,
-            [tipoDespesa]: !prevTipoDeDespesasAtivas[tipoDespesa]
+            [tipoDespesa]: !(prevTipoDeDespesasAtivas && prevTipoDeDespesasAtivas[tipoDespesa])
         }));
         setTodasDespesasDesativadas(false);
     };
@@ -497,8 +500,8 @@ const Graph = ({ year, month, submitClicked }) => {
                 justifyContent: "center",
                 alignItems: "center",
             }}>
-                <Button style={{ margin: "10px" }} onClick={ativarTodos}>Ativar todas arestas (tipos de despesas)</Button>
-                <Button style={{ margin: "10px" }} onClick={desativarTodos}>Desativar todas arestas (tipos de despesas)</Button>
+                <Button style={{ margin: "10px" }} onClick={ativarTodos}>Ativar todas arestas (despesas)</Button>
+                <Button style={{ margin: "10px" }} onClick={desativarTodos}>Desativar todas arestas (despesas)</Button>
             </div>
         )
     };
@@ -607,7 +610,9 @@ const Graph = ({ year, month, submitClicked }) => {
 
                         <Container ref={containerRef} className="Graph">
                             {selectedNode && selectedNode.deputy && <NodeDetails deputy={selectedNode.deputy} onClose={onClose} />}
-                            {selectedNode && selectedNode.fornecedor && <NodeDetails fornecedor={selectedNode.fornecedor} onClose={onClose} />}
+                            {selectedNode && selectedNode.fornecedor && <NodeDetails fornecedor={selectedNode.fornecedor}
+                                indexToTipoDeDespesa={indexToTipoDeDespesa}
+                                onClose={onClose} />}
                             {selectedEdge && <EdgeDetails selectedEdge={selectedEdge} />}
                         </Container>
 

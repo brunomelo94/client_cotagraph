@@ -6,13 +6,13 @@ import { Link } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 import './NodeDetails.css';
 
-function NodeDetails({ deputy, fornecedor, onClose }) {
+function NodeDetails({ deputy, fornecedor, onClose, indexToTipoDeDespesa }) {
     if (!deputy && !fornecedor) {
         return null;
     }
 
     const { photoUrl, id, name, email, uf, party } = deputy || {};
-    const { tipoDespesa, nomeFornecedor, cnpjCpfFornecedor } = fornecedor || {};
+    const { nomeFornecedor, cnpjCpfFornecedor } = fornecedor || {};
 
     return (
         <Row className="NodeDetailsContainer">
@@ -42,7 +42,7 @@ function NodeDetails({ deputy, fornecedor, onClose }) {
                                     <Link to={`/fornecedor/${cnpjCpfFornecedor}`}>{nomeFornecedor}</Link>
                                 </Card.Title>
                                 <Card.Text>CNPJ/CPF do Fornecedor: {cnpjCpfFornecedor}</Card.Text>
-                                <Card.Text>Tipo de despesa: {tipoDespesa}</Card.Text>
+                                <Card.Text>Tipo de despesa: {indexToTipoDeDespesa[fornecedor && fornecedor.tipoDespesa]}</Card.Text>
                             </Card.Body>
                         )}
                     </Card>
